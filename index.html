@@ -1,66 +1,116 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Makrostatistik</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snillets WebGL Demoscenekonst</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; font-family: monospace; color: #00ffcc; }
+    canvas { display: block; }
+    #scrollText {
+      position: absolute;
+      top: 90%;
+      left: 100%;
+      white-space: nowrap;
+      font-size: 1.2em;
+      animation: scroll 30s linear infinite;
+    }
+    @keyframes scroll {
+      0% { left: 100%; }
+      100% { left: -100%; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🌍 Makrostatistik</h1>
-    <p>Senaste värden från världsekonomin – statiskt men stilrent. 20250617</p>
-  </header>
+<canvas id="glcanvas"></canvas>
+<div id="scrollText">Välkommen till Snillets WebGL Demoscene – Håll i hatten! ✨👾🎵</div>
+<audio autoplay loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_230fc452a9.mp3?filename=dreamy-groove-124302.mp3" type="audio/mpeg">
+</audio>
+<script type="module">
+import * as THREE from 'https://cdn.skypack.dev/three@0.152.2';
 
-  <main>
-    <section>
-      <h2>📊 BNP (nominalt)</h2>
-      <ul>
-        <li><strong>Sverige:</strong> 7 135 miljarder SEK</li>
-        <li><strong>USA:</strong> 28 000 miljarder USD</li>
-        <li><strong>Kina:</strong> 17 700 miljarder USD</li>
-      </ul>
-    </section>
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
 
-    <section>
-      <h2>💸 Inflation</h2>
-      <ul>
-        <li><strong>Sverige:</strong> 3,2 %</li>
-        <li><strong>USA:</strong> 3,4 %</li>
-        <li><strong>EU:</strong> 2,6 %</li>
-      </ul>
-    </section>
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 
-    <section>
-      <h2>💼 Arbetslöshet</h2>
-      <ul>
-        <li><strong>Sverige:</strong> 7,6 %</li>
-        <li><strong>USA:</strong> 4,0 %</li>
-        <li><strong>Tyskland:</strong> 5,9 %</li>
-      </ul>
-    </section>
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('glcanvas') });
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-    <section>
-      <h2>🏦 Centralbanksräntor</h2>
-      <ul>
-        <li><strong>Riksbanken (SE):</strong> 3,75 %</li>
-        <li><strong>Fed (US):</strong> 5,25–5,50 %</li>
-        <li><strong>ECB:</strong> 4,25 %</li>
-      </ul>
-    </section>
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-    <section>
-      <h2>💰 Guldpris</h2>
-      <p><strong>2 320 USD / oz</strong></p>
-    </section>
+camera.position.z = 20;
 
-    <section>
-      <h2>💱 Växelkurs USD/SEK</h2>
-      <p><strong>1 USD = 10,55 SEK</strong></p>
-    </section>
-  </main>
+const shapes = [];
+const geometries = [
+  new THREE.BoxGeometry(),
+  new THREE.SphereGeometry(0.8, 16, 16),
+  new THREE.TorusGeometry(0.6, 0.2, 16, 100),
+  new THREE.DodecahedronGeometry(0.8),
+  new THREE.TetrahedronGeometry(0.8),
+];
 
-  <footer>
-    <p>&copy; 2025 Snillet &mdash; Uppdaterad manuellt av Einstein.</p>
-  </footer>
+const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.7, roughness: 0.2 });
+
+for (let i = 0; i < 40; i++) {
+  const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+  const mesh = new THREE.Mesh(geometry, material.clone());
+  mesh.material.color.setHSL(Math.random(), 1, 0.5);
+  mesh.position.set(
+    (Math.random() - 0.5) * 30,
+    (Math.random() - 0.5) * 30,
+    (Math.random() - 0.5) * 30
+  );
+  mesh.userData.velocity = new THREE.Vector3(
+    (Math.random() - 0.5) * 0.2,
+    (Math.random() - 0.5) * 0.2,
+    (Math.random() - 0.5) * 0.2
+  );
+  shapes.push(mesh);
+  scene.add(mesh);
+}
+
+// Färgskiftande ljusshow
+const lights = [];
+for (let i = 0; i < 3; i++) {
+  const light = new THREE.PointLight(0xffffff, 1.5);
+  light.position.set((Math.random() - 0.5) * 30, (Math.random() - 0.5) * 30, 30);
+  scene.add(light);
+  lights.push(light);
+}
+
+function animateLights(t) {
+  lights.forEach((light, i) => {
+    light.color.setHSL((t * 0.0001 + i * 0.3) % 1, 1, 0.5);
+    light.position.x = Math.sin(t * 0.001 + i) * 20;
+    light.position.y = Math.cos(t * 0.0015 + i * 1.1) * 20;
+  });
+}
+
+function animate(time) {
+  requestAnimationFrame(animate);
+  animateLights(time);
+
+  for (let shape of shapes) {
+    shape.rotation.x += 0.01;
+    shape.rotation.y += 0.01;
+    shape.position.add(shape.userData.velocity);
+    ['x', 'y', 'z'].forEach(axis => {
+      if (Math.abs(shape.position[axis]) > 15) {
+        shape.userData.velocity[axis] *= -1;
+        shape.position[axis] = Math.sign(shape.position[axis]) * 15;
+      }
+    });
+  }
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
 </body>
 </html>
