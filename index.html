@@ -19,21 +19,10 @@
       0% { left: 100%; }
       100% { left: -100%; }
     }
-    #fps {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #00ffcc;
-      font-size: 0.9em;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
   </style>
 </head>
 <body>
 <canvas id="glcanvas"></canvas>
-<div id="fps">FPS: ...</div>
 <div id="scrollText">Välkommen till Snillets WebGL Demoscene – Håll i hatten! ✨👾🎵</div>
 <audio autoplay loop>
   <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_230fc452a9.mp3?filename=dreamy-groove-124302.mp3" type="audio/mpeg">
@@ -45,7 +34,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('glcanvas'), antialias: true });
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('glcanvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 window.addEventListener('resize', () => {
@@ -65,7 +55,7 @@ const geometries = [
   new THREE.TetrahedronGeometry(0.8),
 ];
 
-const material = new THREE.MeshStandardMaterial({ metalness: 0.7, roughness: 0.2 });
+const material = new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.7, roughness: 0.2 });
 
 for (let i = 0; i < 40; i++) {
   const geometry = geometries[Math.floor(Math.random() * geometries.length)];
@@ -85,10 +75,6 @@ for (let i = 0; i < 40; i++) {
   scene.add(mesh);
 }
 
-// Shader-baserad bakgrund (enkel puls)
-const backgroundLight = new THREE.AmbientLight(0x202020);
-scene.add(backgroundLight);
-
 // Färgskiftande ljusshow
 const lights = [];
 for (let i = 0; i < 3; i++) {
@@ -96,17 +82,6 @@ for (let i = 0; i < 3; i++) {
   light.position.set((Math.random() - 0.5) * 30, (Math.random() - 0.5) * 30, 30);
   scene.add(light);
   lights.push(light);
-}
-
-// FPS-mätare
-let lastFrameTime = performance.now();
-const fpsDisplay = document.getElementById('fps');
-
-function updateFPS(currentTime) {
-  const delta = currentTime - lastFrameTime;
-  const fps = (1000 / delta).toFixed(1);
-  fpsDisplay.textContent = `FPS: ${fps}`;
-  lastFrameTime = currentTime;
 }
 
 function animateLights(t) {
@@ -117,26 +92,8 @@ function animateLights(t) {
   });
 }
 
-// Logotyp i form av 3D-text
-import { FontLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'https://cdn.skypack.dev/three/examples/jsm/geometries/TextGeometry.js';
-
-const loader = new FontLoader();
-loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', font => {
-  const textGeo = new TextGeometry('SNILLET', {
-    font: font,
-    size: 1,
-    height: 0.3,
-  });
-  const textMaterial = new THREE.MeshStandardMaterial({ color: 0xff00ff });
-  const textMesh = new THREE.Mesh(textGeo, textMaterial);
-  textMesh.position.set(-4, -5, 0);
-  scene.add(textMesh);
-});
-
 function animate(time) {
   requestAnimationFrame(animate);
-  updateFPS(time);
   animateLights(time);
 
   for (let shape of shapes) {
@@ -150,7 +107,6 @@ function animate(time) {
       }
     });
   }
-
   renderer.render(scene, camera);
 }
 
@@ -158,4 +114,3 @@ animate();
 </script>
 </body>
 </html>
-
