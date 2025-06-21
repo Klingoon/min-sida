@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Satori Skärmsläckare – Snillet WebGL Edition</title>
+  <title>WebGL m.kling </title>
   <style>
     body { margin: 0; overflow: hidden; background: black; font-family: sans-serif; }
     canvas { display: block; }
@@ -24,7 +24,7 @@
 </head>
 <body>
 <canvas id="glcanvas"></canvas>
-<div id="scrollText">Satori – After Dark hommage i WebGL av Snillet 🌀🕊️✨</div>
+<div id="scrollText">Test av geometriska figurer i WebGL m.kling 2025 🌀🕊️✨</div>
 <audio autoplay loop>
   <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_230fc452a9.mp3?filename=dreamy-groove-124302.mp3" type="audio/mpeg">
 </audio>
@@ -56,7 +56,7 @@ const geometries = [
   new THREE.OctahedronGeometry(2),
 ];
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 44; i++) {
   const geom = geometries[Math.floor(Math.random() * geometries.length)];
   const mat = new THREE.MeshStandardMaterial({
     color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5),
