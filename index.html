@@ -1,146 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>WebGL Space Invaders</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Satori Skärmsläckare – Snillet WebGL Edition</title>
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
+    body { margin: 0; overflow: hidden; background: black; font-family: sans-serif; }
     canvas { display: block; }
+    #scrollText {
+      position: absolute;
+      top: 90%;
+      left: 100%;
+      white-space: nowrap;
+      font-size: 1.2em;
+      color: #00ffcc;
+      animation: scroll 30s linear infinite;
+    }
+    @keyframes scroll {
+      0% { left: 100%; }
+      100% { left: -100%; }
+    }
   </style>
 </head>
 <body>
-<canvas id="glCanvas"></canvas>
-<script>
-const canvas = document.getElementById("glCanvas");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const gl = canvas.getContext("webgl");
+<canvas id="glcanvas"></canvas>
+<div id="scrollText">Satori – After Dark hommage i WebGL av Snillet 🌀🕊️✨</div>
+<audio autoplay loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_230fc452a9.mp3?filename=dreamy-groove-124302.mp3" type="audio/mpeg">
+</audio>
+<script type="module">
+import * as THREE from 'https://cdn.skypack.dev/three@0.152.2';
 
-if (!gl) {
-  alert("WebGL not supported");
-}
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
 
-// Simple shader setup
-const vertexShaderSource = `
-  attribute vec2 a_position;
-  uniform vec2 u_resolution;
-  void main() {
-    vec2 zeroToOne = a_position / u_resolution;
-    vec2 zeroToTwo = zeroToOne * 2.0;
-    vec2 clipSpace = zeroToTwo - 1.0;
-    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-  }
-`;
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 1000);
+camera.position.z = 100;
 
-const fragmentShaderSource = `
-  precision mediump float;
-  uniform vec4 u_color;
-  void main() {
-    gl_FragColor = u_color;
-  }
-`;
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('glcanvas'), antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-function createShader(gl, type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  return shader;
-}
-
-function createProgram(gl, vertexShader, fragmentShader) {
-  const program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  return program;
-}
-
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-const program = createProgram(gl, vertexShader, fragmentShader);
-
-const positionLocation = gl.getAttribLocation(program, "a_position");
-const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-const colorLocation = gl.getUniformLocation(program, "u_color");
-
-const positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-function drawRect(x, y, width, height, color) {
-  const x1 = x;
-  const y1 = y;
-  const x2 = x + width;
-  const y2 = y + height;
-  const positions = [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  gl.uniform4fv(colorLocation, color);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-}
-
-function render() {
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  gl.useProgram(program);
-  gl.enableVertexAttribArray(positionLocation);
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-  gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
-
-  // Player
-  drawRect(playerX, canvas.height - 30, 40, 20, [0.2, 1.0, 0.2, 1]);
-
-  // Aliens
-  for (let alien of aliens) {
-    drawRect(alien.x, alien.y, 20, 20, [1.0, 0.5, 0.5, 1]);
-  }
-
-  // Bullets
-  for (let bullet of bullets) {
-    drawRect(bullet.x, bullet.y, 4, 10, [1.0, 1.0, 0.0, 1]);
-  }
-
-  update();
-  requestAnimationFrame(render);
-}
-
-// Game logic
-let playerX = canvas.width / 2 - 20;
-let bullets = [];
-let aliens = [];
-for (let row = 0; row < 3; row++) {
-  for (let col = 0; col < 8; col++) {
-    aliens.push({ x: col * 60 + 100, y: row * 40 + 60 });
-  }
-}
-
-function update() {
-  for (let bullet of bullets) {
-    bullet.y -= 5;
-  }
-  bullets = bullets.filter(b => b.y > 0);
-
-  // Basic collision detection
-  for (let i = aliens.length - 1; i >= 0; i--) {
-    for (let j = bullets.length - 1; j >= 0; j--) {
-      const a = aliens[i], b = bullets[j];
-      if (b.x >= a.x && b.x <= a.x + 20 && b.y <= a.y + 20 && b.y >= a.y) {
-        aliens.splice(i, 1);
-        bullets.splice(j, 1);
-        break;
-      }
-    }
-  }
-}
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft") playerX -= 10;
-  if (e.key === "ArrowRight") playerX += 10;
-  if (e.key === " ") bullets.push({ x: playerX + 18, y: canvas.height - 40 });
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-render();
+// Geometriska former som flyter runt och snurrar
+const forms = [];
+const geometries = [
+  new THREE.TorusKnotGeometry(2, 0.5, 64, 8),
+  new THREE.DodecahedronGeometry(2),
+  new THREE.IcosahedronGeometry(2),
+  new THREE.TetrahedronGeometry(2),
+  new THREE.OctahedronGeometry(2),
+];
+
+for (let i = 0; i < 20; i++) {
+  const geom = geometries[Math.floor(Math.random() * geometries.length)];
+  const mat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5),
+    metalness: 0.3,
+    roughness: 0.4,
+    emissive: 0x111111
+  });
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.position.set(
+    (Math.random() - 0.5) * 80,
+    (Math.random() - 0.5) * 80,
+    (Math.random() - 0.5) * 80
+  );
+  mesh.userData.velocity = new THREE.Vector3(
+    (Math.random() - 0.5) * 0.1,
+    (Math.random() - 0.5) * 0.1,
+    (Math.random() - 0.5) * 0.1
+  );
+  mesh.userData.rotationSpeed = new THREE.Vector3(
+    Math.random() * 0.01,
+    Math.random() * 0.01,
+    Math.random() * 0.01
+  );
+  forms.push(mesh);
+  scene.add(mesh);
+}
+
+// Ljus
+const ambient = new THREE.AmbientLight(0x404040);
+scene.add(ambient);
+const point = new THREE.PointLight(0xffffff, 1.2);
+point.position.set(50, 50, 50);
+scene.add(point);
+
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  for (const form of forms) {
+    form.rotation.x += form.userData.rotationSpeed.x;
+    form.rotation.y += form.userData.rotationSpeed.y;
+    form.rotation.z += form.userData.rotationSpeed.z;
+    form.position.add(form.userData.velocity);
+
+    ["x", "y", "z"].forEach(axis => {
+      if (Math.abs(form.position[axis]) > 50) {
+        form.userData.velocity[axis] *= -1;
+      }
+    });
+  }
+
+  camera.position.x = Math.sin(time * 0.0001) * 20;
+  camera.position.y = Math.cos(time * 0.0001) * 20;
+  camera.lookAt(scene.position);
+
+  renderer.render(scene, camera);
+}
+
+animate();
 </script>
 </body>
 </html>
