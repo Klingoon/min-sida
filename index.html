@@ -1,120 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebGL m.kling </title>
+  <meta charset="UTF-8">
+  <title>WebGL Solar System</title>
   <style>
-    body { margin: 0; overflow: hidden; background: black; font-family: sans-serif; }
-    canvas { display: block; }
-    #scrollText {
-      position: absolute;
-      top: 90%;
-      left: 100%;
-      white-space: nowrap;
-      font-size: 1.2em;
-      color: #00ffcc;
-      animation: scroll 30s linear infinite;
-    }
-    @keyframes scroll {
-      0% { left: 100%; }
-      100% { left: -100%; }
-    }
+    html, body, canvas { margin: 0; padding: 0; width: 100%; height: 100%; display: block; background: black; }
   </style>
 </head>
 <body>
-<canvas id="glcanvas"></canvas>
-<div id="scrollText">Test av geometriska figurer i WebGL m.kling 2025 🌀🕊️✨</div>
-<audio autoplay loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_230fc452a9.mp3?filename=dreamy-groove-124302.mp3" type="audio/mpeg">
-</audio>
-<script type="module">
-import * as THREE from 'https://cdn.skypack.dev/three@0.152.2';
+  <canvas id="glcanvas"></canvas>
+  <script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+    const canvas = document.getElementById('glcanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 1000);
-camera.position.z = 100;
+    const scene = new THREE.Scene();
 
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('glcanvas'), antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 50;
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+    const light = new THREE.PointLight(0xffffff, 1.5);
+    light.position.set(0, 0, 0);
+    scene.add(light);
 
-// Geometriska former som flyter runt och snurrar
-const forms = [];
-const geometries = [
-  new THREE.TorusKnotGeometry(2, 0.5, 64, 8),
-  new THREE.DodecahedronGeometry(2),
-  new THREE.IcosahedronGeometry(2),
-  new THREE.TetrahedronGeometry(2),
-  new THREE.OctahedronGeometry(2),
-];
+    const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
 
-for (let i = 0; i < 15; i++) {
-  const geom = geometries[Math.floor(Math.random() * geometries.length)];
-  const mat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5),
-    metalness: 0.3,
-    roughness: 0.4,
-    emissive: 0x111111
-  });
-  const mesh = new THREE.Mesh(geom, mat);
-  mesh.position.set(
-    (Math.random() - 0.5) * 80,
-    (Math.random() - 0.5) * 80,
-    (Math.random() - 0.5) * 80
-  );
-  mesh.userData.velocity = new THREE.Vector3(
-    (Math.random() - 0.5) * 0.1,
-    (Math.random() - 0.5) * 0.1,
-    (Math.random() - 0.5) * 0.1
-  );
-  mesh.userData.rotationSpeed = new THREE.Vector3(
-    Math.random() * 0.01,
-    Math.random() * 0.01,
-    Math.random() * 0.01
-  );
-  forms.push(mesh);
-  scene.add(mesh);
-}
+    const planets = [];
+    const planetColors = [0xaaaaaa, 0xff5500, 0x44aaff, 0xffaa00, 0xff4400, 0xcc99ff, 0x66ccff, 0x8888ff];
+    const planetDistances = [8, 12, 16, 22, 28, 34, 40, 46];
+    const planetSizes = [0.4, 0.9, 1.0, 1.1, 2.0, 1.6, 1.5, 1.3];
 
-// Ljus
-const ambient = new THREE.AmbientLight(0x404040);
-scene.add(ambient);
-const point = new THREE.PointLight(0xffffff, 1.2);
-point.position.set(50, 50, 50);
-scene.add(point);
+    for (let i = 0; i < 8; i++) {
+      const geometry = new THREE.SphereGeometry(planetSizes[i], 16, 16);
+      const material = new THREE.MeshStandardMaterial({ color: planetColors[i] });
+      const planet = new THREE.Mesh(geometry, material);
+      planet.position.x = planetDistances[i];
+      scene.add(planet);
+      planets.push({ mesh: planet, distance: planetDistances[i], angle: Math.random() * Math.PI * 2, speed: 0.01 + i * 0.002 });
+    }
 
-function animate(time) {
-  requestAnimationFrame(animate);
+    function animate() {
+      requestAnimationFrame(animate);
 
-  for (const form of forms) {
-    form.rotation.x += form.userData.rotationSpeed.x;
-    form.rotation.y += form.userData.rotationSpeed.y;
-    form.rotation.z += form.userData.rotationSpeed.z;
-    form.position.add(form.userData.velocity);
-
-    ["x", "y", "z"].forEach(axis => {
-      if (Math.abs(form.position[axis]) > 50) {
-        form.userData.velocity[axis] *= -1;
+      for (const planet of planets) {
+        planet.angle += planet.speed;
+        planet.mesh.position.x = Math.cos(planet.angle) * planet.distance;
+        planet.mesh.position.z = Math.sin(planet.angle) * planet.distance;
       }
-    });
-  }
 
-  camera.position.x = Math.sin(time * 0.0001) * 20;
-  camera.position.y = Math.cos(time * 0.0001) * 20;
-  camera.lookAt(scene.position);
+      renderer.render(scene, camera);
+    }
 
-  renderer.render(scene, camera);
-}
-
-animate();
-</script>
+    animate();
+  </script>
 </body>
 </html>
