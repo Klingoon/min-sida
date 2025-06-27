@@ -2,155 +2,129 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WebGL Solar System</title>
+  <title>Fraktalgenerator</title>
   <style>
-    html, body, canvas { margin: 0; padding: 0; width: 100%; height: 100%; display: block; background: black; }
-    .label {
-      position: absolute;
-      color: white;
-      font-family: sans-serif;
-      font-size: 12px;
-      pointer-events: none;
-    }
+    body { margin: 0; overflow: hidden; background: black; }
+    canvas { display: block; width: 100vw; height: 100vh; }
   </style>
 </head>
 <body>
-  <canvas id="glcanvas"></canvas>
-  <script type="module">
-    import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
-    import { OrbitControls } from 'https://cdn.skypack.dev/three@0.150.1/examples/jsm/controls/OrbitControls';
-    import { TextureLoader } from 'https://cdn.skypack.dev/three@0.150.1';
+<canvas id="glcanvas"></canvas>
+<script>
+const vertexShaderSource = `
+  attribute vec2 a_position;
+  void main() {
+    gl_Position = vec4(a_position, 0, 1);
+  }
+`;
 
-    const canvas = document.getElementById('glcanvas');
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+const fragmentShaderSource = `
+  precision highp float;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.set(0, 30, 80);
+  uniform vec2 u_resolution;
+  uniform float u_time;
+  uniform int u_type; // 0 = Mandelbrot, 1 = Julia
+  uniform vec2 u_c;
+  uniform float u_zoom;
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 1000;
-    const starVertices = [];
-    for (let i = 0; i < starsCount; i++) {
-      const x = (Math.random() - 0.5) * 2000;
-      const y = (Math.random() - 0.5) * 2000;
-      const z = (Math.random() - 0.5) * 2000;
-      starVertices.push(x, y, z);
+  int mandelbrot(vec2 z) {
+    vec2 c = z;
+    int iter;
+    for (iter = 0; iter < 256; iter++) {
+      float x = (z.x * z.x - z.y * z.y) + c.x;
+      float y = (2.0 * z.x * z.y) + c.y;
+      if (x*x + y*y > 4.0) break;
+      z = vec2(x, y);
     }
-    starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
+    return iter;
+  }
 
-    const light = new THREE.PointLight(0xffffff, 2);
-    light.position.set(0, 0, 0);
-    scene.add(light);
-
-    const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
-    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-    scene.add(sun);
-
-    const loader = new TextureLoader();
-    const planetNames = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
-    const planetTextures = [
-      null,
-      null,
-      'https://threejsfundamentals.org/threejs/resources/images/earth.jpg',
-      null,
-      null,
-      null,
-      null,
-      null
-    ];
-    const planetColors = [0xaaaaaa, 0xffcc99, 0xffffff, 0xff5500, 0xffaa00, 0xccbb99, 0x66ccff, 0x8888ff];
-    const planetDistances = [10, 15, 20, 25, 35, 45, 55, 65];
-    const planetSizes = [0.4, 0.9, 1.0, 0.8, 2.0, 1.6, 1.5, 1.3];
-    const planetSpeeds = [0.02, 0.015, 0.012, 0.01, 0.008, 0.006, 0.005, 0.004];
-    const planets = [];
-
-    for (let i = 0; i < planetNames.length; i++) {
-      const geometry = new THREE.SphereGeometry(planetSizes[i], 32, 32);
-      let material;
-      if (planetTextures[i]) {
-        const texture = loader.load(planetTextures[i]);
-        material = new THREE.MeshStandardMaterial({ map: texture });
-      } else {
-        material = new THREE.MeshStandardMaterial({ color: planetColors[i] });
-      }
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
-
-      const div = document.createElement('div');
-      div.className = 'label';
-      div.textContent = planetNames[i];
-      document.body.appendChild(div);
-
-      const ring = (planetNames[i] === 'Saturn') ? createRing(planetSizes[i] * 2.2) : null;
-      if (ring) scene.add(ring);
-
-      planets.push({
-        mesh,
-        distance: planetDistances[i],
-        angle: Math.random() * Math.PI * 2,
-        speed: planetSpeeds[i],
-        label: div,
-        ring
-      });
+  int julia(vec2 z, vec2 c) {
+    int iter;
+    for (iter = 0; iter < 256; iter++) {
+      float x = (z.x * z.x - z.y * z.y) + c.x;
+      float y = (2.0 * z.x * z.y) + c.y;
+      if (x*x + y*y > 4.0) break;
+      z = vec2(x, y);
     }
+    return iter;
+  }
 
-    function createRing(radius) {
-      const ringGeometry = new THREE.RingGeometry(radius, radius + 0.3, 64);
-      const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xbbbbbb, side: THREE.DoubleSide });
-      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-      ring.rotation.x = Math.PI / 2;
-      return ring;
-    }
+  void main() {
+    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
+    uv *= u_zoom;
+    int n = u_type == 0 ? mandelbrot(uv) : julia(uv, u_c);
+    float color = float(n) / 256.0;
+    gl_FragColor = vec4(vec3(sin(color * 6.2831), cos(color * 4.0), color), 1.0);
+  }
+`;
 
-    const moonGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-    const moonMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
-    const moon = new THREE.Mesh(moonGeometry, moonMaterial);
-    scene.add(moon);
+function createShader(gl, type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  return shader;
+}
 
-    function updateLabels() {
-      for (const planet of planets) {
-        const vector = planet.mesh.position.clone().project(camera);
-        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-        const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
-        planet.label.style.transform = `translate(-50%, -50%) translate(${x}px,${y}px)`;
-      }
-    }
+function createProgram(gl, vertexShader, fragmentShader) {
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  return program;
+}
 
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
+function main() {
+  const canvas = document.getElementById("glcanvas");
+  const gl = canvas.getContext("webgl");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-      for (const planet of planets) {
-        planet.angle += planet.speed;
-        planet.mesh.position.x = Math.cos(planet.angle) * planet.distance;
-        planet.mesh.position.z = Math.sin(planet.angle) * planet.distance;
+  const vShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+  const program = createProgram(gl, vShader, fShader);
 
-        if (planet.ring) {
-          planet.ring.position.x = planet.mesh.position.x;
-          planet.ring.position.z = planet.mesh.position.z;
-        }
-      }
+  const positionAttribute = gl.getAttribLocation(program, "a_position");
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([
+      -1, -1, 1, -1, -1, 1,
+      -1, 1, 1, -1, 1, 1
+    ]),
+    gl.STATIC_DRAW
+  );
 
-      const earth = planets[2];
-      const moonAngle = Date.now() * 0.001;
-      moon.position.x = earth.mesh.position.x + Math.cos(moonAngle) * 1.5;
-      moon.position.z = earth.mesh.position.z + Math.sin(moonAngle) * 1.5;
-      moon.position.y = earth.mesh.position.y;
+  gl.useProgram(program);
+  gl.enableVertexAttribArray(positionAttribute);
+  gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
 
-      renderer.render(scene, camera);
-      updateLabels();
-    }
+  const resLoc = gl.getUniformLocation(program, "u_resolution");
+  const timeLoc = gl.getUniformLocation(program, "u_time");
+  const typeLoc = gl.getUniformLocation(program, "u_type");
+  const cLoc = gl.getUniformLocation(program, "u_c");
+  const zoomLoc = gl.getUniformLocation(program, "u_zoom");
 
-    animate();
-  </script>
+  const type = Math.random() < 0.5 ? 0 : 1;
+  const c = [Math.random() * 2 - 1, Math.random() * 2 - 1];
+  const zoom = 0.5 + Math.random();
+
+  function render(t) {
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(resLoc, canvas.width, canvas.height);
+    gl.uniform1f(timeLoc, t * 0.001);
+    gl.uniform1i(typeLoc, type);
+    gl.uniform2f(cLoc, c[0], c[1]);
+    gl.uniform1f(zoomLoc, zoom);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+}
+
+main();
+</script>
 </body>
 </html>
