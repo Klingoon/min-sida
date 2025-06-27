@@ -2,14 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fraktalgenerator</title>
+  <title>Interaktiv Fraktalgenerator</title>
   <style>
     body { margin: 0; overflow: hidden; background: black; }
     canvas { display: block; width: 100vw; height: 100vh; }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 8px;
+      color: white;
+      font-family: sans-serif;
+    }
+    input[type=range] {
+      width: 150px;
+    }
   </style>
 </head>
 <body>
 <canvas id="glcanvas"></canvas>
+<div id="controls">
+  <label>Zoom: <input type="range" id="zoom" min="0.1" max="2.0" step="0.01" value="1"></label><br>
+  <label>Julia Cx: <input type="range" id="cx" min="-1.5" max="1.5" step="0.01" value="0.285"></label><br>
+  <label>Julia Cy: <input type="range" id="cy" min="-1.5" max="1.5" step="0.01" value="0.01"></label><br>
+  <label>Fraktal: 
+    <select id="fractalType">
+      <option value="0">Mandelbrot</option>
+      <option value="1">Julia</option>
+    </select>
+  </label><br>
+  <button id="saveBtn">Spara bild</button>
+</div>
 <script>
 const vertexShaderSource = `
   attribute vec2 a_position;
@@ -20,10 +45,9 @@ const vertexShaderSource = `
 
 const fragmentShaderSource = `
   precision highp float;
-
   uniform vec2 u_resolution;
   uniform float u_time;
-  uniform int u_type; // 0 = Mandelbrot, 1 = Julia
+  uniform int u_type;
   uniform vec2 u_c;
   uniform float u_zoom;
 
@@ -66,10 +90,10 @@ function createShader(gl, type, source) {
   return shader;
 }
 
-function createProgram(gl, vertexShader, fragmentShader) {
+function createProgram(gl, vShader, fShader) {
   const program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
+  gl.attachShader(program, vShader);
+  gl.attachShader(program, fShader);
   gl.linkProgram(program);
   return program;
 }
@@ -87,14 +111,10 @@ function main() {
   const positionAttribute = gl.getAttribLocation(program, "a_position");
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([
-      -1, -1, 1, -1, -1, 1,
-      -1, 1, 1, -1, 1, 1
-    ]),
-    gl.STATIC_DRAW
-  );
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1, 1, -1, -1, 1,
+    -1, 1, 1, -1, 1, 1
+  ]), gl.STATIC_DRAW);
 
   gl.useProgram(program);
   gl.enableVertexAttribArray(positionAttribute);
@@ -106,21 +126,29 @@ function main() {
   const cLoc = gl.getUniformLocation(program, "u_c");
   const zoomLoc = gl.getUniformLocation(program, "u_zoom");
 
-  const type = Math.random() < 0.5 ? 0 : 1;
-  const c = [Math.random() * 2 - 1, Math.random() * 2 - 1];
-  const zoom = 0.5 + Math.random();
+  const zoomSlider = document.getElementById("zoom");
+  const cxSlider = document.getElementById("cx");
+  const cySlider = document.getElementById("cy");
+  const fractalSelect = document.getElementById("fractalType");
+  const saveBtn = document.getElementById("saveBtn");
+
+  saveBtn.addEventListener("click", () => {
+    const link = document.createElement('a');
+    link.download = 'fractal.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
 
   function render(t) {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(resLoc, canvas.width, canvas.height);
     gl.uniform1f(timeLoc, t * 0.001);
-    gl.uniform1i(typeLoc, type);
-    gl.uniform2f(cLoc, c[0], c[1]);
-    gl.uniform1f(zoomLoc, zoom);
+    gl.uniform1i(typeLoc, parseInt(fractalSelect.value));
+    gl.uniform2f(cLoc, parseFloat(cxSlider.value), parseFloat(cySlider.value));
+    gl.uniform1f(zoomLoc, parseFloat(zoomSlider.value));
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     requestAnimationFrame(render);
   }
-
   requestAnimationFrame(render);
 }
 
