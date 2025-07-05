@@ -6,9 +6,19 @@
   <style>
     body { margin: 0; overflow: hidden; background: black; }
     canvas { display: block; width: 100vw; height: 100vh; }
+    #logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 120px;
+      opacity: 0.7;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
+  <img id="logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Amiga_logo_1985.svg/320px-Amiga_logo_1985.svg.png" alt="Amiga logo">
+  <audio id="bounce-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
   <canvas id="glcanvas"></canvas>
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -46,10 +56,27 @@
     const ball = new THREE.Mesh(geometry, material);
     scene.add(ball);
 
+    // Bounce parameters
+    let bounceY = 0;
+    let velocityY = 0.03;
+    let direction = 1;
+    let prevBounce = 0;
+    const sound = document.getElementById("bounce-sound");
+
     function animate() {
       requestAnimationFrame(animate);
+
       ball.rotation.x += 0.01;
       ball.rotation.y += 0.01;
+
+      bounceY += velocityY * direction;
+      if ((direction === 1 && bounceY > 1.5) || (direction === -1 && bounceY < -1.5)) {
+        direction *= -1;
+        sound.currentTime = 0;
+        sound.play();
+      }
+      ball.position.y = bounceY;
+
       controls.update();
       renderer.render(scene, camera);
     }
