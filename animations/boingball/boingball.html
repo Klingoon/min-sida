@@ -1,117 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <title>Boing Ball - WebGL Demo</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: #000;
-    }
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Amiga Boing Ball</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Dölj scrollbars */
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-  <canvas id="glcanvas"></canvas>
-  <script>
-    const canvas = document.getElementById('glcanvas');
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-      alert('WebGL not supported');
-    }
+    
+    <!-- Den här skript-taggen importerar Three.js-biblioteket -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+            }
+        }
+    </script>
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    <!-- Huvudskriptet för vår demo -->
+    <script type="module">
+        import * as THREE from 'three';
 
-    const vertexShaderSource = `
-      attribute vec2 a_position;
-      uniform vec2 u_resolution;
-      void main() {
-        vec2 zeroToOne = a_position / u_resolution;
-        vec2 zeroToTwo = zeroToOne * 2.0;
-        vec2 clipSpace = zeroToTwo - 1.0;
-        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-      }
-    `;
+        // 1. Grundläggande Scen-setup
+        // ==============================
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 8); // Flytta kameran bakåt och lite upp
+        camera.lookAt(0, 1, 0); // Titta mot mitten av scenen
 
-    const fragmentShaderSource = `
-      precision mediump float;
-      uniform vec4 u_color;
-      void main() {
-        gl_FragColor = u_color;
-      }
-    `;
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio); // För skarpare bild på högupplösta skärmar
+        document.body.appendChild(renderer.domElement);
 
-    function createShader(gl, type, source) {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      return shader;
-    }
+        // Funktion för att skapa rutmönster (checkerboard)
+        function createCheckerboardTexture(color1, color2, size = 2) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const context = canvas.getContext('2d');
+            context.fillStyle = color1;
+            context.fillRect(0, 0, size, size);
+            context.fillStyle = color2;
+            context.fillRect(0, 0, size / 2, size / 2);
+            context.fillRect(size / 2, size / 2, size / 2, size / 2);
+            return new THREE.CanvasTexture(canvas);
+        }
 
-    function createProgram(gl, vShader, fShader) {
-      const program = gl.createProgram();
-      gl.attachShader(program, vShader);
-      gl.attachShader(program, fShader);
-      gl.linkProgram(program);
-      return program;
-    }
+        // 2. Skapa Golv och Bakgrundsvägg
+        // ===================================
+        const gridTexture = createCheckerboardTexture('#555', '#444', 16);
+        gridTexture.wrapS = THREE.RepeatWrapping;
+        gridTexture.wrapT = THREE.RepeatWrapping;
+        gridTexture.repeat.set(100, 100);
 
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-    const program = createProgram(gl, vertexShader, fragmentShader);
+        const gridMaterial = new THREE.MeshPhongMaterial({ map: gridTexture });
 
-    const positionLocation = gl.getAttribLocation(program, 'a_position');
-    const resolutionUniform = gl.getUniformLocation(program, 'u_resolution');
-    const colorUniform = gl.getUniformLocation(program, 'u_color');
+        // Golv
+        const floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100),
+            gridMaterial
+        );
+        floor.rotation.x = -Math.PI / 2; // Rotera planet så det ligger platt
+        scene.add(floor);
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        // Bakre vägg
+        const wall = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100),
+            gridMaterial
+        );
+        wall.position.z = -20;
+        scene.add(wall);
 
-    function drawBall(x, y, r, color) {
-      const segments = 100;
-      const positions = [];
-      for (let i = 0; i <= segments; i++) {
-        let angle = (i / segments) * 2 * Math.PI;
-        positions.push(x + Math.cos(angle) * r);
-        positions.push(y + Math.sin(angle) * r);
-      }
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+        // 3. Skapa Boing Ball
+        // =======================
+        const ballTexture = createCheckerboardTexture('#ff0000', '#ffffff', 8);
+        ballTexture.wrapS = THREE.RepeatWrapping;
+        ballTexture.wrapT = THREE.RepeatWrapping;
+        ballTexture.repeat.set(6, 4);
 
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+        const ballMaterial = new THREE.MeshPhongMaterial({ map: ballTexture, shininess: 90 });
+        const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+        ball.position.y = 5; // Starta bollen i luften
+        scene.add(ball);
 
-      gl.useProgram(program);
-      gl.enableVertexAttribArray(positionLocation);
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+        // 4. Skapa en "falsk" skugga
+        // ============================
+        const shadowCanvas = document.createElement('canvas');
+        shadowCanvas.width = 128;
+        shadowCanvas.height = 128;
+        const shadowContext = shadowCanvas.getContext('2d');
+        const gradient = shadowContext.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0.2, 'rgba(0,0,0,0.5)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        shadowContext.fillStyle = gradient;
+        shadowContext.fillRect(0, 0, 128, 128);
 
-      gl.uniform2f(resolutionUniform, gl.canvas.width, gl.canvas.height);
-      gl.uniform4fv(colorUniform, color);
+        const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
+        const shadowMaterial = new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true });
+        const shadow = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), shadowMaterial);
+        shadow.rotation.x = -Math.PI / 2;
+        shadow.position.y = 0.01; // Precis ovanför golvet
+        scene.add(shadow);
 
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, positions.length / 2);
-    }
+        // 5. Ljus
+        // =========
+        const ambientLight = new THREE.AmbientLight(0xaaaaaa); // Ljus från alla håll
+        scene.add(ambientLight);
 
-    let x = 200, y = 200;
-    let vx = 3, vy = 2;
-    const r = 50;
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(-5, 10, 5); // Ljus uppifrån, snett framifrån
+        scene.add(directionalLight);
 
-    function animate() {
-      x += vx;
-      y += vy;
+        // 6. Fysik och Animationsloop
+        // =============================
+        const clock = new THREE.Clock();
+        let ballVelocity = new THREE.Vector3(0.02, 0, -0.05); // Startrörelse
+        const gravity = new THREE.Vector3(0, -9.82, 0);
+        const damping = 0.85; // Energi som förloras vid studs
+        const ballRadius = 1;
+        let squashTimer = 0;
 
-      if (x + r > canvas.width || x - r < 0) vx = -vx;
-      if (y + r > canvas.height || y - r < 0) vy = -vy;
+        function animate() {
+            requestAnimationFrame(animate);
 
-      drawBall(x, y, r, [1, 0.3, 0.3, 1]);
-      requestAnimationFrame(animate);
-    }
+            const deltaTime = clock.getDelta();
 
-    animate();
-  </script>
+            // Hantera "squash and stretch"
+            if (squashTimer > 0) {
+                squashTimer -= deltaTime;
+                const squashAmount = Math.sin(squashTimer * Math.PI * 4); // Skapa en snabb "wobble"
+                ball.scale.set(1 - squashAmount * 0.4, 1 + squashAmount * 0.4, 1 - squashAmount * 0.4);
+            } else {
+                ball.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1); // Gå tillbaka till normal form
+            }
+
+            // Uppdatera hastighet med gravitation
+            ballVelocity.add(gravity.clone().multiplyScalar(deltaTime));
+            
+            // Uppdatera bollens position
+            ball.position.add(ballVelocity.clone().multiplyScalar(deltaTime * 5)); // *5 för att snabba upp allt lite
+
+            // Kollisionsdetektering med golvet
+            if (ball.position.y < ballRadius) {
+                ball.position.y = ballRadius;
+                ballVelocity.y *= -damping; // Invertera y-hastighet och dämpa
+                
+                // Om studsen är tillräckligt kraftig, trigga "squash"
+                if (Math.abs(ballVelocity.y) > 0.1) {
+                     squashTimer = 0.25; // Starta squashen i 0.25 sekunder
+                }
+            }
+
+            // Kollisionsdetektering med "väggarna" (osynliga)
+            const worldBoundary = 15;
+            if (ball.position.x > worldBoundary || ball.position.x < -worldBoundary) {
+                ballVelocity.x *= -1;
+            }
+            if (ball.position.z > 8 || ball.position.z < -18) { // Anpassat för kameravyn
+                ballVelocity.z *= -1;
+            }
+            
+            // Rotera bollen baserat på dess rörelse
+            const rotationAxis = new THREE.Vector3(ballVelocity.z, 0, -ballVelocity.x).normalize();
+            const rotationSpeed = ballVelocity.length() / ballRadius;
+            ball.rotateOnWorldAxis(rotationAxis, rotationSpeed * deltaTime * 5);
+
+            // Uppdatera skuggans position och storlek
+            shadow.position.x = ball.position.x;
+            shadow.position.z = ball.position.z;
+            const shadowScale = Math.max(0.5, 1 - (ball.position.y - ballRadius) / 10);
+            shadow.scale.set(shadowScale, shadowScale, shadowScale);
+            shadow.material.opacity = Math.max(0, 0.5 - (ball.position.y - ballRadius) / 15);
+
+            // Rendera scenen
+            renderer.render(scene, camera);
+        }
+
+        // Hantera fönsterstorleksändring
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Starta animationen!
+        animate();
+
+    </script>
 </body>
 </html>
