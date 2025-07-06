@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Vätske-box</title>
+    <style>
+        /* CSS för att canvasen ska fylla hela fönstret */
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- 
+        Import Map: Detta är en modern metod för att tala om för webbläsaren 
+        var den ska hitta Three.js-modulerna. Det gör att vi kan använda 
+        "import"-syntax direkt i skriptet nedan utan en komplicerad setup.
+    -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <!--
+        Vårt 3D-skript. Notera type="module", vilket är nödvändigt för 
+        att kunna använda "import".
+    -->
+    <script type="module">
+        // Importera nödvändiga delar från Three.js
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { Water } from 'three/addons/objects/Water.js';
+        import { Sky } from 'three/addons/objects/Sky.js';
+
+        // ---- Grundläggande setup ----
+        // 1. Scen: Behållaren för alla 3D-objekt
+        const scene = new THREE.Scene();
+
+        // 2. Kamera: Våra ögon i 3D-världen
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
+        camera.position.set(30, 30, 100); // Placera kameran lite på avstånd
+
+        // 3. Renderer: Ritar scenen på en canvas
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // ---- Kontroller ----
+        // Låter oss rotera kameran med musen
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.minDistance = 50;
+        controls.maxDistance = 200;
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        // ---- Ljus och Miljö ----
+        // Ett enkelt omgivningsljus
+        const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
+
+        // Ett riktat ljus (simulerar solen)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(-1, 1, 1);
+        scene.add(directionalLight);
+
+        // Skapa en himmel (Sky) för reflektioner i vattnet
+        const sky = new Sky();
+        sky.scale.setScalar(10000);
+        scene.add(sky);
+
+        const skyUniforms = sky.material.uniforms;
+        skyUniforms['turbidity'].value = 10;
+        skyUniforms['rayleigh'].value = 2;
+        skyUniforms['mieCoefficient'].value = 0.005;
+        skyUniforms['mieDirectionalG'].value = 0.8;
+
+        // Uppdatera solens position
+        const sun = new THREE.Vector3();
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const phi = THREE.MathUtils.degToRad(88); // 90 = horisonten
+        const theta = THREE.MathUtils.degToRad(180);
+        sun.setFromSphericalCoords(1, phi, theta);
+        sky.material.uniforms['sunPosition'].value.copy(sun);
+
+
+        // ---- Vätskan (Vattnet) ----
+        const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+
+        const water = new Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load('https://threejs.org/examples/textures/waternormals.jpg', function (texture) {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                }),
+                sunDirection: new THREE.Vector3(),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f, // Mörkgrön/blå färg på vattnet
+                distortionScale: 3.7,
+                fog: scene.fog !== undefined
+            }
+        );
+
+        water.rotation.x = -Math.PI / 2; // Rotera planet så det ligger platt
+        scene.add(water);
+
+        // Uppdatera vattnets uniforms med solens data för korrekta reflektioner
+        const waterUniforms = water.material.uniforms;
+        waterUniforms['sunDirection'].value.copy(sun).normalize();
+        scene.environment = pmremGenerator.fromScene(sky).texture;
+
+
+        // ---- Boxen ----
+        const boxSize = 50;
+        const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+        // Vi skapar 6 olika material, ett för varje sida av kuben
+        const boxMaterials = [
+            // Sida: Höger, Vänster, Topp, Botten, Framsida, Baksida
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.0, side: THREE.BackSide }), // Toppen är helt transparent
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide }),
+        ];
+
+        const box = new THREE.Mesh(boxGeometry, boxMaterials);
+        box.position.y = boxSize / 2 - 1; // Positionera boxen så botten är vid y = -1
+        scene.add(box);
+
+
+        // ---- Animationsloop ----
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Uppdatera tiden för vågrörelserna
+            water.material.uniforms['time'].value += 1.0 / 60.0;
+
+            renderer.render(scene, camera);
+        }
+
+        // Hantera fönsterstorleksändring
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Starta animationen
+        animate();
+    </script>
+</body>
+</html>

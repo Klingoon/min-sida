@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL - Game of Life</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: #eee;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            border: 1px solid #444;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .controls {
+            margin-top: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Conway's Game of Life i WebGL</h1>
+    <canvas id="gl-canvas"></canvas>
+    <div class="controls">
+        <button id="reset-button">Starta om med ny slumpad data</button>
+    </div>
+
+    <!-- 
+      VERTEX SHADER
+      Denna shader är mycket enkel. Den tar bara emot hörnpositioner för en fyrkant (-1 till +1)
+      och skickar dem vidare. Den skapar också texturkoordinater (v_texCoord) så att
+      fragment shadern vet vilken pixel i texturen den ska jobba med.
+    -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+        varying vec2 v_texCoord;
+
+        void main() {
+            // Skapa texturkoordinater som går från 0.0 till 1.0
+            v_texCoord = a_position * 0.5 + 0.5;
+            gl_Position = vec4(a_position, 0.0, 1.0);
+        }
+    </script>
+
+    <!-- 
+      DISPLAY FRAGMENT SHADER
+      Denna shader används bara för att rita upp den slutgiltiga texturen på skärmen.
+      Den tar en texturkoordinat och hämtar färgen från motsvarande pixel i state-texturen.
+    -->
+    <script id="display-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform sampler2D u_texture;
+        varying vec2 v_texCoord;
+
+        void main() {
+            gl_FragColor = texture2D(u_texture, v_texCoord);
+        }
+    </script>
+
+    <!-- 
+      SIMULATION FRAGMENT SHADER
+      Det här är hjärtat i programmet. Denna shader körs för varje pixel (cell)
+      för att beräkna dess nästa tillstånd.
+    -->
+    <script id="simulation-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Texturen som innehåller det nuvarande tillståndet för alla celler
+        uniform sampler2D u_state;
+        // Storleken på texturen (t.ex. 512x512)
+        uniform vec2 u_resolution;
+
+        // Texturkoordinaten för den nuvarande pixeln
+        varying vec2 v_texCoord;
+
+        void main() {
+            // Beräkna storleken på en enskild pixel i texturkoordinatsystemet (0.0-1.0)
+            vec2 onePixel = vec2(1.0, 1.0) / u_resolution;
+
+            // Hämta tillståndet för den nuvarande cellen. Vi använder bara den röda kanalen (r).
+            // 1.0 = levande, 0.0 = död.
+            float currentState = texture2D(u_state, v_texCoord).r;
+
+            // Räkna levande grannar
+            int liveNeighbors = 0;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    // Hoppa över den mittersta cellen (oss själva)
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+
+                    // Hämta grannens tillstånd
+                    vec2 neighborCoord = v_texCoord + onePixel * vec2(float(i), float(j));
+                    float neighborState = texture2D(u_state, neighborCoord).r;
+
+                    // Om grannen är "levande" (närmare 1.0 än 0.0)
+                    if (neighborState > 0.5) {
+                        liveNeighbors++;
+                    }
+                }
+            }
+            
+            float newState = currentState;
+
+            // Applicera Game of Life-reglerna
+            if (currentState > 0.5) { // Om cellen är levande
+                if (liveNeighbors < 2 || liveNeighbors > 3) {
+                    newState = 0.0; // Dör av ensamhet eller överbefolkning
+                }
+            } else { // Om cellen är död
+                if (liveNeighbors == 3) {
+                    newState = 1.0; // Föds till liv genom reproduktion
+                }
+            }
+
+            // Sätt den nya färgen för pixeln. Svart för död, vit för levande.
+            gl_FragColor = vec4(vec3(newState), 1.0);
+        }
+    </script>
+
+
+    <!-- HUVUDPROGRAMMET I JAVASCRIPT -->
+    <script>
+        // Vänta tills sidan har laddats helt
+        window.onload = function() {
+            const canvas = document.getElementById('gl-canvas');
+            const gl = canvas.getContext('webgl');
+            if (!gl) {
+                alert('Din webbläsare stöder inte WebGL.');
+                return;
+            }
+
+            // Sätt storleken på spelplanen
+            const GRID_WIDTH = 512;
+            const GRID_HEIGHT = 512;
+            canvas.width = GRID_WIDTH;
+            canvas.height = GRID_HEIGHT;
+
+            // --- Shader- och programskapande ---
+
+            // Funktion för att kompilera en shader
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Ett fel uppstod vid kompilering av shader:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            // Funktion för att länka två shaders till ett WebGL-program
+            function createProgram(gl, vertexShader, fragmentShader) {
+                const program = gl.createProgram();
+                gl.attachShader(program, vertexShader);
+                gl.attachShader(program, fragmentShader);
+                gl.linkProgram(program);
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    console.error('Kunde inte länka programmet:', gl.getProgramInfoLog(program));
+                    gl.deleteProgram(program);
+                    return null;
+                }
+                return program;
+            }
+
+            // Hämta shaderkällkoden från HTML-dokumentet
+            const vertexShaderSource = document.getElementById('vertex-shader').textContent;
+            const displayFragmentShaderSource = document.getElementById('display-fragment-shader').textContent;
+            const simulationFragmentShaderSource = document.getElementById('simulation-fragment-shader').textContent;
+
+            // Kompilera shaders
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+            const displayFragmentShader = createShader(gl, gl.FRAGMENT_SHADER, displayFragmentShaderSource);
+            const simulationFragmentShader = createShader(gl, gl.FRAGMENT_SHADER, simulationFragmentShaderSource);
+
+            // Skapa WebGL-programmen
+            const displayProgram = createProgram(gl, vertexShader, displayFragmentShader);
+            const simulationProgram = createProgram(gl, vertexShader, simulationFragmentShader);
+
+            // Hämta platser för attribut och uniforms (variabler i shadern)
+            const positionLocation = gl.getAttribLocation(simulationProgram, 'a_position');
+            const resolutionLocation = gl.getUniformLocation(simulationProgram, 'u_resolution');
+            const stateLocation = gl.getUniformLocation(simulationProgram, 'u_state');
+            const displayTextureLocation = gl.getUniformLocation(displayProgram, 'u_texture');
+
+            // --- Skapa geometri ---
+            // Vi behöver bara en fyrkant som täcker hela skärmen.
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1.0, -1.0,
+                 1.0, -1.0,
+                -1.0,  1.0,
+                -1.0,  1.0,
+                 1.0, -1.0,
+                 1.0,  1.0,
+            ]), gl.STATIC_DRAW);
+
+            // --- Texturer och Framebuffers (för ping-pong-tekniken) ---
+            
+            // Funktion för att skapa en textur
+            function createTexture(gl) {
+                const texture = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_to_EDGE);
+                // Använd NEAREST-filtrering för att få skarpa pixlar, inte suddiga
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                return texture;
+            }
+
+            // Skapa två texturer och två framebuffers
+            const textures = [createTexture(gl), createTexture(gl)];
+            const framebuffers = [gl.createFramebuffer(), gl.createFramebuffer()];
+
+            let currentStateIndex = 0;
+
+            // Funktion för att fylla en textur med slumpmässig data
+            function initializeState() {
+                const initialData = new Uint8Array(GRID_WIDTH * GRID_HEIGHT * 4);
+                for (let i = 0; i < initialData.length; i += 4) {
+                    const value = Math.random() < 0.3 ? 255 : 0; // ca 30% chans att vara levande
+                    initialData[i] = value;     // R
+                    initialData[i + 1] = value; // G
+                    initialData[i + 2] = value; // B
+                    initialData[i + 3] = 255;   // A
+                }
+
+                // Ladda upp den slumpmässiga datan till båda texturerna
+                for (let i = 0; i < 2; i++) {
+                    gl.bindTexture(gl.TEXTURE_2D, textures[i]);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, GRID_WIDTH, GRID_HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, initialData);
+                    
+                    // Koppla texturen till en framebuffer
+                    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffers[i]);
+                    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, textures[i], 0);
+                }
+            }
+
+            // Fyll texturerna med startdata
+            initializeState();
+
+            // Sätt upp eventlyssnare för omstart-knappen
+            document.getElementById('reset-button').addEventListener('click', initializeState);
+
+            // --- Renderingsloopen ---
+            function render() {
+                // --- STEG 1: KÖR SIMULERINGEN ---
+                // Säg åt WebGL att använda simuleringsprogrammet
+                gl.useProgram(simulationProgram);
+
+                // Rikta renderingen till den framebuffer som INTE är den nuvarande
+                const nextStateIndex = 1 - currentStateIndex;
+                gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffers[nextStateIndex]);
+                
+                // Sätt viewport till storleken på vår textur
+                gl.viewport(0, 0, GRID_WIDTH, GRID_HEIGHT);
+
+                // Aktivera position-attributet
+                gl.enableVertexAttribArray(positionLocation);
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+                // Skicka in resolutionen till shadern
+                gl.uniform2f(resolutionLocation, GRID_WIDTH, GRID_HEIGHT);
+
+                // Bind den nuvarande state-texturen så att shadern kan läsa från den
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, textures[currentStateIndex]);
+                gl.uniform1i(stateLocation, 0); // Säg åt shadern att använda textur-enhet 0
+
+                // Rita fyrkanten. Detta kör fragment shadern för varje pixel.
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+                // --- STEG 2: VISA RESULTATET PÅ SKÄRMEN ---
+                // Säg åt WebGL att använda display-programmet
+                gl.useProgram(displayProgram);
+
+                // Rikta renderingen till canvasen (null = default framebuffer)
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+                // Sätt viewport till storleken på canvasen
+                gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+                // Bind texturen vi precis ritade till (det nya tillståndet)
+                gl.bindTexture(gl.TEXTURE_2D, textures[nextStateIndex]);
+                gl.uniform1i(displayTextureLocation, 0); // Säg åt shadern att använda textur-enhet 0
+                
+                // Rita fyrkanten igen, denna gång till skärmen
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+                // --- STEG 3: PING-PONG SWAP ---
+                // Byt vilken textur som är den "nuvarande"
+                currentStateIndex = nextStateIndex;
+
+                // Be webbläsaren att kalla på render() igen vid nästa bildruta
+                requestAnimationFrame(render);
+            }
+
+            // Starta renderingsloopen!
+            render();
+        };
+    </script>
+
+</body>
+</html>
