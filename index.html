@@ -2,92 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Amiga Boing Ball in WebGL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mkling.org – WebGL Playground</title>
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
-    canvas { display: block; width: 100vw; height: 100vh; }
-    #logo {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 120px;
-      opacity: 0.7;
-      z-index: 10;
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #121212;
+      color: #f5f5f5;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      background: #222;
+      padding: 1rem;
+    }
+    nav a {
+      color: #81d4fa;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #ffffff;
+    }
+    main {
+      padding: 2rem;
+      text-align: center;
+    }
+    canvas {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+      display: block;
+      margin: 2rem auto;
+      border: 1px solid #333;
     }
   </style>
 </head>
 <body>
-  <img id="logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Amiga_logo_1985.svg/320px-Amiga_logo_1985.svg.png" alt="Amiga logo">
-  <audio id="bounce-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
-  <canvas id="glcanvas"></canvas>
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+  <header>
+    <h1>Welcome to mkling.org</h1>
+    <p>A collection of fun and fascinating graphical experiments, code, and creativity.</p>
+  </header>
 
-    const canvas = document.getElementById("glcanvas");
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+  <nav>
+    <a href="/animations/boingball.html">Boing Ball</a>
+    <a href="/animations/mandelbrot.html">Mandelbrot Set</a>
+    <a href="/animations/gameoflife.html">Game of Life</a>
+    <a href="/animations/particles.html">Particles</a>
+    <a href="/animations/chaos.html">Chaos Patterns</a>
+  </nav>
 
-    const scene = new THREE.Scene();
+  <main>
+    <h2>Explore the World of Creative Code</h2>
+    <p>Pick a demo from the menu above to start playing with interactive animations. Each one is built with love and curiosity for graphics programming, visualizations and generative art.</p>
+    <canvas id="previewCanvas">Your browser does not support HTML5 canvas.</canvas>
+  </main>
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.z = 5;
+  <script>
+    // Simple canvas placeholder effect
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 400;
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
-
-    const radius = 1;
-    const widthSegments = 32;
-    const heightSegments = 32;
-    const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
-
-    const checkerTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/3/36/Boing_ball_texture.png');
-    checkerTexture.wrapS = THREE.RepeatWrapping;
-    checkerTexture.wrapT = THREE.RepeatWrapping;
-    checkerTexture.repeat.set(1, 1);
-
-    const material = new THREE.MeshStandardMaterial({ map: checkerTexture });
-    const ball = new THREE.Mesh(geometry, material);
-    scene.add(ball);
-
-    // Bounce parameters
-    let bounceY = 0;
-    let velocityY = 0.03;
-    let direction = 1;
-    let prevBounce = 0;
-    const sound = document.getElementById("bounce-sound");
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      ball.rotation.x += 0.01;
-      ball.rotation.y += 0.01;
-
-      bounceY += velocityY * direction;
-      if ((direction === 1 && bounceY > 1.5) || (direction === -1 && bounceY < -1.5)) {
-        direction *= -1;
-        sound.currentTime = 0;
-        sound.play();
-      }
-      ball.position.y = bounceY;
-
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    ctx.fillStyle = '#222';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#81d4fa';
+    ctx.font = '24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Choose a demo from the menu above', canvas.width / 2, canvas.height / 2);
   </script>
 </body>
 </html>
