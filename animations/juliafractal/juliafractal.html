@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiv Julia Fractal med WebGL</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background-color: #111;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: monospace;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none; /* Gör så att man kan klicka "igenom" texten */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="glCanvas"></canvas>
+    <div id="info">
+        Rör musen för att ändra formen<br>
+        Skrolla för att zooma<br>
+        Klicka och dra för att panorera
+    </div>
+
+    <!-- Vertex Shader: Positionerar hörnen för vår rektangel som täcker hela skärmen -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+
+        void main() {
+            gl_Position = vec4(a_position, 0.0, 1.0);
+        }
+    </script>
+
+    <!-- Fragment Shader: Beräknar färgen för varje pixel (det är här fraktalen skapas) -->
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision highp float; // Viktigt för detaljrikedomen i fraktaler
+
+        // Uniforms som skickas från JavaScript
+        uniform vec2 u_resolution; // Canvasens upplösning i pixlar
+        uniform vec2 u_c;          // Den komplexa konstanten 'C' som definierar Julia-mängden
+        uniform float u_zoom;      // Zoomnivå
+        uniform vec2 u_offset;     // Panoreringsoffset
+
+        const int MAX_ITERATIONS = 200; // Max antal iterationer per pixel
+
+        // Funktion för att multiplicera två komplexa tal (representerade som vec2)
+        vec2 complex_mul(vec2 a, vec2 b) {
+            return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+        }
+
+        void main() {
+            // 1. Konvertera pixelkoordinat (gl_FragCoord) till komplexa planet
+            // Normalisera, korrigera för bildförhållande, och applicera zoom/offset
+            vec2 aspect_ratio = vec2(u_resolution.x / u_resolution.y, 1.0);
+            vec2 z = (gl_FragCoord.xy / u_resolution - 0.5) * 2.0 * aspect_ratio / u_zoom + u_offset;
+
+            // 2. Iterera Julia-funktionen: z = z^2 + c
+            int i;
+            for(i = 0; i < MAX_ITERATIONS; i++) {
+                z = complex_mul(z, z) + u_c;
+
+                // Om punkten "flyr" (magnituden > 2), avbryt loopen
+                // dot(z,z) är snabbare än length(z) eftersom vi slipper roten ur.
+                if(dot(z,z) > 4.0) {
+                    break;
+                }
+            }
+
+            // 3. Färglägg pixeln baserat på antalet iterationer
+            vec3 color;
+            if (i == MAX_ITERATIONS) {
+                // Punkten är inuti mängden -> svart
+                color = vec3(0.0, 0.0, 0.0);
+            } else {
+                // Punkten är utanför mängden.
+                // Använd en "smooth" färgläggning för mjuka övergångar.
+                float smoothed = float(i) + 1.0 - log(log(length(z))) / log(2.0);
+                
+                // Skapa en fin färgpalett med sinus-funktioner
+                float r = 0.5 + 0.5 * cos(3.0 + smoothed * 0.15 + 0.0);
+                float g = 0.5 + 0.5 * cos(3.0 + smoothed * 0.15 + 0.6);
+                float b = 0.5 + 0.5 * cos(3.0 + smoothed * 0.15 + 1.0);
+                
+                color = vec3(r, g, b);
+            }
+
+            gl_FragColor = vec4(color, 1.0);
+        }
+    </script>
+
+
+    <!-- JavaScript: Sätter upp WebGL, hanterar interaktion och renderar -->
+    <script>
+        window.onload = function() {
+            const canvas = document.getElementById('glCanvas');
+            const gl = canvas.getContext('webgl');
+
+            if (!gl) {
+                alert('Din webbläsare stöder inte WebGL. Prova en annan webbläsare.');
+                return;
+            }
+
+            // 1. Skapa och kompilera shaders
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Fel vid kompilering av shader:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            const vertexShaderSource = document.getElementById('vertex-shader').textContent;
+            const fragmentShaderSource = document.getElementById('fragment-shader').textContent;
+
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            // 2. Länka shaders till ett WebGL-program
+            function createProgram(gl, vertexShader, fragmentShader) {
+                const program = gl.createProgram();
+                gl.attachShader(program, vertexShader);
+                gl.attachShader(program, fragmentShader);
+                gl.linkProgram(program);
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    console.error('Fel vid länkning av program:', gl.getProgramInfoLog(program));
+                    gl.deleteProgram(program);
+                    return null;
+                }
+                return program;
+            }
+
+            const program = createProgram(gl, vertexShader, fragmentShader);
+            gl.useProgram(program);
+
+            // 3. Hitta "locations" för våra uniforms och attribut
+            const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+            const cLocation = gl.getUniformLocation(program, 'u_c');
+            const zoomLocation = gl.getUniformLocation(program, 'u_zoom');
+            const offsetLocation = gl.getUniformLocation(program, 'u_offset');
+            const positionLocation = gl.getAttribLocation(program, 'a_position');
+
+            // 4. Skapa en buffer för en rektangel som täcker hela skärmen
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            const positions = [
+                -1, -1,
+                 1, -1,
+                -1,  1,
+                -1,  1,
+                 1, -1,
+                 1,  1,
+            ];
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+            // 5. Hantera tillstånd och interaktivitet
+            let zoom = 1.0;
+            let offset = [0.0, 0.0];
+            let c = [-0.7, 0.27015]; // En klassisk, vacker Julia-mängd som startvärde
+            
+            let isDragging = false;
+            let lastMousePos = { x: 0, y: 0 };
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                if (isDragging) {
+                    const dx = (mouseX - lastMousePos.x) * 2.0 / canvas.width / zoom;
+                    const dy = -(mouseY - lastMousePos.y) * 2.0 / canvas.height / zoom;
+                    offset[0] -= dx;
+                    offset[1] -= dy;
+                } else {
+                    // Uppdatera 'c'-konstanten baserat på musposition
+                    // Skala från pixelkoordinater till det komplexa intervallet [-1.5, 1.5]
+                    c[0] = (mouseX / canvas.width - 0.5) * 3.0;
+                    c[1] = (mouseY / canvas.height - 0.5) * 3.0;
+                }
+                
+                lastMousePos = { x: mouseX, y: mouseY };
+            });
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 1.1 : 1 / 1.1; // Zooma in eller ut
+                zoom *= zoomFactor;
+            });
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                lastMousePos = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => { // Lyssna på hela fönstret
+                isDragging = false;
+            });
+
+
+            // 6. Huvudrenderingsloopen
+            function render() {
+                // Anpassa canvasstorlek till fönsterstorlek
+                const displayWidth = canvas.clientWidth;
+                const displayHeight = canvas.clientHeight;
+                if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+                    canvas.width = displayWidth;
+                    canvas.height = displayHeight;
+                    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                }
+
+                // Berätta för WebGL hur det ska använda vår position-buffer
+                gl.enableVertexAttribArray(positionLocation);
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+                // Skicka våra JavaScript-värden (uniforms) till shadern
+                gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+                gl.uniform2fv(cLocation, c);
+                gl.uniform1f(zoomLocation, zoom);
+                gl.uniform2fv(offsetLocation, offset);
+                
+                // Rita rektangeln
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+                // Be webbläsaren att kalla på render() igen vid nästa frame
+                requestAnimationFrame(render);
+            }
+
+            // Starta renderingsloopen
+            render();
+        };
+    </script>
+</body>
+</html>
