@@ -125,12 +125,12 @@
       }
       function layoutText(ctx, text, maxWidth, startSize) {
         for (let size = startSize; size >= 22; size -= 2) {
-          ctx.font = '300 ' + size + 'px Inter, ui-sans-serif, system-ui, sans-serif';
+          ctx.font = '200 ' + size + 'px Inter, ui-sans-serif, system-ui, sans-serif';
           const lines = wrapText(ctx, text, maxWidth);
           const widest = Math.max(...lines.map((line) => ctx.measureText(line).width));
           if (widest <= maxWidth && lines.length <= 4) return { fontSize: size, lines };
         }
-        ctx.font = '300 22px Inter, ui-sans-serif, system-ui, sans-serif';
+        ctx.font = '200 22px Inter, ui-sans-serif, system-ui, sans-serif';
         return { fontSize: 22, lines: wrapText(ctx, text, maxWidth) };
       }
       function drawTextTexture(messageIndex) {
@@ -140,18 +140,18 @@
         textCtx.clearRect(0, 0, cssW, cssH);
         textCtx.textAlign = 'center';
         textCtx.textBaseline = 'middle';
-        textCtx.fillStyle = 'rgba(245, 250, 255, 0.96)';
-        textCtx.shadowColor = 'rgba(80, 150, 255, 0.72)';
-        textCtx.shadowBlur = 18;
-        const message = MESSAGES[messageIndex];
-        const maxWidth = Math.min(cssW * 0.78, 980);
-        const baseSize = Math.max(28, Math.min(54, cssW * 0.044));
+        textCtx.fillStyle = 'rgba(245, 250, 255, 0.92)';
+        textCtx.shadowColor = 'rgba(175, 205, 255, 0.48)';
+        textCtx.shadowBlur = 8;
+        const message = MESSAGES[messageIndex].toUpperCase();
+        const maxWidth = Math.min(cssW * 0.70, 840);
+        const baseSize = Math.max(22, Math.min(34, cssW * 0.027));
         const { fontSize, lines } = layoutText(textCtx, message, maxWidth, baseSize);
-        textCtx.font = '300 ' + fontSize + 'px Inter, ui-sans-serif, system-ui, sans-serif';
-        const lineHeight = fontSize * 1.28;
+        textCtx.font = '200 ' + fontSize + 'px Inter, ui-sans-serif, system-ui, sans-serif';
+        const lineHeight = fontSize * 1.48;
         const blockHeight = (lines.length - 1) * lineHeight;
         const x = cssW * 0.5;
-        const y = cssH < 680 ? cssH * 0.47 : cssH * 0.50;
+        const y = cssH < 680 ? cssH * 0.45 : cssH * 0.48;
         textCtx.save();
         textCtx.globalAlpha = 0.16;
         textCtx.strokeStyle = 'rgba(210, 232, 255, 0.9)';
@@ -163,8 +163,8 @@
         textCtx.restore();
         lines.forEach((line, i) => {
           const ly = y + i * lineHeight - blockHeight * 0.5;
-          textCtx.strokeStyle = 'rgba(0, 14, 34, 0.62)';
-          textCtx.lineWidth = Math.max(3, fontSize * 0.08);
+          textCtx.strokeStyle = 'rgba(0, 10, 24, 0.48)';
+          textCtx.lineWidth = Math.max(2, fontSize * 0.055);
           textCtx.strokeText(line, x, ly);
           textCtx.fillText(line, x, ly);
         });
