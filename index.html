@@ -670,7 +670,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0048 · uppladdad 2026-06-21 00:48 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0059 · uppladdad 2026-06-21 00:59 CEST</div>
   </main>
 
   <script>
@@ -2377,7 +2377,7 @@
           if (bullets[i].y < -30) bullets.splice(i, 1);
         }
 
-        if (activeRun && !enemies.length && !boss) {
+        if (isActiveRun() && !enemies.length && !boss) {
           alienRoundsCleared += 1;
           score += 1000;
           player.lives = Math.min(5, player.lives + (wave % 3 === 0 ? 1 : 0));
