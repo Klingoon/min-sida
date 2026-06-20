@@ -79,25 +79,47 @@
       z-index: 7;
       max-width: min(340px, 52%);
       pointer-events: none;
-      color: rgba(255, 248, 188, 0.78);
-      font-family: "Courier New", ui-monospace, monospace;
-      font-size: clamp(12px, 1.7vw, 18px);
+      color: rgba(255, 248, 188, 0.84);
+      font-family: "Press Start 2P", "Silkscreen", "Courier New", ui-monospace, monospace;
+      font-size: 16px;
       font-weight: 900;
-      line-height: 1.08;
+      line-height: 1.22;
       letter-spacing: 0;
       text-transform: uppercase;
+      -webkit-text-stroke: 1px rgba(10, 14, 28, 0.86);
+      paint-order: stroke fill;
       text-shadow:
-        0 0 8px rgba(255, 216, 107, 0.82),
-        0 0 22px rgba(94, 215, 255, 0.42),
-        2px 2px 0 rgba(0, 0, 0, 0.78);
+        0 0 6px rgba(255, 216, 107, 0.72),
+        0 0 16px rgba(255, 216, 107, 0.32),
+        0 0 24px rgba(94, 215, 255, 0.34),
+        2px 2px 0 rgba(0, 0, 0, 0.82);
       opacity: 0;
-      transform: translateY(8px) scale(0.97);
-      transition: opacity 260ms ease, transform 260ms ease;
+      filter: drop-shadow(0 0 5px rgba(78, 230, 166, 0.28));
+      transform: translateY(8px) scale(0.96) skewX(-4deg);
+      transition: opacity 260ms ease, transform 260ms ease, filter 260ms ease;
+    }
+
+    .encouragement::after {
+      content: "";
+      position: absolute;
+      inset: -5px -7px;
+      z-index: -1;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(94, 215, 255, 0.11) 0,
+          rgba(94, 215, 255, 0.11) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity: 0.45;
+      transform: skewX(4deg);
     }
 
     .encouragement.visible {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      filter: drop-shadow(0 0 9px rgba(78, 230, 166, 0.36));
+      transform: translateY(0) scale(1) skewX(-4deg);
     }
 
     .hud-pill {
@@ -644,7 +666,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0006 · uppladdad 2026-06-21 00:06 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0012 · uppladdad 2026-06-21 00:12 CEST</div>
   </main>
 
   <script>
