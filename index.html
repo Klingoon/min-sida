@@ -252,6 +252,17 @@
       pointer-events: auto;
     }
 
+    .overlay.demo-mode {
+      background:
+        linear-gradient(180deg, rgba(2, 4, 12, 0.1), rgba(2, 4, 12, 0.32)),
+        radial-gradient(circle at 50% 58%, rgba(94, 215, 255, 0.08), transparent 40%);
+    }
+
+    .overlay.demo-mode .panel {
+      transform: scale(0.88);
+      opacity: 0.9;
+    }
+
     .intro {
       position: absolute;
       inset: 0;
@@ -670,7 +681,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0059 · uppladdad 2026-06-21 00:59 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0110 · uppladdad 2026-06-21 01:10 CEST</div>
   </main>
 
   <script>
@@ -760,6 +771,7 @@
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
       let attractTimer = null;
+      let attractDeadline = 0;
       let alienRoundsCleared = 0;
       let bossDefeated = false;
       let bossTransitionTimer = null;
@@ -1394,12 +1406,15 @@
       function clearAttractTimer() {
         if (attractTimer) clearTimeout(attractTimer);
         attractTimer = null;
+        attractDeadline = 0;
       }
 
       function scheduleAttractMode(delay = 20000) {
         clearAttractTimer();
+        attractDeadline = performance.now() + delay;
         attractTimer = setTimeout(() => {
           attractTimer = null;
+          attractDeadline = 0;
           if (state !== "playing" && state !== "intro" && state !== "transition") startDemoMode();
         }, delay);
       }
@@ -1609,6 +1624,7 @@
         demoTargetX = W / 2;
         demoFireTimer = 0.4;
         overlay.classList.add("visible");
+        overlay.classList.add("demo-mode");
         startBtn.textContent = "Starta";
         overlayText.textContent = "Demo-läge kör i bakgrunden. Tryck Starta för att spela. Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar vågen, men skjut inte kometen.";
         updateHud();
@@ -1616,6 +1632,7 @@
 
       function startGame() {
         clearAttractTimer();
+        overlay.classList.remove("demo-mode");
         if (state === "demo") {
           enemies.length = 0;
           boss = null;
@@ -1628,6 +1645,7 @@
         initAudio();
         state = "intro";
         overlay.classList.remove("visible");
+        overlay.classList.remove("demo-mode");
         intro.classList.add("visible");
         crawlCopy.style.animation = "none";
         void crawlCopy.offsetHeight;
@@ -1644,6 +1662,7 @@
         resetGame();
         state = "playing";
         overlay.classList.remove("visible");
+        overlay.classList.remove("demo-mode");
         if (!muted) startMelody();
         play(392, 0.16, "sawtooth", 0.045);
         play(587, 0.22, "sawtooth", 0.04);
@@ -1652,6 +1671,7 @@
 
       function gameOver() {
         state = "gameover";
+        overlay.classList.remove("demo-mode");
         comets.length = 0;
         bonusUfo = null;
         rifts.length = 0;
@@ -1700,6 +1720,7 @@
 
       function winGame(finale = false) {
         state = "won";
+        overlay.classList.remove("demo-mode");
         boss = null;
         bonusUfo = null;
         bonusUfoTimer = 99;
@@ -2099,6 +2120,10 @@
 
       function step(dt) {
         const activeRun = isActiveRun();
+        if (!activeRun && attractDeadline && performance.now() >= attractDeadline) {
+          startDemoMode();
+          return;
+        }
         if (state === "playing" && !muted && !melodyTimer) startMelody();
         stars.forEach((star) => {
           star.y += star.s * (42 + wave * 3) * dt;
