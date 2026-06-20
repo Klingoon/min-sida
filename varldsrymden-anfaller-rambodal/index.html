@@ -606,7 +606,7 @@
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Världsrymden</span><span>Anfaller</span><span>Rambodal</span></h1>
-        <p id="overlayText">Skjut dig igenom formationer av dykande fiender. Flytta med piltangenterna eller A/D, skjut med mellanslag och aktivera sköld med X.</p>
+        <p id="overlayText">Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar hela vågen om du skjuter ner det. Skjut inte kometen - den delar sig i fler mindre delar.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score-lista"></div>
         <div class="actions">
           <button id="startBtn" type="button">Starta</button>
@@ -644,7 +644,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0000 · uppladdad 2026-06-21 00:00 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0006 · uppladdad 2026-06-21 00:06 CEST</div>
   </main>
 
   <script>
@@ -686,9 +686,11 @@
       const enemyBullets = [];
       const enemies = [];
       const particles = [];
+      const comets = [];
       let boss = null;
       let bonusUfo = null;
       let bonusUfoTimer = 8;
+      let cometTimer = 12;
       const stars = Array.from({ length: 180 }, () => ({
         x: Math.random() * W,
         y: Math.random() * H,
@@ -1408,9 +1410,11 @@
       function spawnWave() {
         enemies.length = 0;
         enemyBullets.length = 0;
+        comets.length = 0;
         boss = null;
         bonusUfo = null;
         scheduleBonusUfo();
+        scheduleComet();
         const secondAct = act === 2;
         const cols = secondAct ? 10 : 9;
         const rows = secondAct ? 4 : Math.min(5, 3 + Math.floor(wave / 2));
@@ -1454,6 +1458,8 @@
         bossDefeated = false;
         bonusUfo = null;
         bonusUfoTimer = 99;
+        comets.length = 0;
+        cometTimer = 99;
         clearBossTimers();
         const hunter = act === 2;
         setBackdropForStage("boss");
@@ -1493,6 +1499,8 @@
         boss = null;
         bonusUfo = null;
         bonusUfoTimer = 8;
+        comets.length = 0;
+        cometTimer = 12;
         bossDefeated = false;
         clearBossTimers();
         winScene.classList.remove("visible", "finale", "intermission");
@@ -1533,6 +1541,8 @@
 
       function gameOver() {
         state = "gameover";
+        comets.length = 0;
+        bonusUfo = null;
         submitScore("END");
         overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
@@ -1546,6 +1556,8 @@
         boss = null;
         bonusUfo = null;
         bonusUfoTimer = 7;
+        comets.length = 0;
+        cometTimer = 10;
         bossDefeated = false;
         clearBossTimers();
         player.lives = 3;
@@ -1576,6 +1588,8 @@
         boss = null;
         bonusUfo = null;
         bonusUfoTimer = 99;
+        comets.length = 0;
+        cometTimer = 99;
         bossDefeated = false;
         clearBossTimers();
         enemies.length = 0;
@@ -1700,6 +1714,67 @@
         enemyBullets.length = 0;
         play(1320, 0.16, "square", 0.04);
         setTimeout(() => play(1760, 0.18, "triangle", 0.026), 110);
+      }
+
+      function scheduleComet() {
+        cometTimer = 8 + Math.random() * 12;
+      }
+
+      function spawnComet(force = false, parent = null) {
+        if (!force && (boss || state !== "playing" || !enemies.length || comets.length > 10)) return;
+        if (!force && Math.random() > 0.62) {
+          cometTimer = 8 + Math.random() * 13;
+          return;
+        }
+        if (parent) {
+          const splitDir = parent.splitDir || 1;
+          comets.push({
+            x: parent.x,
+            y: parent.y,
+            vx: parent.vx * 0.84 + splitDir * (72 + Math.random() * 54),
+            vy: parent.vy * 0.82 + (Math.random() - 0.5) * 130,
+            size: parent.size * 0.68,
+            level: parent.level + 1,
+            hp: 1,
+            phase: Math.random() * Math.PI * 2,
+            spin: (Math.random() > 0.5 ? 1 : -1) * (1.6 + Math.random() * 2.2)
+          });
+          return;
+        }
+        const dir = Math.random() > 0.5 ? 1 : -1;
+        const fromTop = Math.random() > 0.45;
+        const startY = fromTop ? -55 : 140 + Math.random() * 250;
+        comets.push({
+          x: dir > 0 ? -80 : W + 80,
+          y: startY,
+          vx: dir * (150 + Math.random() * 70 + wave * 4),
+          vy: fromTop ? 118 + Math.random() * 72 : -24 + Math.random() * 58,
+          size: 40 + Math.random() * 12,
+          level: 0,
+          hp: 1,
+          phase: Math.random() * Math.PI * 2,
+          spin: (Math.random() > 0.5 ? 1 : -1) * (0.8 + Math.random() * 1.6)
+        });
+        cometTimer = 12 + Math.random() * 16;
+      }
+
+      function splitComet(comet, index) {
+        comets.splice(index, 1);
+        makeParticles(comet.x, comet.y, "#ff8a36", Math.max(12, 30 - comet.level * 4));
+        makeParticles(comet.x, comet.y, "#ffd86b", Math.max(8, 20 - comet.level * 3));
+        shake = Math.max(shake, 10 + comet.size * 0.15);
+        play(190 + comet.level * 44, 0.12, "sawtooth", 0.042);
+        if (comet.level >= 4 || comet.size < 11 || comets.length > 18) {
+          explosionSound(0.45);
+          return;
+        }
+        const pieces = comet.level >= 2 ? 3 : 2;
+        for (let n = 0; n < pieces; n += 1) {
+          spawnComet(true, {
+            ...comet,
+            splitDir: n - (pieces - 1) / 2
+          });
+        }
       }
 
       function shoot() {
@@ -1886,10 +1961,20 @@
           b.x += b.vx * dt;
           b.y += b.vy * dt;
         });
+        comets.forEach((comet) => {
+          comet.x += comet.vx * dt;
+          comet.y += comet.vy * dt;
+          comet.phase += comet.spin * dt;
+          comet.vy += 12 * dt;
+        });
 
         if (!boss && !bonusUfo && enemies.length) {
           bonusUfoTimer -= dt;
           if (bonusUfoTimer <= 0) spawnBonusUfo();
+        }
+        if (!boss && enemies.length && comets.length < 1) {
+          cometTimer -= dt;
+          if (cometTimer <= 0) spawnComet();
         }
 
         if (bonusUfo) {
@@ -1985,6 +2070,13 @@
             play(620, 0.05, "triangle", 0.024);
             if (bonusUfo.hp <= 0) detonateWaveFromUfo();
           }
+          for (let c = comets.length - 1; c >= 0 && !consumed; c -= 1) {
+            const comet = comets[c];
+            if (hitCircleEllipse(b, { x: comet.x, y: comet.y, rx: comet.size * 0.8, ry: comet.size * 0.58 })) {
+              consumed = true;
+              splitComet(comet, c);
+            }
+          }
           for (let j = enemies.length - 1; j >= 0 && !consumed; j -= 1) {
             const e = enemies[j];
             if (hitCircleRect(b, e)) {
@@ -2006,6 +2098,15 @@
         }
 
         const playerRect = { x: player.x, y: player.y, w: player.w, h: player.h };
+        for (let i = comets.length - 1; i >= 0; i -= 1) {
+          const comet = comets[i];
+          if (comet.x < -140 || comet.x > W + 140 || comet.y < -140 || comet.y > H + 160) {
+            comets.splice(i, 1);
+          } else if (hitCircleEllipse({ x: player.x, y: player.y, r: 10 }, { x: comet.x, y: comet.y, rx: comet.size * 0.72, ry: comet.size * 0.5 })) {
+            splitComet(comet, i);
+            damagePlayer();
+          }
+        }
         for (let i = enemyBullets.length - 1; i >= 0; i -= 1) {
           const b = enemyBullets[i];
           if (b.y > H + 30 || b.x < -30 || b.x > W + 30) {
@@ -2154,6 +2255,24 @@
         drawPoly(lineShape, bonusUfo.x, bonusUfo.y + 22 + bob, 36, 1.4, 0, rgba(colors.gold, 0.34), gl.LINES);
       }
 
+      function drawComet(comet) {
+        const angle = Math.atan2(comet.vy, comet.vx) + Math.PI / 2;
+        const speed = Math.hypot(comet.vx, comet.vy) || 1;
+        const tailX = -comet.vx / speed;
+        const tailY = -comet.vy / speed;
+        const tail = comet.size * (2.8 + comet.level * 0.32);
+        for (let i = 0; i < 5; i += 1) {
+          const k = i / 5;
+          const x = comet.x + tailX * tail * (k + 0.22) + Math.sin(comet.phase * 2 + i) * comet.size * 0.12;
+          const y = comet.y + tailY * tail * (k + 0.22) + Math.cos(comet.phase * 1.7 + i) * comet.size * 0.1;
+          const color = i < 2 ? colors.gold : i < 4 ? colors.orange : colors.red;
+          drawPoly(boltShape, x, y, comet.size * (0.26 - k * 0.025), comet.size * (1.15 - k * 0.12), angle, rgba(color, 0.34 - k * 0.045));
+        }
+        drawPoly(bossEyeShape, comet.x, comet.y, comet.size * 0.86, comet.size * 0.62, comet.phase * 0.22, rgba(colors.orange, 0.92));
+        drawPoly(bossEyeShape, comet.x - comet.size * 0.16, comet.y - comet.size * 0.12, comet.size * 0.42, comet.size * 0.28, comet.phase * -0.18, rgba(colors.white, 0.5));
+        drawPoly(bossEyeShape, comet.x + comet.size * 0.2, comet.y + comet.size * 0.08, comet.size * 0.3, comet.size * 0.22, comet.phase * 0.34, rgba(colors.red, 0.56));
+      }
+
       function drawBoss() {
         if (!boss) return;
         const t = boss.phase;
@@ -2291,6 +2410,10 @@
           pushPoint(glowPoints, bonusUfo.x, bonusUfo.y, 150, colors.cyan, 0.42);
           pushPoint(glowPoints, bonusUfo.x, bonusUfo.y + 16, 92, colors.gold, 0.28);
         }
+        comets.forEach((comet) => {
+          pushPoint(glowPoints, comet.x, comet.y, comet.size * 4.8, colors.orange, 0.36);
+          pushPoint(glowPoints, comet.x, comet.y, comet.size * 2.4, colors.gold, 0.28);
+        });
         if (boss) {
           if (boss.kind === "hunter") {
             pushPoint(glowPoints, boss.x, boss.y - 8, 270, colors.toxic, 0.48);
@@ -2324,6 +2447,7 @@
 
         drawBoss();
         drawBonusUfo();
+        comets.forEach(drawComet);
         enemies.forEach(drawEnemy);
         drawPlayer();
 
