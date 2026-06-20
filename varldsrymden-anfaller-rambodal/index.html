@@ -606,7 +606,7 @@
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Världsrymden</span><span>Anfaller</span><span>Rambodal</span></h1>
-        <p id="overlayText">Skjut dig igenom formationer av dykande fiender. Flytta med piltangenterna eller A/D, skjut med mellanslag.</p>
+        <p id="overlayText">Skjut dig igenom formationer av dykande fiender. Flytta med piltangenterna eller A/D, skjut med mellanslag och aktivera sköld med X.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score-lista"></div>
         <div class="actions">
           <button id="startBtn" type="button">Starta</button>
@@ -644,7 +644,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2346 · uppladdad 2026-06-20 23:46 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2349 · uppladdad 2026-06-20 23:49 CEST</div>
   </main>
 
   <script>
@@ -702,6 +702,16 @@
         a: Math.random() * 0.05 + 0.035,
         s: Math.random() * 0.14 + 0.05
       }));
+      const backdropPalettes = [
+        [hexToRgb("#2b144f"), hexToRgb("#0e5a83"), hexToRgb("#f08bff")],
+        [hexToRgb("#0b365f"), hexToRgb("#238f99"), hexToRgb("#ffd86b")],
+        [hexToRgb("#32123f"), hexToRgb("#9dff6b"), hexToRgb("#ff5b78")],
+        [hexToRgb("#101a4a"), hexToRgb("#5ed7ff"), hexToRgb("#ffffff")],
+        [hexToRgb("#33111b"), hexToRgb("#ff8a36"), hexToRgb("#ffd86b")],
+        [hexToRgb("#071a13"), hexToRgb("#4ee6a6"), hexToRgb("#9b6dff")]
+      ];
+      const spaceBackdrops = Array.from({ length: 6 }, (_, index) => makeSpaceBackdrop(index));
+      let activeBackdrop = spaceBackdrops[0];
 
       let state = "ready";
       let last = 0;
@@ -783,6 +793,116 @@
 
       function rgba(rgb, alpha = 1) {
         return [rgb[0], rgb[1], rgb[2], alpha];
+      }
+
+      function seededRandom(seed) {
+        let value = seed >>> 0;
+        return () => {
+          value = (value * 1664525 + 1013904223) >>> 0;
+          return value / 4294967296;
+        };
+      }
+
+      function makeSpaceBackdrop(index) {
+        const rand = seededRandom(0x9e3779b9 ^ (index * 0x85ebca6b));
+        const palette = backdropPalettes[index % backdropPalettes.length];
+        const clouds = [];
+        const galaxy = [];
+        const dust = [];
+        const cx = W * (0.26 + rand() * 0.48);
+        const cy = H * (0.16 + rand() * 0.38);
+
+        for (let i = 0; i < 12; i += 1) {
+          clouds.push({
+            x: rand() * W,
+            y: rand() * H,
+            size: 190 + rand() * 360,
+            color: palette[i % palette.length],
+            alpha: 0.035 + rand() * 0.055,
+            wobble: 8 + rand() * 24,
+            drift: 0.08 + rand() * 0.16,
+            phase: rand() * Math.PI * 2
+          });
+        }
+
+        for (let i = 0; i < 84; i += 1) {
+          const arm = i % 2 === 0 ? 0 : Math.PI;
+          const angle = i * 0.31 + arm + rand() * 0.55;
+          const radius = 18 + rand() * 330;
+          galaxy.push({
+            x: cx + Math.cos(angle) * radius * (1.05 + rand() * 0.25),
+            y: cy + Math.sin(angle) * radius * (0.24 + rand() * 0.22),
+            size: 7 + rand() * 26,
+            color: palette[(i + 1) % palette.length],
+            alpha: 0.025 + rand() * 0.06,
+            wobble: 2 + rand() * 8,
+            drift: 0.1 + rand() * 0.2,
+            phase: rand() * Math.PI * 2
+          });
+        }
+
+        for (let i = 0; i < 52; i += 1) {
+          dust.push({
+            x: rand() * W,
+            y: rand() * H,
+            size: 2 + rand() * 8,
+            color: palette[(i + 2) % palette.length],
+            alpha: 0.07 + rand() * 0.12,
+            phase: rand() * Math.PI * 2
+          });
+        }
+
+        const hasPlanet = index % 2 === 1;
+        return {
+          base: palette[0],
+          clouds,
+          galaxy,
+          dust,
+          planet: hasPlanet
+            ? {
+                x: W * (0.18 + rand() * 0.64),
+                y: H * (0.18 + rand() * 0.18),
+                size: 96 + rand() * 80,
+                color: palette[1],
+                rim: palette[2],
+                alpha: 0.18
+              }
+            : null
+        };
+      }
+
+      function setBackdropForStage(mode = "wave") {
+        const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
+        const bossOffset = mode === "boss" ? 3 : 0;
+        const index = (act - 1) * roundsBeforeBoss + attackWave + bossOffset;
+        activeBackdrop = spaceBackdrops[index % spaceBackdrops.length];
+      }
+
+      function drawSpaceBackdrop(nowSec) {
+        if (!activeBackdrop) return;
+        const points = [];
+
+        activeBackdrop.clouds.forEach((cloud) => {
+          const waveX = Math.sin(nowSec * cloud.drift + cloud.phase) * cloud.wobble;
+          const waveY = Math.cos(nowSec * cloud.drift * 0.7 + cloud.phase) * cloud.wobble * 0.45;
+          pushPoint(points, cloud.x + waveX, cloud.y + waveY, cloud.size, cloud.color, cloud.alpha);
+        });
+        if (activeBackdrop.planet) {
+          const planet = activeBackdrop.planet;
+          pushPoint(points, planet.x, planet.y, planet.size * 1.35, planet.rim, planet.alpha * 0.72);
+          pushPoint(points, planet.x, planet.y, planet.size, planet.color, planet.alpha);
+          pushPoint(points, planet.x - planet.size * 0.18, planet.y - planet.size * 0.16, planet.size * 0.45, colors.white, 0.045);
+        }
+        activeBackdrop.galaxy.forEach((spark) => {
+          const pulse = 0.75 + Math.sin(nowSec * spark.drift + spark.phase) * 0.25;
+          pushPoint(points, spark.x, spark.y, spark.size * pulse, spark.color, spark.alpha * pulse);
+        });
+        activeBackdrop.dust.forEach((speck) => {
+          const twinkle = 0.55 + Math.sin(nowSec * 0.9 + speck.phase) * 0.45;
+          pushPoint(points, speck.x, speck.y, speck.size, speck.color, speck.alpha * twinkle);
+        });
+
+        drawPoints(points, true);
       }
 
       function initAudio() {
@@ -1291,6 +1411,7 @@
         const startY = secondAct ? 118 : 126;
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const wavePattern = wavePatterns[(attackWave + (act - 1) * roundsBeforeBoss) % wavePatterns.length];
+        setBackdropForStage("wave");
 
         for (let row = 0; row < rows; row += 1) {
           for (let col = 0; col < cols; col += 1) {
@@ -1325,6 +1446,7 @@
         bossDefeated = false;
         clearBossTimers();
         const hunter = act === 2;
+        setBackdropForStage("boss");
         const hp = hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
           x: W / 2,
@@ -2025,8 +2147,12 @@
         renderShake.x = shake > 0 ? (Math.random() - 0.5) * shake : 0;
         renderShake.y = shake > 0 ? (Math.random() - 0.5) * shake : 0;
         gl.viewport(0, 0, W, H);
-        gl.clearColor(0.01, 0.015, 0.04, 1);
+        const base = activeBackdrop ? activeBackdrop.base : colors.space;
+        gl.clearColor(base[0] * 0.045, base[1] * 0.055, base[2] * 0.075, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        const nowSec = performance.now() / 1000;
+        drawSpaceBackdrop(nowSec);
 
         const glowPoints = [];
         nebulae.forEach((nebula) => {
