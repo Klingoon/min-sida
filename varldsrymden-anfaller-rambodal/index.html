@@ -670,7 +670,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0038 · uppladdad 2026-06-21 00:38 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0048 · uppladdad 2026-06-21 00:48 CEST</div>
   </main>
 
   <script>
@@ -1396,7 +1396,7 @@
         attractTimer = null;
       }
 
-      function scheduleAttractMode(delay = 9000) {
+      function scheduleAttractMode(delay = 20000) {
         clearAttractTimer();
         attractTimer = setTimeout(() => {
           attractTimer = null;
@@ -1659,7 +1659,7 @@
         overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
         overlay.classList.add("visible");
-        scheduleAttractMode(8000);
+        scheduleAttractMode(20000);
       }
 
       function startNextAct(demoMode = false) {
@@ -1729,7 +1729,7 @@
           }, i * (finale ? 78 : 110));
         }
         updateHud();
-        scheduleAttractMode(finale ? 12000 : 9000);
+        scheduleAttractMode(20000);
       }
 
       function showBossClearScene() {
@@ -2814,7 +2814,7 @@
 
       renderLeaderboard();
       renderLives();
-      startDemoMode();
+      scheduleAttractMode(20000);
       requestAnimationFrame(loop);
     })();
   </script>
