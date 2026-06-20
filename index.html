@@ -644,7 +644,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2356 · uppladdad 2026-06-20 23:56 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0000 · uppladdad 2026-06-21 00:00 CEST</div>
   </main>
 
   <script>
@@ -726,6 +726,7 @@
       let shake = 0;
       let melodyTimer = null;
       let melodyStep = 0;
+      const musicGain = 1.32;
       let alienRoundsCleared = 0;
       let bossDefeated = false;
       let bossTransitionTimer = null;
@@ -922,6 +923,7 @@
 
       function melodyNote(freq, when, length, gain = 0.022, type = "square") {
         if (muted || !audioCtx) return;
+        gain *= musicGain;
         const osc = audioCtx.createOscillator();
         const sub = audioCtx.createOscillator();
         const amp = audioCtx.createGain();
@@ -952,7 +954,7 @@
         if (muted || !audioCtx) return;
         const amp = audioCtx.createGain();
         const filter = audioCtx.createBiquadFilter();
-        amp.gain.setValueAtTime(kind === "kick" ? 0.05 : 0.024, when);
+        amp.gain.setValueAtTime((kind === "kick" ? 0.05 : 0.024) * musicGain, when);
         amp.gain.exponentialRampToValueAtTime(0.0001, when + (kind === "kick" ? 0.11 : 0.045));
         if (kind === "hat") {
           const length = Math.floor(audioCtx.sampleRate * 0.04);
