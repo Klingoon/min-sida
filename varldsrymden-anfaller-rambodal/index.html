@@ -518,6 +518,10 @@
       justify-content: center;
     }
 
+    .win-scene.intermission .win-actions {
+      display: none;
+    }
+
     @keyframes spin-rays {
       to {
         transform: rotate(360deg);
@@ -640,7 +644,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2337 · uppladdad 2026-06-20 23:37 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2346 · uppladdad 2026-06-20 23:46 CEST</div>
   </main>
 
   <script>
@@ -713,6 +717,7 @@
       let alienRoundsCleared = 0;
       let bossDefeated = false;
       let bossTransitionTimer = null;
+      let bossEffectTimer = null;
       const roundsBeforeBoss = 3;
       let introTimer = null;
       let encouragementTimer = 6;
@@ -1210,6 +1215,13 @@
         renderLeaderboard();
       }
 
+      function clearBossTimers() {
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
+        if (bossEffectTimer) clearInterval(bossEffectTimer);
+        bossEffectTimer = null;
+      }
+
       function showEncouragement(force = false) {
         if (state !== "playing" && !force) return;
         encouragementEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -1311,8 +1323,7 @@
         enemies.length = 0;
         enemyBullets.length = 0;
         bossDefeated = false;
-        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
-        bossTransitionTimer = null;
+        clearBossTimers();
         const hunter = act === 2;
         const hp = hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
@@ -1349,9 +1360,8 @@
         encouragementTimer = 4.5;
         boss = null;
         bossDefeated = false;
-        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
-        bossTransitionTimer = null;
-        winScene.classList.remove("visible", "finale");
+        clearBossTimers();
+        winScene.classList.remove("visible", "finale", "intermission");
         winTitle.textContent = "Grattis du vann";
         winSubtitle.textContent = "Farzan Tarzan bjuder på Kebab!";
         bullets.length = 0;
@@ -1401,8 +1411,7 @@
         alienRoundsCleared = 0;
         boss = null;
         bossDefeated = false;
-        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
-        bossTransitionTimer = null;
+        clearBossTimers();
         player.lives = 3;
         player.shieldTime = 2.4;
         player.invuln = 2.2;
@@ -1411,6 +1420,7 @@
         enemies.length = 0;
         score += 3000;
         overlay.classList.remove("visible");
+        winScene.classList.remove("visible", "finale", "intermission");
         overlayText.textContent = "Akt 2. Nya alienvågor närmar sig.";
         for (let i = 0; i < 14; i += 1) {
           setTimeout(() => {
@@ -1429,13 +1439,13 @@
         state = "won";
         boss = null;
         bossDefeated = false;
-        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
-        bossTransitionTimer = null;
+        clearBossTimers();
         enemies.length = 0;
         enemyBullets.length = 0;
         bullets.length = 0;
         score += (finale ? 9000 : 5000) + wave * 700;
         submitScore(finale ? "WIN" : "BOS");
+        winScene.classList.remove("intermission");
         winScene.classList.toggle("finale", finale);
         winTitle.textContent = finale ? "Grattis du har vunnit" : "Grattis du vann";
         winSubtitle.textContent = finale ? "en Toblerone av farzan tarzan" : "Farzan Tarzan bjuder på Kebab!";
@@ -1450,6 +1460,35 @@
           }, i * (finale ? 78 : 110));
         }
         updateHud();
+      }
+
+      function showBossClearScene() {
+        winScene.classList.remove("finale");
+        winScene.classList.add("intermission");
+        winTitle.textContent = "Grattis du vann";
+        winSubtitle.textContent = "Spelet fortsätter - det finns en boss till att besegra!";
+        winScene.classList.add("visible");
+        renderLeaderboard();
+      }
+
+      function runBossClearEffects(x, y, hunter) {
+        const palette = hunter ? ["#9dff6b", "#ffd86b", "#ff5b78", "#5ed7ff"] : ["#b66cff", "#ffd86b", "#ff5b78", "#5ed7ff"];
+        let burst = 0;
+        clearBossTimers();
+        makeParticles(x, y, palette[0], hunter ? 96 : 78);
+        explosionSound(hunter ? 1.5 : 1.25);
+        bossEffectTimer = setInterval(() => {
+          const color = palette[burst % palette.length];
+          const px = x + (Math.random() - 0.5) * (hunter ? 220 : 190);
+          const py = y + (Math.random() - 0.5) * (hunter ? 180 : 155);
+          makeParticles(px, py, color, hunter ? 42 : 34);
+          if (burst % 2 === 0) explosionSound(hunter ? 0.75 : 0.58);
+          burst += 1;
+          if (burst >= 8) {
+            clearInterval(bossEffectTimer);
+            bossEffectTimer = null;
+          }
+        }, 120);
       }
 
       function makeParticles(x, y, color, count = 14) {
@@ -1577,13 +1616,9 @@
         state = "transition";
         bullets.length = 0;
         enemyBullets.length = 0;
-        for (let i = 0; i < 7; i += 1) {
-          setTimeout(() => {
-            makeParticles(bx + (Math.random() - 0.5) * 190, by + (Math.random() - 0.5) * 160, hunter ? "#9dff6b" : "#b66cff", hunter ? 72 : 58);
-            explosionSound(hunter ? 1.65 : 1.4);
-          }, i * 90);
-        }
+        runBossClearEffects(bx, by, hunter);
         shake = hunter ? 42 : 34;
+        if (!hunter) showBossClearScene();
         bossTransitionTimer = setTimeout(() => {
           bossTransitionTimer = null;
           if (hunter) winGame(true);
