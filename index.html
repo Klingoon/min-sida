@@ -237,7 +237,11 @@
       display: grid;
       place-items: center;
       padding: 24px;
-      background: linear-gradient(180deg, rgba(2, 4, 12, 0.34), rgba(2, 4, 12, 0.76));
+      background:
+        linear-gradient(180deg, rgba(2, 4, 12, 0.42), rgba(2, 4, 12, 0.82)),
+        radial-gradient(circle at 50% 68%, rgba(94, 215, 255, 0.08), transparent 34%),
+        url("varldsrymden-anfaller-rambodal/assets/marketing-artwork-no-text.png") center / cover no-repeat,
+        #02040b;
       pointer-events: none;
       opacity: 0;
       transition: opacity 160ms ease;
@@ -666,7 +670,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0028 · uppladdad 2026-06-21 00:28 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0038 · uppladdad 2026-06-21 00:38 CEST</div>
   </main>
 
   <script>
@@ -753,6 +757,9 @@
       let melodyTimer = null;
       let melodyStep = 0;
       const musicGain = 1.32;
+      let demoTargetX = W / 2;
+      let demoFireTimer = 0;
+      let attractTimer = null;
       let alienRoundsCleared = 0;
       let bossDefeated = false;
       let bossTransitionTimer = null;
@@ -824,6 +831,10 @@
 
       function rgba(rgb, alpha = 1) {
         return [rgb[0], rgb[1], rgb[2], alpha];
+      }
+
+      function isActiveRun() {
+        return state === "playing" || state === "demo";
       }
 
       function seededRandom(seed) {
@@ -1066,7 +1077,7 @@
       }
 
       function play(freq, duration = 0.08, type = "square", gain = 0.035) {
-        if (muted) return;
+        if (muted || state === "demo") return;
         initAudio();
         const osc = audioCtx.createOscillator();
         const amp = audioCtx.createGain();
@@ -1092,7 +1103,7 @@
       }
 
       function explosionSound(power = 1) {
-        if (muted) return;
+        if (muted || state === "demo") return;
         initAudio();
         const length = Math.floor(audioCtx.sampleRate * 0.72);
         const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
@@ -1380,6 +1391,19 @@
         bossEffectTimer = null;
       }
 
+      function clearAttractTimer() {
+        if (attractTimer) clearTimeout(attractTimer);
+        attractTimer = null;
+      }
+
+      function scheduleAttractMode(delay = 9000) {
+        clearAttractTimer();
+        attractTimer = setTimeout(() => {
+          attractTimer = null;
+          if (state !== "playing" && state !== "intro" && state !== "transition") startDemoMode();
+        }, delay);
+      }
+
       function showEncouragement(force = false) {
         if (state !== "playing" && !force) return;
         encouragementEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -1576,7 +1600,31 @@
         updateHud();
       }
 
+      function startDemoMode() {
+        if (state === "playing" || state === "intro" || state === "transition") return;
+        clearAttractTimer();
+        state = "demo";
+        resetGame();
+        score = 0;
+        demoTargetX = W / 2;
+        demoFireTimer = 0.4;
+        overlay.classList.add("visible");
+        startBtn.textContent = "Starta";
+        overlayText.textContent = "Demo-läge kör i bakgrunden. Tryck Starta för att spela. Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar vågen, men skjut inte kometen.";
+        updateHud();
+      }
+
       function startGame() {
+        clearAttractTimer();
+        if (state === "demo") {
+          enemies.length = 0;
+          boss = null;
+          bullets.length = 0;
+          enemyBullets.length = 0;
+          particles.length = 0;
+          comets.length = 0;
+          rifts.length = 0;
+        }
         initAudio();
         state = "intro";
         overlay.classList.remove("visible");
@@ -1611,9 +1659,10 @@
         overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
         overlay.classList.add("visible");
+        scheduleAttractMode(8000);
       }
 
-      function startNextAct() {
+      function startNextAct(demoMode = false) {
         act += 1;
         wave += 1;
         alienRoundsCleared = 0;
@@ -1633,7 +1682,7 @@
         enemyBullets.length = 0;
         enemies.length = 0;
         score += 3000 + act * 900;
-        overlay.classList.remove("visible");
+        if (!demoMode) overlay.classList.remove("visible");
         winScene.classList.remove("visible", "finale", "intermission");
         overlayText.textContent = `Akt ${act}. Nya arkadvågor öppnar sig i rymden.`;
         for (let i = 0; i < 14; i += 1) {
@@ -1642,7 +1691,7 @@
           }, i * 70);
         }
         spawnWave();
-        state = "playing";
+        state = demoMode ? "demo" : "playing";
         updateHud();
         play(523, 0.18, "square", 0.05);
         setTimeout(() => play(784, 0.2, "square", 0.04), 120);
@@ -1680,6 +1729,7 @@
           }, i * (finale ? 78 : 110));
         }
         updateHud();
+        scheduleAttractMode(finale ? 12000 : 9000);
       }
 
       function showBossClearScene() {
@@ -1713,12 +1763,13 @@
         }, 120);
       }
 
-      function finishBossTransition(finale) {
+      function finishBossTransition(finale, demoMode = false) {
         if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
         bossTransitionTimer = null;
         if (state !== "transition") return;
-        if (finale) winGame(true);
-        else startNextAct();
+        if (finale && demoMode) startDemoMode();
+        else if (finale) winGame(true);
+        else startNextAct(demoMode);
       }
 
       function makeParticles(x, y, color, count = 14) {
@@ -1748,7 +1799,7 @@
       }
 
       function spawnBonusUfo(force = false) {
-        if (bonusUfo || boss || state !== "playing" || !enemies.length) return;
+        if (bonusUfo || boss || !isActiveRun() || !enemies.length) return;
         if (!force && Math.random() > 0.72) {
           bonusUfoTimer = 7 + Math.random() * 9;
           return;
@@ -1799,7 +1850,7 @@
       }
 
       function spawnComet(force = false, parent = null) {
-        if (!force && (boss || state !== "playing" || !enemies.length || comets.length > 10)) return;
+        if (!force && (boss || !isActiveRun() || !enemies.length || comets.length > 10)) return;
         if (!force && Math.random() > 0.62) {
           cometTimer = 8 + Math.random() * 13;
           return;
@@ -1860,7 +1911,7 @@
       }
 
       function spawnRift(force = false) {
-        if (!force && (boss || state !== "playing" || !enemies.length || rifts.length)) return;
+        if (!force && (boss || !isActiveRun() || !enemies.length || rifts.length)) return;
         if (!force && Math.random() > 0.55) {
           riftTimer = 10 + Math.random() * 14;
           return;
@@ -1892,11 +1943,11 @@
       }
 
       function shoot() {
-        if (player.cooldown > 0 || state !== "playing") return;
+        if (player.cooldown > 0 || !isActiveRun()) return;
         bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4 });
         bullets.push({ x: player.x + 12, y: player.y - 24, vy: -720, r: 4 });
         player.cooldown = 0.18;
-        laserSound();
+        if (state === "playing") laserSound();
       }
 
       function activateShield() {
@@ -1923,7 +1974,7 @@
       }
 
       function chooseDiver() {
-        if (state !== "playing") return;
+        if (!isActiveRun()) return;
         const pool = enemies.filter((e) => !e.dive && e.y > 70);
         if (!pool.length) return;
         const enemy = pool[Math.floor(Math.random() * pool.length)];
@@ -1993,14 +2044,15 @@
         const by = boss.y;
         const kind = boss.kind;
         const finale = act >= totalActs;
+        const demoMode = state === "demo";
         boss = null;
         state = "transition";
         bullets.length = 0;
         enemyBullets.length = 0;
         runBossClearEffects(bx, by, kind);
         shake = kind === "dreadnought" ? 50 : kind === "hunter" ? 42 : 34;
-        if (!finale) showBossClearScene();
-        bossTransitionTimer = setTimeout(() => finishBossTransition(finale), finale ? 820 : 760);
+        if (!finale && !demoMode) showBossClearScene();
+        bossTransitionTimer = setTimeout(() => finishBossTransition(finale, demoMode), finale ? 820 : 760);
       }
 
       function damagePlayer() {
@@ -2022,7 +2074,31 @@
         }
       }
 
+      function runDemoPilot(dt) {
+        demoFireTimer -= dt;
+        let target = boss || enemies.find((enemy) => enemy.y > 40) || enemies[0] || null;
+        if (target) {
+          demoTargetX = target.x + Math.sin(performance.now() / 360) * 34;
+        } else {
+          demoTargetX = W / 2 + Math.sin(performance.now() / 900) * 180;
+        }
+        const nearestBullet = enemyBullets
+          .filter((b) => b.y > player.y - 220 && b.y < player.y + 60)
+          .sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
+        if (nearestBullet && Math.abs(nearestBullet.x - player.x) < 62) {
+          demoTargetX += nearestBullet.x < player.x ? 120 : -120;
+        }
+        const dx = clamp(demoTargetX, 58, W - 58) - player.x;
+        player.x += clamp(dx, -player.speed * dt, player.speed * dt);
+        player.x = clamp(player.x, 54, W - 54);
+        if (demoFireTimer <= 0 && (target || enemies.length)) {
+          shoot();
+          demoFireTimer = boss ? 0.13 : 0.2;
+        }
+      }
+
       function step(dt) {
+        const activeRun = isActiveRun();
         if (state === "playing" && !muted && !melodyTimer) startMelody();
         stars.forEach((star) => {
           star.y += star.s * (42 + wave * 3) * dt;
@@ -2039,7 +2115,7 @@
           }
         });
 
-        if (state !== "playing") {
+        if (!activeRun) {
           particles.forEach((p) => {
             p.x += p.vx * dt;
             p.y += p.vy * dt;
@@ -2057,15 +2133,19 @@
           encouragementTimer = 8 + Math.random() * 9;
         }
 
-        const left = keys.has("ArrowLeft") || keys.has("KeyA");
-        const right = keys.has("ArrowRight") || keys.has("KeyD");
-        if (left) player.x -= player.speed * dt;
-        if (right) player.x += player.speed * dt;
-        player.x = clamp(player.x, 54, W - 54);
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
-        if (keys.has("Space") || keys.has("KeyW") || keys.has("ArrowUp")) shoot();
+        if (state === "demo") {
+          runDemoPilot(dt);
+        } else {
+          const left = keys.has("ArrowLeft") || keys.has("KeyA");
+          const right = keys.has("ArrowRight") || keys.has("KeyD");
+          if (left) player.x -= player.speed * dt;
+          if (right) player.x += player.speed * dt;
+          player.x = clamp(player.x, 54, W - 54);
+          if (keys.has("Space") || keys.has("KeyW") || keys.has("ArrowUp")) shoot();
+        }
 
         bullets.forEach((b) => {
           b.y += b.vy * dt;
@@ -2297,7 +2377,7 @@
           if (bullets[i].y < -30) bullets.splice(i, 1);
         }
 
-        if (state === "playing" && !enemies.length && !boss) {
+        if (activeRun && !enemies.length && !boss) {
           alienRoundsCleared += 1;
           score += 1000;
           player.lives = Math.min(5, player.lives + (wave % 3 === 0 ? 1 : 0));
@@ -2311,7 +2391,7 @@
           updateHud();
           play(660, 0.11, "triangle", 0.04);
           play(990, 0.14, "triangle", 0.035);
-          showEncouragement(true);
+          if (state === "playing") showEncouragement(true);
         } else {
           updateHud();
         }
@@ -2734,6 +2814,7 @@
 
       renderLeaderboard();
       renderLives();
+      startDemoMode();
       requestAnimationFrame(loop);
     })();
   </script>
