@@ -666,7 +666,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0018 · uppladdad 2026-06-21 00:18 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0028 · uppladdad 2026-06-21 00:28 CEST</div>
   </main>
 
   <script>
@@ -1372,6 +1372,10 @@
       function clearBossTimers() {
         if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
         bossTransitionTimer = null;
+        clearBossEffectTimer();
+      }
+
+      function clearBossEffectTimer() {
         if (bossEffectTimer) clearInterval(bossEffectTimer);
         bossEffectTimer = null;
       }
@@ -1692,7 +1696,7 @@
       function runBossClearEffects(x, y, kind) {
         const palette = kind === "dreadnought" ? ["#ff8a36", "#ffd86b", "#ff5b78", "#5ed7ff"] : kind === "crystal" ? ["#5ed7ff", "#ffffff", "#9b6dff", "#ffd86b"] : kind === "hunter" ? ["#9dff6b", "#ffd86b", "#ff5b78", "#5ed7ff"] : ["#b66cff", "#ffd86b", "#ff5b78", "#5ed7ff"];
         let burst = 0;
-        clearBossTimers();
+        clearBossEffectTimer();
         makeParticles(x, y, palette[0], kind === "dreadnought" ? 112 : kind === "hunter" ? 96 : 78);
         explosionSound(kind === "dreadnought" ? 1.7 : kind === "hunter" ? 1.5 : 1.25);
         bossEffectTimer = setInterval(() => {
@@ -1707,6 +1711,14 @@
             bossEffectTimer = null;
           }
         }, 120);
+      }
+
+      function finishBossTransition(finale) {
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
+        if (state !== "transition") return;
+        if (finale) winGame(true);
+        else startNextAct();
       }
 
       function makeParticles(x, y, color, count = 14) {
@@ -1988,11 +2000,7 @@
         runBossClearEffects(bx, by, kind);
         shake = kind === "dreadnought" ? 50 : kind === "hunter" ? 42 : 34;
         if (!finale) showBossClearScene();
-        bossTransitionTimer = setTimeout(() => {
-          bossTransitionTimer = null;
-          if (finale) winGame(true);
-          else startNextAct();
-        }, finale ? 820 : 760);
+        bossTransitionTimer = setTimeout(() => finishBossTransition(finale), finale ? 820 : 760);
       }
 
       function damagePlayer() {
