@@ -44,8 +44,8 @@
 
     .shell {
       position: relative;
-      width: min(100vw, 760px);
-      height: min(100vh, 960px);
+      width: min(100vw, calc(100vh * 0.7916667), 855px);
+      height: min(100vh, calc(100vw * 1.2631579), 1080px);
       min-height: 560px;
       background:
         radial-gradient(circle at 50% 75%, rgba(94, 215, 255, 0.14), transparent 38%),
@@ -65,13 +65,39 @@
       position: absolute;
       inset: 12px 12px auto;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: auto 1fr auto 1fr;
       gap: 10px;
       align-items: center;
       pointer-events: none;
       font-size: clamp(12px, 2.4vw, 15px);
       letter-spacing: 0;
       text-transform: uppercase;
+    }
+
+    .encouragement {
+      position: absolute;
+      z-index: 7;
+      max-width: min(340px, 52%);
+      pointer-events: none;
+      color: rgba(255, 248, 188, 0.78);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: clamp(12px, 1.7vw, 18px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 8px rgba(255, 216, 107, 0.82),
+        0 0 22px rgba(94, 215, 255, 0.42),
+        2px 2px 0 rgba(0, 0, 0, 0.78);
+      opacity: 0;
+      transform: translateY(8px) scale(0.97);
+      transition: opacity 260ms ease, transform 260ms ease;
+    }
+
+    .encouragement.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     .hud-pill {
@@ -92,6 +118,10 @@
     }
 
     .hud-pill:nth-child(2) {
+      justify-self: start;
+    }
+
+    .hud-pill:nth-child(3) {
       justify-self: center;
     }
 
@@ -119,6 +149,64 @@
       clip-path: polygon(50% 0, 100% 100%, 50% 76%, 0 100%);
       background: var(--cyan);
       box-shadow: 0 0 12px rgba(94, 215, 255, 0.7);
+    }
+
+    .leaderboard {
+      margin-top: 18px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 216, 107, 0.34);
+      background: rgba(2, 4, 11, 0.38);
+      box-shadow: inset 0 0 18px rgba(255, 216, 107, 0.08), 0 0 18px rgba(94, 215, 255, 0.08);
+      font-family: "Courier New", ui-monospace, monospace;
+      text-transform: uppercase;
+    }
+
+    .leaderboard-title {
+      color: #ffd86b;
+      font-size: clamp(12px, 2.2vw, 15px);
+      font-weight: 900;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(255, 216, 107, 0.72);
+    }
+
+    .leaderboard ol {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .leaderboard li {
+      display: grid;
+      grid-template-columns: 2.4ch 4ch 1fr;
+      gap: 10px;
+      color: rgba(245, 247, 255, 0.82);
+      font-size: clamp(11px, 2vw, 14px);
+      font-weight: 800;
+      line-height: 1.1;
+      text-shadow: 0 0 10px rgba(94, 215, 255, 0.4);
+    }
+
+    .leaderboard li:first-child {
+      color: #ffd86b;
+      text-shadow: 0 0 14px rgba(255, 216, 107, 0.86);
+    }
+
+    .build-mark {
+      position: absolute;
+      left: 10px;
+      bottom: 8px;
+      z-index: 8;
+      pointer-events: none;
+      color: rgba(245, 247, 255, 0.56);
+      font-family: "Courier New", ui-monospace, monospace;
+      font-size: clamp(8px, 1.4vw, 10px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+      text-shadow: 0 0 8px rgba(94, 215, 255, 0.45), 1px 1px 0 rgba(0, 0, 0, 0.75);
+      text-transform: uppercase;
     }
 
     .overlay {
@@ -288,7 +376,7 @@
       position: absolute;
       inset: auto 12px 14px;
       display: none;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: 1fr auto auto 1fr;
       gap: 12px;
       pointer-events: none;
     }
@@ -309,33 +397,10 @@
       color: #15100a;
     }
 
-    .quote-bubble {
-      position: absolute;
-      right: 14px;
-      bottom: 86px;
-      max-width: min(240px, calc(100% - 28px));
-      padding: 7px 9px;
-      border: 1px solid rgba(255, 216, 107, 0.65);
-      background: linear-gradient(180deg, rgba(6, 10, 22, 0.92), rgba(16, 5, 30, 0.86));
-      color: #ffd86b;
-      font-family: "Courier New", ui-monospace, monospace;
-      font-size: clamp(8px, 1.45vw, 11px);
-      font-weight: 900;
-      line-height: 1.05;
-      text-transform: uppercase;
-      text-align: right;
-      text-shadow: 0 0 10px rgba(255, 216, 107, 0.85), 2px 2px 0 #000;
-      box-shadow: 0 0 22px rgba(255, 216, 107, 0.22), inset 0 0 16px rgba(94, 215, 255, 0.08);
-      opacity: 0;
-      transform: translateY(12px) scale(0.96);
-      pointer-events: none;
-      transition: opacity 140ms ease, transform 140ms ease;
-      z-index: 4;
-    }
-
-    .quote-bubble.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+    .touch button:nth-child(3) {
+      min-width: 80px;
+      background: rgba(94, 215, 255, 0.84);
+      color: #06111c;
     }
 
     .win-scene {
@@ -414,6 +479,41 @@
       text-shadow: 0 0 18px rgba(78, 230, 166, 0.7), 2px 2px 0 #000;
     }
 
+    .win-scene.finale {
+      background:
+        radial-gradient(circle at 50% 32%, rgba(255, 216, 107, 0.28), transparent 25%),
+        radial-gradient(circle at 24% 74%, rgba(255, 91, 120, 0.24), transparent 28%),
+        radial-gradient(circle at 82% 72%, rgba(94, 215, 255, 0.22), transparent 24%),
+        rgba(2, 4, 11, 0.78);
+    }
+
+    .win-scene.finale .win-card {
+      border-color: rgba(255, 216, 107, 0.96);
+      background:
+        radial-gradient(circle at 50% 38%, rgba(255, 216, 107, 0.24), transparent 30%),
+        linear-gradient(180deg, rgba(58, 8, 76, 0.9), rgba(4, 8, 18, 0.94));
+      animation: win-pop 520ms cubic-bezier(.2, 1.4, .4, 1) both, win-card-pulse 620ms ease-in-out infinite alternate;
+    }
+
+    .win-scene.finale .win-title {
+      color: #fff8bc;
+      font-size: clamp(34px, 8.5vw, 72px);
+      -webkit-text-stroke-color: #ff8a36;
+      text-shadow:
+        0 0 16px rgba(255, 216, 107, 0.98),
+        0 0 52px rgba(255, 138, 54, 0.82),
+        0 0 84px rgba(94, 215, 255, 0.52),
+        4px 4px 0 rgba(0, 0, 0, 0.85);
+    }
+
+    .win-scene.finale .win-subtitle {
+      color: #ffd86b;
+      text-shadow:
+        0 0 18px rgba(255, 216, 107, 0.9),
+        0 0 42px rgba(255, 91, 120, 0.76),
+        2px 2px 0 #000;
+    }
+
     .win-actions {
       justify-content: center;
     }
@@ -435,6 +535,18 @@
       }
     }
 
+    @keyframes win-card-pulse {
+      from {
+        box-shadow: 0 0 42px rgba(255, 216, 107, 0.32), inset 0 0 40px rgba(94, 215, 255, 0.14);
+      }
+      to {
+        box-shadow:
+          0 0 78px rgba(255, 216, 107, 0.55),
+          0 0 124px rgba(255, 91, 120, 0.24),
+          inset 0 0 82px rgba(94, 215, 255, 0.24);
+      }
+    }
+
     @media (pointer: coarse), (max-width: 720px) {
       .touch {
         display: grid;
@@ -451,6 +563,7 @@
       .hud {
         inset-inline: 8px;
         gap: 6px;
+        grid-template-columns: 1fr auto;
       }
 
       .hud-pill {
@@ -458,13 +571,21 @@
         padding-inline: 7px;
       }
 
-      .quote-bubble {
-        right: 10px;
-        bottom: 76px;
-        max-width: 190px;
+      .build-mark {
+        bottom: 4px;
         font-size: 8px;
-        padding: 6px 8px;
       }
+
+      .encouragement {
+        max-width: 60%;
+        font-size: 11px;
+      }
+
+      .leaderboard {
+        margin-top: 12px;
+        padding: 8px 9px;
+      }
+
     }
   </style>
 </head>
@@ -473,14 +594,16 @@
     <canvas id="game" width="760" height="960"></canvas>
     <div class="hud" aria-live="polite">
       <div class="hud-pill"><span class="dot"></span><span>Poäng&nbsp;<strong id="score">0</strong></span></div>
+      <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
       <div class="hud-pill">Våg&nbsp;<strong id="wave">1</strong></div>
-      <div class="hud-pill"><span>Liv</span><span class="lives" id="lives"></span></div>
+      <div class="hud-pill"><span>Liv</span><span class="lives" id="lives"></span><span>X&nbsp;Sköld&nbsp;<strong id="shieldCount">∞</strong></span></div>
     </div>
 
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Världsrymden</span><span>Anfaller</span><span>Rambodal</span></h1>
         <p id="overlayText">Skjut dig igenom formationer av dykande fiender. Flytta med piltangenterna eller A/D, skjut med mellanslag.</p>
+        <div class="leaderboard" id="leaderboard" aria-label="High score-lista"></div>
         <div class="actions">
           <button id="startBtn" type="button">Starta</button>
           <button class="secondary" id="muteBtn" type="button">Ljud på</button>
@@ -503,18 +626,21 @@
     <div class="touch" aria-hidden="true">
       <button id="leftBtn" type="button">←</button>
       <button id="fireBtn" type="button">Skjut</button>
+      <button id="shieldBtn" type="button">Sköld</button>
       <button id="rightBtn" type="button">→</button>
     </div>
-    <div class="quote-bubble" id="quoteBubble" aria-live="polite"></div>
     <section class="win-scene" id="winScene" aria-live="assertive">
       <div class="win-card">
         <h2 class="win-title">Grattis du vann</h2>
         <p class="win-subtitle">Farzan Tarzan bjuder på Kebab!</p>
+        <div class="leaderboard" id="winLeaderboard" aria-label="High score-lista"></div>
         <div class="actions win-actions">
           <button id="winRestartBtn" type="button">Spela igen</button>
         </div>
       </div>
     </section>
+    <div class="encouragement" id="encouragement" aria-live="polite"></div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.20.2337 · uppladdad 2026-06-20 23:37 CEST</div>
   </main>
 
   <script>
@@ -526,8 +652,10 @@
         return;
       }
       const scoreEl = document.querySelector("#score");
+      const hiScoreEl = document.querySelector("#hiScore");
       const waveEl = document.querySelector("#wave");
       const livesEl = document.querySelector("#lives");
+      const shieldCountEl = document.querySelector("#shieldCount");
       const overlay = document.querySelector("#overlay");
       const overlayText = document.querySelector("#overlayText");
       const startBtn = document.querySelector("#startBtn");
@@ -535,12 +663,17 @@
       const intro = document.querySelector("#intro");
       const crawlCopy = document.querySelector("#crawlCopy");
       const skipIntroBtn = document.querySelector("#skipIntroBtn");
-      const quoteBubble = document.querySelector("#quoteBubble");
       const winScene = document.querySelector("#winScene");
+      const winTitle = document.querySelector(".win-title");
+      const winSubtitle = document.querySelector(".win-subtitle");
+      const encouragementEl = document.querySelector("#encouragement");
+      const leaderboardEl = document.querySelector("#leaderboard");
+      const winLeaderboardEl = document.querySelector("#winLeaderboard");
       const winRestartBtn = document.querySelector("#winRestartBtn");
       const leftBtn = document.querySelector("#leftBtn");
       const rightBtn = document.querySelector("#rightBtn");
       const fireBtn = document.querySelector("#fireBtn");
+      const shieldBtn = document.querySelector("#shieldBtn");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -569,16 +702,38 @@
       let state = "ready";
       let last = 0;
       let score = 0;
+      let scoreSubmitted = false;
       let wave = 1;
+      let act = 1;
       let muted = false;
       let audioCtx = null;
       let shake = 0;
-      let robotCooldown = 0;
-      let ambience = null;
       let melodyTimer = null;
       let melodyStep = 0;
       let alienRoundsCleared = 0;
+      let bossDefeated = false;
+      let bossTransitionTimer = null;
+      const roundsBeforeBoss = 3;
       let introTimer = null;
+      let encouragementTimer = 6;
+      const encouragements = [
+        "Bra Milton",
+        "Bra Maxen",
+        "Bra grabbar",
+        "Mina fina grabbar",
+        "Farzan Tarzan tänker på er"
+      ];
+      const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel"];
+      const scoreNames = ["MIL", "MAX", "FTZ", "RAM", "KID", "ACE"];
+      const scoreKey = "varldsrymdenAnfallerRambodal.leaderboard";
+      const defaultLeaderboard = [
+        { name: "MIL", score: 50000 },
+        { name: "MAX", score: 42000 },
+        { name: "FTZ", score: 30000 },
+        { name: "RAM", score: 20000 },
+        { name: "ACE", score: 12000 }
+      ];
+      let leaderboard = loadLeaderboard();
 
       const player = {
         x: W / 2,
@@ -587,6 +742,7 @@
         h: 48,
         speed: 430,
         lives: 3,
+        shieldTime: 0,
         cooldown: 0,
         invuln: 0
       };
@@ -627,40 +783,7 @@
       function initAudio() {
         if (muted) return null;
         audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
-        if (!ambience) {
-          const drone = audioCtx.createOscillator();
-          const subDrone = audioCtx.createOscillator();
-          const tremolo = audioCtx.createOscillator();
-          const tremGain = audioCtx.createGain();
-          const filter = audioCtx.createBiquadFilter();
-          const subFilter = audioCtx.createBiquadFilter();
-          const amp = audioCtx.createGain();
-          const subAmp = audioCtx.createGain();
-          drone.type = "sawtooth";
-          drone.frequency.value = 52;
-          subDrone.type = "sine";
-          subDrone.frequency.value = 28;
-          tremolo.type = "sine";
-          tremolo.frequency.value = 0.23;
-          tremGain.gain.value = 0.018;
-          filter.type = "lowpass";
-          filter.frequency.value = 520;
-          filter.Q.value = 8;
-          subFilter.type = "lowpass";
-          subFilter.frequency.value = 95;
-          subFilter.Q.value = 1.6;
-          amp.gain.value = 0.018;
-          subAmp.gain.value = 0.028;
-          tremolo.connect(tremGain).connect(amp.gain);
-          drone.connect(filter).connect(amp).connect(audioCtx.destination);
-          subDrone.connect(subFilter).connect(subAmp).connect(audioCtx.destination);
-          drone.start();
-          subDrone.start();
-          tremolo.start();
-          ambience = { drone, subDrone, tremolo, amp, subAmp };
-        }
-        ambience.amp.gain.setTargetAtTime(0.018, audioCtx.currentTime, 0.05);
-        ambience.subAmp.gain.setTargetAtTime(0.028, audioCtx.currentTime, 0.05);
+        if (audioCtx.state === "suspended") audioCtx.resume();
         startMelody();
         return audioCtx;
       }
@@ -670,7 +793,7 @@
         melodyTimer = null;
       }
 
-      function melodyNote(freq, when, length, gain = 0.022, type = "triangle") {
+      function melodyNote(freq, when, length, gain = 0.022, type = "square") {
         if (muted || !audioCtx) return;
         const osc = audioCtx.createOscillator();
         const sub = audioCtx.createOscillator();
@@ -679,17 +802,17 @@
         const filter = audioCtx.createBiquadFilter();
         osc.type = type;
         osc.frequency.value = freq;
-        sub.type = "square";
+        sub.type = "triangle";
         sub.frequency.value = freq * 0.5;
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(2500, when);
-        filter.frequency.exponentialRampToValueAtTime(900, when + length);
-        filter.Q.value = 6;
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(freq * 2.4, when);
+        filter.frequency.exponentialRampToValueAtTime(Math.max(650, freq * 1.1), when + length);
+        filter.Q.value = 7;
         amp.gain.setValueAtTime(0.0001, when);
-        amp.gain.linearRampToValueAtTime(gain, when + 0.012);
+        amp.gain.linearRampToValueAtTime(gain, when + 0.006);
         amp.gain.exponentialRampToValueAtTime(0.0001, when + length);
-        subAmp.gain.setValueAtTime(gain * 0.18, when);
-        subAmp.gain.exponentialRampToValueAtTime(0.0001, when + length * 0.8);
+        subAmp.gain.setValueAtTime(gain * 0.14, when);
+        subAmp.gain.exponentialRampToValueAtTime(0.0001, when + length * 0.65);
         osc.connect(filter).connect(amp).connect(audioCtx.destination);
         sub.connect(subAmp).connect(audioCtx.destination);
         osc.start(when);
@@ -698,19 +821,55 @@
         sub.stop(when + length + 0.03);
       }
 
+      function chipDrum(kind, when) {
+        if (muted || !audioCtx) return;
+        const amp = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        amp.gain.setValueAtTime(kind === "kick" ? 0.05 : 0.024, when);
+        amp.gain.exponentialRampToValueAtTime(0.0001, when + (kind === "kick" ? 0.11 : 0.045));
+        if (kind === "hat") {
+          const length = Math.floor(audioCtx.sampleRate * 0.04);
+          const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < length; i += 1) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+          filter.type = "highpass";
+          filter.frequency.value = 5200;
+          noise.connect(filter).connect(amp).connect(audioCtx.destination);
+          noise.start(when);
+          return;
+        }
+        const osc = audioCtx.createOscillator();
+        osc.type = kind === "snare" ? "triangle" : "square";
+        osc.frequency.setValueAtTime(kind === "snare" ? 180 : 92, when);
+        osc.frequency.exponentialRampToValueAtTime(kind === "snare" ? 95 : 42, when + 0.09);
+        osc.connect(amp).connect(audioCtx.destination);
+        osc.start(when);
+        osc.stop(when + 0.13);
+      }
+
       function startMelody() {
         if (melodyTimer || muted || !audioCtx) return;
-        const notes = [659.25, 783.99, 987.77, 880, 739.99, 987.77, 1174.66, 987.77, 698.46, 880, 1046.5, 783.99, 622.25, 739.99, 932.33, 739.99];
-        const bass = [164.81, 196, 220, 246.94];
+        const lead = [659.25, 783.99, 987.77, 1174.66, 987.77, 880, 783.99, 659.25, 587.33, 659.25, 783.99, 880, 987.77, 1174.66, 1318.51, 987.77, 880, 987.77, 1174.66, 1567.98, 1318.51, 1174.66, 987.77, 783.99, 659.25, 783.99, 987.77, 880, 783.99, 659.25, 587.33, 523.25];
+        const counter = [0, 1318.51, 0, 1174.66, 0, 987.77, 0, 1567.98, 0, 1174.66, 0, 987.77, 0, 880, 0, 1318.51];
+        const arp = [329.63, 392, 493.88, 659.25, 493.88, 392, 329.63, 392, 369.99, 440, 554.37, 739.99, 554.37, 440, 369.99, 440];
+        const bass = [164.81, 164.81, 196, 196, 220, 220, 246.94, 246.94, 220, 220, 196, 196, 174.61, 174.61, 196, 246.94];
         melodyTimer = setInterval(() => {
-          const now = audioCtx.currentTime + 0.035;
-          const note = notes[melodyStep % notes.length];
-          melodyNote(note, now, 0.135, 0.018, melodyStep % 2 ? "square" : "triangle");
-          if (melodyStep % 2 === 1) melodyNote(note * 1.25, now + 0.078, 0.09, 0.007, "triangle");
-          if (melodyStep % 4 === 0) melodyNote(bass[(melodyStep / 4) % bass.length | 0], now, 0.28, 0.012, "sawtooth");
-          if (melodyStep % 8 === 6) melodyNote(note * 1.5, now + 0.04, 0.12, 0.008, "square");
+          const now = audioCtx.currentTime + 0.025;
+          const note = lead[melodyStep % lead.length];
+          const chip = melodyStep % 8 < 4 ? "square" : "triangle";
+          if (note) melodyNote(note, now, 0.095, 0.029, chip);
+          const high = counter[melodyStep % counter.length];
+          if (high) melodyNote(high, now + 0.028, 0.052, 0.011, "square");
+          melodyNote(arp[melodyStep % arp.length], now + 0.055, 0.055, 0.012, "square");
+          if (melodyStep % 2 === 0) melodyNote(bass[(melodyStep / 2) % bass.length], now, 0.12, 0.026, "square");
+          if (melodyStep % 4 === 0) chipDrum("kick", now);
+          if (melodyStep % 8 === 4) chipDrum("snare", now + 0.01);
+          if (melodyStep % 2 === 1) chipDrum("hat", now + 0.02);
+          if (melodyStep % 16 === 14) melodyNote(1760, now + 0.035, 0.075, 0.021, "square");
           melodyStep += 1;
-        }, 168);
+        }, 104);
       }
 
       function fanfareNote(freq, when, length, gain = 0.05) {
@@ -741,22 +900,12 @@
       function playIntroFanfare() {
         if (muted) return;
         initAudio();
-        stopMelody();
         const now = audioCtx.currentTime + 0.08;
         [
           [196, 0, 0.58], [293.66, 0.16, 0.58], [392, 0.32, 0.82],
           [523.25, 1.08, 0.42], [493.88, 1.32, 0.38], [392, 1.56, 0.75],
           [329.63, 2.34, 0.42], [392, 2.58, 0.42], [587.33, 2.82, 1.2]
         ].forEach(([freq, offset, len]) => fanfareNote(freq, now + offset, len, 0.045));
-      }
-
-      function showQuote(text) {
-        quoteBubble.textContent = text;
-        quoteBubble.classList.add("visible");
-        clearTimeout(showQuote.timer);
-        showQuote.timer = setTimeout(() => {
-          quoteBubble.classList.remove("visible");
-        }, 2700);
       }
 
       function play(freq, duration = 0.08, type = "square", gain = 0.035) {
@@ -823,40 +972,6 @@
         thump.stop(audioCtx.currentTime + 0.44);
         play(82 + Math.random() * 28, 0.42, "sawtooth", 0.08 * power);
         setTimeout(() => play(46 + Math.random() * 12, 0.35, "triangle", 0.045 * power), 70);
-      }
-
-      function robotSpeak(text, force = false) {
-        if (!force && robotCooldown > 0) return;
-        showQuote(text);
-        if (muted || !("speechSynthesis" in window)) {
-          robotCooldown = 3.2;
-          return;
-        }
-        robotCooldown = 4.5;
-        const say = new SpeechSynthesisUtterance(text);
-        const voices = speechSynthesis.getVoices();
-        say.voice = voices.find((v) => /svenska|swedish|google svenska|alva|samantha|karen|moira|tessa|victoria|zira|female/i.test(v.name + v.lang)) || voices.find((v) => /sv|en/i.test(v.lang)) || voices[0] || null;
-        say.lang = say.voice?.lang || "sv-SE";
-        say.pitch = 1.45;
-        say.rate = 1.08;
-        say.volume = 0.82;
-        speechSynthesis.cancel();
-        speechSynthesis.speak(say);
-        play(720, 0.045, "triangle", 0.018);
-        setTimeout(() => play(960, 0.04, "triangle", 0.014), 80);
-        setTimeout(() => play(1280, 0.035, "square", 0.01), 145);
-      }
-
-      const sciFiQuotes = [
-        "Farm fries forever",
-        "Chickens",
-        "Leons Superstar",
-        "Smedby forever",
-        "Man skulle ha en Honda Civic"
-      ];
-
-      function quote(force = false) {
-        robotSpeak(sciFiQuotes[Math.floor(Math.random() * sciFiQuotes.length)], force);
       }
 
       function shader(type, source) {
@@ -1021,6 +1136,10 @@
       const bossMantleShape = makeBlob(34, 0.13);
       const bossEyeShape = makeBlob(18, 0.08);
       const bossBeakShape = [0, -1, 0.62, -0.16, 0.34, 0.82, 0, 1.08, -0.34, 0.82, -0.62, -0.16];
+      const hunterMaskShape = [0, -1.2, 0.5, -1.02, 0.9, -0.54, 0.72, 0.16, 0.46, 0.72, 0.16, 1.08, 0, 1.2, -0.16, 1.08, -0.46, 0.72, -0.72, 0.16, -0.9, -0.54, -0.5, -1.02];
+      const hunterMandibleShape = [-0.14, -1, 0.38, -0.3, 0.52, 0.82, 0.14, 1.08, -0.16, 0.08];
+      const hunterBladeShape = [-0.12, -1, 0.18, -0.62, 0.14, 0.9, -0.14, 0.9, -0.18, -0.62];
+      const shieldShape = makeBlob(48, 0.025);
       const boltShape = [-0.16, -1, 0.16, -1, 0.1, 1, -0.1, 1];
       const lineShape = [-1, 0, 1, 0];
       const renderShake = { x: 0, y: 0 };
@@ -1036,36 +1155,153 @@
 
       function updateHud() {
         scoreEl.textContent = score.toString();
-        waveEl.textContent = boss ? "BOSS" : wave.toString();
+        hiScoreEl.textContent = getHiScore().toString();
+        waveEl.textContent = boss ? `BOSS ${act}` : `${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
+        shieldCountEl.textContent = "∞";
         renderLives();
+      }
+
+      function loadLeaderboard() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(scoreKey) || "null");
+          if (Array.isArray(parsed)) {
+            return parsed
+              .filter((entry) => entry && Number.isFinite(entry.score) && typeof entry.name === "string")
+              .map((entry) => ({ name: entry.name.slice(0, 3).toUpperCase(), score: Math.max(0, Math.floor(entry.score)) }))
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 5);
+          }
+        } catch (error) {
+          localStorage.removeItem(scoreKey);
+        }
+        return defaultLeaderboard.slice();
+      }
+
+      function getHiScore() {
+        return Math.max(score, leaderboard[0]?.score || 0);
+      }
+
+      function saveLeaderboard() {
+        try {
+          localStorage.setItem(scoreKey, JSON.stringify(leaderboard));
+        } catch (error) {
+          // Local storage can be unavailable in private browsing; the game still works.
+        }
+      }
+
+      function renderLeaderboard() {
+        const html = `<div class="leaderboard-title">HI-SCORE</div><ol>${leaderboard.map((entry, index) => (
+          `<li><span>${index + 1}.</span><span>${entry.name}</span><span>${entry.score.toString().padStart(6, "0")}</span></li>`
+        )).join("")}</ol>`;
+        leaderboardEl.innerHTML = html;
+        winLeaderboardEl.innerHTML = html;
+        updateHud();
+      }
+
+      function submitScore(label = "ACE") {
+        if (scoreSubmitted || score <= 0) return;
+        scoreSubmitted = true;
+        const name = scoreNames[(act + alienRoundsCleared + score) % scoreNames.length] || label;
+        leaderboard.push({ name, score });
+        leaderboard = leaderboard
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5);
+        saveLeaderboard();
+        renderLeaderboard();
+      }
+
+      function showEncouragement(force = false) {
+        if (state !== "playing" && !force) return;
+        encouragementEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+        encouragementEl.style.left = `${8 + Math.random() * 56}%`;
+        encouragementEl.style.top = `${18 + Math.random() * 54}%`;
+        encouragementEl.classList.add("visible");
+        clearTimeout(showEncouragement.timer);
+        showEncouragement.timer = setTimeout(() => {
+          encouragementEl.classList.remove("visible");
+        }, 2200);
+      }
+
+      function formationTarget(enemy, nowSec) {
+        const t = nowSec + enemy.phase + enemy.enterDelay;
+        const power = act === 2 ? 1.25 : 1;
+        const pattern = enemy.formation;
+        if (pattern === "sine") {
+          return {
+            x: enemy.homeX + Math.sin(t * 1.85 + enemy.row * 0.9) * 58 * power,
+            y: enemy.homeY + Math.sin(t * 1.15 + enemy.col * 0.35) * 18 * power
+          };
+        }
+        if (pattern === "figure8") {
+          return {
+            x: enemy.homeX + Math.sin(t * 1.75) * 54 * power,
+            y: enemy.homeY + Math.sin(t * 3.5 + enemy.col * 0.12) * 30 * power
+          };
+        }
+        if (pattern === "snake") {
+          return {
+            x: enemy.homeX + Math.sin(t * 2.25 + enemy.row * 1.2 + enemy.col * 0.38) * 74 * power,
+            y: enemy.homeY + Math.cos(t * 1.1 + enemy.col * 0.45) * 20 * power
+          };
+        }
+        if (pattern === "vwave") {
+          const center = enemy.cols > 1 ? (enemy.col / (enemy.cols - 1) - 0.5) : 0;
+          return {
+            x: enemy.homeX + Math.sin(t * 1.7 + Math.abs(center) * 4) * 34 * power,
+            y: enemy.homeY + Math.abs(center) * 68 + Math.sin(t * 2.2 + enemy.row) * 16 * power
+          };
+        }
+        if (pattern === "carousel") {
+          const ring = 22 + enemy.row * 10;
+          const angle = t * (1.05 + enemy.row * 0.12) + enemy.col * 0.7;
+          return {
+            x: enemy.homeX + Math.cos(angle) * ring * power,
+            y: enemy.homeY + Math.sin(angle) * ring * 0.72 * power
+          };
+        }
+        const formationBob = Math.sin(nowSec * 1.47) * 8;
+        const formationDrift = Math.sin(nowSec * 0.87) * (24 + wave * 2);
+        return {
+          x: enemy.homeX + formationDrift,
+          y: enemy.homeY + formationBob
+        };
       }
 
       function spawnWave() {
         enemies.length = 0;
         enemyBullets.length = 0;
         boss = null;
-        const cols = 9;
-        const rows = Math.min(5, 3 + Math.floor(wave / 2));
-        const gapX = 62;
+        const secondAct = act === 2;
+        const cols = secondAct ? 10 : 9;
+        const rows = secondAct ? 4 : Math.min(5, 3 + Math.floor(wave / 2));
+        const gapX = secondAct ? 58 : 62;
         const startX = W / 2 - ((cols - 1) * gapX) / 2;
-        const startY = 126;
+        const startY = secondAct ? 118 : 126;
+        const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
+        const wavePattern = wavePatterns[(attackWave + (act - 1) * roundsBeforeBoss) % wavePatterns.length];
 
         for (let row = 0; row < rows; row += 1) {
           for (let col = 0; col < cols; col += 1) {
             const type = row === 0 && col % 2 === 0 ? "captain" : row < 2 ? "guard" : "scout";
+            const formation = wavePattern;
             enemies.push({
               homeX: startX + col * gapX,
               homeY: startY + row * 54,
               x: startX + col * gapX,
-              y: -80 - row * 28 - col * 7,
+              y: secondAct ? -140 - row * 48 - col * 12 : -80 - row * 28 - col * 7,
               w: type === "captain" ? 40 : 34,
               h: type === "captain" ? 36 : 32,
               type,
-              hp: type === "captain" ? 2 + Math.floor(wave / 4) : 1,
+              formation,
+              row,
+              col,
+              cols,
+              enterDelay: (col * 0.055 + row * 0.18) * (secondAct ? 1.25 : 0.7),
+              hp: type === "captain" ? 2 + Math.floor(wave / 4) + (secondAct ? 1 : 0) : secondAct && row === 1 ? 2 : 1,
               phase: Math.random() * Math.PI * 2,
               dive: null,
               cooldown: 0.8 + Math.random() * 2.4,
-              value: type === "captain" ? 320 : type === "guard" ? 180 : 100
+              value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (secondAct ? 80 : 0)
             });
           }
         }
@@ -1074,36 +1310,50 @@
       function spawnBoss() {
         enemies.length = 0;
         enemyBullets.length = 0;
+        bossDefeated = false;
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
+        const hunter = act === 2;
+        const hp = hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
           x: W / 2,
-          y: -155,
-          targetY: 230,
-          w: 210,
-          h: 190,
-          hp: 115 + wave * 18,
-          maxHp: 115 + wave * 18,
+          y: hunter ? -210 : -155,
+          targetY: hunter ? 220 : 230,
+          w: hunter ? 230 : 210,
+          h: hunter ? 220 : 190,
+          kind: hunter ? "hunter" : "octopus",
+          hp,
+          maxHp: hp,
           phase: 0,
-          cooldown: 1.2,
+          cooldown: hunter ? 0.95 : 1.2,
           burst: 0,
           hurt: 0
         };
-        shake = 22;
-        quote(true);
-        play(74, 0.55, "sawtooth", 0.08);
+        shake = hunter ? 30 : 22;
+        play(hunter ? 92 : 74, hunter ? 0.72 : 0.55, "sawtooth", hunter ? 0.095 : 0.08);
         updateHud();
       }
 
       function resetGame() {
         score = 0;
+        scoreSubmitted = false;
         wave = 1;
+        act = 1;
         player.x = W / 2;
         player.y = H - 140;
         player.lives = 3;
+        player.shieldTime = 0;
         player.cooldown = 0;
         player.invuln = 1.4;
         alienRoundsCleared = 0;
+        encouragementTimer = 4.5;
         boss = null;
-        winScene.classList.remove("visible");
+        bossDefeated = false;
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
+        winScene.classList.remove("visible", "finale");
+        winTitle.textContent = "Grattis du vann";
+        winSubtitle.textContent = "Farzan Tarzan bjuder på Kebab!";
         bullets.length = 0;
         enemyBullets.length = 0;
         particles.length = 0;
@@ -1113,7 +1363,6 @@
 
       function startGame() {
         initAudio();
-        stopMelody();
         state = "intro";
         overlay.classList.remove("visible");
         intro.classList.add("visible");
@@ -1135,34 +1384,70 @@
         if (!muted) startMelody();
         play(392, 0.16, "sawtooth", 0.045);
         play(587, 0.22, "sawtooth", 0.04);
-        quote(true);
+        setTimeout(() => showEncouragement(true), 900);
       }
 
       function gameOver() {
         state = "gameover";
-        overlayText.textContent = `Game over. Du nådde våg ${wave} och fick ${score} poäng.`;
+        submitScore("END");
+        overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
         overlay.classList.add("visible");
-        quote(true);
       }
 
-      function winGame() {
+      function startSecondAct() {
+        act = 2;
+        wave += 1;
+        alienRoundsCleared = 0;
+        boss = null;
+        bossDefeated = false;
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
+        player.lives = 3;
+        player.shieldTime = 2.4;
+        player.invuln = 2.2;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        enemies.length = 0;
+        score += 3000;
+        overlay.classList.remove("visible");
+        overlayText.textContent = "Akt 2. Nya alienvågor närmar sig.";
+        for (let i = 0; i < 14; i += 1) {
+          setTimeout(() => {
+            makeParticles(W * (0.18 + Math.random() * 0.64), H * (0.2 + Math.random() * 0.42), i % 2 ? "#5ed7ff" : "#ffd86b", 30);
+          }, i * 70);
+        }
+        spawnWave();
+        state = "playing";
+        updateHud();
+        play(523, 0.18, "square", 0.05);
+        setTimeout(() => play(784, 0.2, "square", 0.04), 120);
+        setTimeout(() => play(1046, 0.24, "square", 0.035), 260);
+      }
+
+      function winGame(finale = false) {
         state = "won";
         boss = null;
+        bossDefeated = false;
+        if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
+        bossTransitionTimer = null;
         enemies.length = 0;
         enemyBullets.length = 0;
         bullets.length = 0;
-        score += 5000 + wave * 700;
+        score += (finale ? 9000 : 5000) + wave * 700;
+        submitScore(finale ? "WIN" : "BOS");
+        winScene.classList.toggle("finale", finale);
+        winTitle.textContent = finale ? "Grattis du har vunnit" : "Grattis du vann";
+        winSubtitle.textContent = finale ? "en Toblerone av farzan tarzan" : "Farzan Tarzan bjuder på Kebab!";
         winScene.classList.add("visible");
-        quote(true);
-        shake = 34;
-        for (let i = 0; i < 18; i += 1) {
+        shake = finale ? 46 : 34;
+        for (let i = 0; i < (finale ? 34 : 18); i += 1) {
           setTimeout(() => {
             const x = W * (0.15 + Math.random() * 0.7);
-            const y = H * (0.18 + Math.random() * 0.34);
-            makeParticles(x, y, i % 3 === 0 ? "#ffd86b" : i % 3 === 1 ? "#4ee6a6" : "#ff5b78", 42);
-            explosionSound(0.7);
-          }, i * 110);
+            const y = H * (0.16 + Math.random() * 0.48);
+            makeParticles(x, y, i % 4 === 0 ? "#ffd86b" : i % 4 === 1 ? "#4ee6a6" : i % 4 === 2 ? "#ff5b78" : "#5ed7ff", finale ? 62 : 42);
+            explosionSound(finale ? 0.9 : 0.7);
+          }, i * (finale ? 78 : 110));
         }
         updateHud();
       }
@@ -1197,6 +1482,15 @@
         laserSound();
       }
 
+      function activateShield() {
+        if (state !== "playing" || player.shieldTime > 0) return;
+        player.shieldTime = 2.4;
+        updateHud();
+        play(880, 0.14, "triangle", 0.04);
+        setTimeout(() => play(1320, 0.12, "square", 0.022), 80);
+        makeParticles(player.x, player.y, "#5ed7ff", 18);
+      }
+
       function enemyShoot(enemy) {
         const dx = player.x - enemy.x;
         const dy = player.y - enemy.y;
@@ -1221,7 +1515,8 @@
           sx: enemy.x,
           sy: enemy.y,
           side: Math.random() > 0.5 ? 1 : -1,
-          amp: 80 + Math.random() * 90
+          amp: (act === 2 ? 120 : 80) + Math.random() * (act === 2 ? 120 : 90),
+          freq: act === 2 ? 6.5 + Math.random() * 2.8 : 5.2
         };
         enemyShoot(enemy);
       }
@@ -1240,46 +1535,75 @@
 
       function bossShoot() {
         if (!boss) return;
-        const count = boss.hp < boss.maxHp * 0.45 ? 9 : 7;
+        const hunter = boss.kind === "hunter";
+        const count = hunter ? (boss.hp < boss.maxHp * 0.45 ? 11 : 8) : (boss.hp < boss.maxHp * 0.45 ? 9 : 7);
         for (let i = 0; i < count; i += 1) {
-          const spread = (i - (count - 1) / 2) * 0.18;
+          const spread = (i - (count - 1) / 2) * (hunter ? 0.14 : 0.18);
           const dx = player.x - boss.x;
           const dy = player.y - boss.y;
-          const base = Math.atan2(dy, dx) + spread + Math.sin(boss.phase + i) * 0.05;
-          const speed = 205 + wave * 18 + Math.random() * 40;
+          const base = Math.atan2(dy, dx) + spread + Math.sin(boss.phase + i) * (hunter ? 0.08 : 0.05);
+          const speed = (hunter ? 235 : 205) + wave * 18 + Math.random() * (hunter ? 70 : 40);
           enemyBullets.push({
-            x: boss.x + Math.sin(boss.phase + i) * 74,
-            y: boss.y + 48 + Math.cos(boss.phase * 1.3 + i) * 18,
+            x: boss.x + Math.sin(boss.phase + i) * (hunter ? 92 : 74),
+            y: boss.y + (hunter ? 34 : 48) + Math.cos(boss.phase * 1.3 + i) * (hunter ? 26 : 18),
             vx: Math.cos(base) * speed,
             vy: Math.sin(base) * speed,
-            r: 6
+            r: hunter ? 7 : 6
           });
         }
-        play(150, 0.18, "sawtooth", 0.045);
+        if (hunter && boss.hp < boss.maxHp * 0.7) {
+          for (let i = 0; i < 10; i += 1) {
+            const a = boss.phase + i * Math.PI * 0.2;
+            const speed = 190 + Math.sin(boss.phase + i) * 34;
+            enemyBullets.push({
+              x: boss.x + Math.cos(a) * 38,
+              y: boss.y + 18 + Math.sin(a) * 22,
+              vx: Math.cos(a) * speed,
+              vy: Math.sin(a) * speed + 72,
+              r: 5
+            });
+          }
+        }
+        play(hunter ? 110 : 150, hunter ? 0.22 : 0.18, "sawtooth", hunter ? 0.055 : 0.045);
       }
 
       function defeatBoss() {
-        if (!boss) return;
+        if (!boss || bossDefeated) return;
+        bossDefeated = true;
         const bx = boss.x;
         const by = boss.y;
+        const hunter = boss.kind === "hunter";
+        boss = null;
+        state = "transition";
+        bullets.length = 0;
+        enemyBullets.length = 0;
         for (let i = 0; i < 7; i += 1) {
           setTimeout(() => {
-            makeParticles(bx + (Math.random() - 0.5) * 180, by + (Math.random() - 0.5) * 150, "#b66cff", 58);
-            explosionSound(1.4);
+            makeParticles(bx + (Math.random() - 0.5) * 190, by + (Math.random() - 0.5) * 160, hunter ? "#9dff6b" : "#b66cff", hunter ? 72 : 58);
+            explosionSound(hunter ? 1.65 : 1.4);
           }, i * 90);
         }
-        shake = 34;
-        winGame();
+        shake = hunter ? 42 : 34;
+        bossTransitionTimer = setTimeout(() => {
+          bossTransitionTimer = null;
+          if (hunter) winGame(true);
+          else startSecondAct();
+        }, hunter ? 760 : 720);
       }
 
       function damagePlayer() {
         if (player.invuln > 0 || state !== "playing") return;
+        if (player.shieldTime > 0) {
+          shake = Math.max(shake, 8);
+          makeParticles(player.x, player.y - 6, "#5ed7ff", 18);
+          play(540, 0.11, "triangle", 0.035);
+          return;
+        }
         player.lives -= 1;
         player.invuln = 1.8;
         shake = 16;
         makeParticles(player.x, player.y, "#5ed7ff", 34);
         explosionSound(1.1);
-        quote();
         updateHud();
         if (player.lives <= 0) {
           gameOver();
@@ -1287,7 +1611,7 @@
       }
 
       function step(dt) {
-        robotCooldown = Math.max(0, robotCooldown - dt);
+        if (state === "playing" && !muted && !melodyTimer) startMelody();
         stars.forEach((star) => {
           star.y += star.s * (42 + wave * 3) * dt;
           if (star.y > H) {
@@ -1315,6 +1639,12 @@
           return;
         }
 
+        encouragementTimer -= dt;
+        if (encouragementTimer <= 0) {
+          showEncouragement();
+          encouragementTimer = 8 + Math.random() * 9;
+        }
+
         const left = keys.has("ArrowLeft") || keys.has("KeyA");
         const right = keys.has("ArrowRight") || keys.has("KeyD");
         if (left) player.x -= player.speed * dt;
@@ -1322,6 +1652,7 @@
         player.x = clamp(player.x, 54, W - 54);
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
+        player.shieldTime = Math.max(0, player.shieldTime - dt);
         if (keys.has("Space") || keys.has("KeyW") || keys.has("ArrowUp")) shoot();
 
         bullets.forEach((b) => {
@@ -1332,17 +1663,21 @@
           b.y += b.vy * dt;
         });
 
-        const formationBob = Math.sin(performance.now() / 680) * 8;
-        const formationDrift = Math.sin(performance.now() / 1150) * (24 + wave * 2);
+        const nowSec = performance.now() / 1000;
         if (boss) {
           boss.phase += dt;
           boss.hurt = Math.max(0, boss.hurt - dt);
           boss.cooldown -= dt;
           boss.y += (boss.targetY - boss.y) * Math.min(1, dt * 1.7);
-          boss.x = W / 2 + Math.sin(boss.phase * 0.72) * 116 + Math.sin(boss.phase * 1.9) * 24;
+          if (boss.kind === "hunter") {
+            boss.x = W / 2 + Math.sin(boss.phase * 0.9) * 142 + Math.sin(boss.phase * 2.7) * 34;
+            boss.targetY = 214 + Math.sin(boss.phase * 1.35) * 22;
+          } else {
+            boss.x = W / 2 + Math.sin(boss.phase * 0.72) * 116 + Math.sin(boss.phase * 1.9) * 24;
+          }
           if (boss.cooldown <= 0) {
             bossShoot();
-            boss.cooldown = boss.hp < boss.maxHp * 0.45 ? 0.85 : 1.2;
+            boss.cooldown = boss.kind === "hunter" ? (boss.hp < boss.maxHp * 0.45 ? 0.58 : 0.86) : (boss.hp < boss.maxHp * 0.45 ? 0.85 : 1.2);
           }
         }
         enemies.forEach((enemy) => {
@@ -1352,16 +1687,17 @@
           if (enemy.dive) {
             enemy.dive.t += dt;
             const t = enemy.dive.t;
-            enemy.x = enemy.dive.sx + Math.sin(t * 5.2) * enemy.dive.amp * enemy.dive.side;
-            enemy.y = enemy.dive.sy + t * (310 + wave * 24);
+            enemy.x = enemy.dive.sx + Math.sin(t * enemy.dive.freq) * enemy.dive.amp * enemy.dive.side + (act === 2 ? Math.sin(t * 13) * 18 : 0);
+            enemy.y = enemy.dive.sy + t * (act === 2 ? 360 + wave * 28 : 310 + wave * 24);
             if (enemy.y > H + 60) {
               enemy.dive = null;
               enemy.x = enemy.homeX;
               enemy.y = -35;
             }
           } else {
-            enemy.x += (enemy.homeX + formationDrift - enemy.x) * Math.min(1, dt * 4);
-            enemy.y += (enemy.homeY + formationBob - enemy.y) * Math.min(1, dt * 3);
+            const target = formationTarget(enemy, nowSec);
+            enemy.x += (target.x - enemy.x) * Math.min(1, dt * (act === 2 ? 3.7 : 3.4));
+            enemy.y += (target.y - enemy.y) * Math.min(1, dt * (act === 2 ? 3.3 : 3));
           }
 
           if (enemy.cooldown <= 0 && enemy.y > 90 && Math.random() < 0.48) {
@@ -1373,12 +1709,12 @@
         for (let i = bullets.length - 1; i >= 0; i -= 1) {
           const b = bullets[i];
           let consumed = b.y < -20;
-          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: 104, ry: 92 })) {
+          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "hunter" ? 122 : 104, ry: boss.kind === "hunter" ? 108 : 92 })) {
             consumed = true;
             boss.hp -= 1;
             boss.hurt = 0.12;
             score += 20;
-            makeParticles(b.x, b.y, "#b66cff", 5);
+            makeParticles(b.x, b.y, boss.kind === "hunter" ? "#9dff6b" : "#b66cff", 5);
             if (boss.hp % 17 === 0) {
               shake = Math.max(shake, 8);
               explosionSound(0.55);
@@ -1399,7 +1735,6 @@
                 enemies.splice(j, 1);
                 shake = Math.max(shake, e.type === "captain" ? 14 : 8);
                 explosionSound(e.type === "captain" ? 1.25 : 0.86);
-                if (e.type === "captain") quote();
               } else {
                 play(520, 0.04, "triangle", 0.025);
               }
@@ -1432,12 +1767,14 @@
         }
 
         if (boss) {
-          const bodyHit = Math.abs(player.x - boss.x) < 88 && Math.abs(player.y - boss.y) < 72;
+          const bodyHit = boss.kind === "hunter"
+            ? Math.abs(player.x - boss.x) < 102 && Math.abs(player.y - boss.y) < 88
+            : Math.abs(player.x - boss.x) < 88 && Math.abs(player.y - boss.y) < 72;
           let tentacleHit = false;
           for (let i = -3; i <= 3; i += 1) {
-            const tx = boss.x + i * 31 + Math.sin(boss.phase * 2.4 + i) * 34;
-            const ty = boss.y + 110 + Math.cos(boss.phase * 2.1 + i) * 18;
-            if (Math.hypot(player.x - tx, player.y - ty) < 28) tentacleHit = true;
+            const tx = boss.x + i * (boss.kind === "hunter" ? 34 : 31) + Math.sin(boss.phase * 2.4 + i) * (boss.kind === "hunter" ? 26 : 34);
+            const ty = boss.y + (boss.kind === "hunter" ? 74 : 110) + Math.cos(boss.phase * 2.1 + i) * 18;
+            if (Math.hypot(player.x - tx, player.y - ty) < (boss.kind === "hunter" ? 24 : 28)) tentacleHit = true;
           }
           if (bodyHit || tentacleHit) damagePlayer();
         }
@@ -1456,12 +1793,12 @@
           if (bullets[i].y < -30) bullets.splice(i, 1);
         }
 
-        if (!enemies.length && !boss) {
+        if (state === "playing" && !enemies.length && !boss) {
           alienRoundsCleared += 1;
           score += 1000;
           player.lives = Math.min(5, player.lives + (wave % 3 === 0 ? 1 : 0));
           player.invuln = 1.2;
-          if (alienRoundsCleared >= 3) {
+          if (alienRoundsCleared >= roundsBeforeBoss) {
             spawnBoss();
           } else {
             wave += 1;
@@ -1470,7 +1807,7 @@
           updateHud();
           play(660, 0.11, "triangle", 0.04);
           play(990, 0.14, "triangle", 0.035);
-          quote(true);
+          showEncouragement(true);
         } else {
           updateHud();
         }
@@ -1483,6 +1820,12 @@
         const blink = player.invuln > 0 && Math.floor(player.invuln * 12) % 2 === 0;
         if (blink) return;
         const t = performance.now() / 1000;
+        if (player.shieldTime > 0) {
+          const pulse = 1 + Math.sin(t * 16) * 0.05;
+          drawPoly(shieldShape, player.x, player.y, 62 * pulse, 62 * pulse, t * 0.4, rgba(colors.cyan, 0.28));
+          drawPoly(shieldShape, player.x, player.y, 66 * pulse, 66 * pulse, -t * 0.7, rgba(colors.white, 0.44), gl.LINE_LOOP);
+          drawPoly(shieldShape, player.x, player.y, 48 * pulse, 48 * pulse, t, rgba(colors.cyan, 0.12), gl.LINE_LOOP);
+        }
         drawPoly(playerShape, player.x, player.y, 43, 47, 0, rgba(colors.cyan, 0.96));
         drawPoly(playerShape, player.x, player.y + 2, 30, 35, 0, rgba(colors.white, 0.34), gl.LINE_LOOP);
         drawPoly(canopyShape, player.x, player.y - 7, 18, 24, 0, rgba(colors.white, 0.78));
@@ -1537,6 +1880,56 @@
         if (!boss) return;
         const t = boss.phase;
         const hurtFlash = boss.hurt > 0 ? 0.26 : 0;
+        if (boss.kind === "hunter") {
+          const armor = [0.12 + hurtFlash * 0.9, 0.17 + hurtFlash * 0.25, 0.15];
+          const bone = [0.62 + hurtFlash, 0.68 + hurtFlash * 0.4, 0.54];
+          const dark = [0.02, 0.04, 0.04];
+          const glow = colors.toxic;
+
+          for (let i = -5; i <= 5; i += 1) {
+            const rootX = boss.x + i * 17;
+            const rootY = boss.y - 34 + Math.abs(i) * 5;
+            const length = 118 - Math.abs(i) * 6;
+            let px = rootX;
+            let py = rootY;
+            for (let s = 1; s <= 5; s += 1) {
+              const k = s / 5;
+              const nx = rootX + i * 5 * k + Math.sin(t * 2.1 + i + k * 4) * (12 + k * 30);
+              const ny = rootY + k * length + Math.cos(t * 1.8 + i) * 9;
+              const angle = Math.atan2(ny - py, nx - px) + Math.PI / 2;
+              drawPoly(tentacleShape, (px + nx) / 2, (py + ny) / 2, 13 - k * 5, Math.hypot(nx - px, ny - py) / 2 + 4, angle, [0.03, 0.08 + k * 0.08, 0.06, 0.88]);
+              if (s === 5) drawPoly(bossEyeShape, nx, ny, 4, 4, 0, rgba(glow, 0.7));
+              px = nx;
+              py = ny;
+            }
+          }
+
+          drawPoly(bossMantleShape, boss.x, boss.y + 10, 120, 118, Math.sin(t) * 0.035, [armor[0], armor[1], armor[2], 0.98]);
+          drawPoly(hunterMaskShape, boss.x, boss.y - 12, 92, 102, Math.sin(t * 1.2) * 0.03, [bone[0], bone[1], bone[2], 0.9]);
+          drawPoly(hunterMaskShape, boss.x, boss.y - 8, 72, 72, -Math.sin(t * 1.5) * 0.025, [dark[0], dark[1], dark[2], 0.34]);
+          drawPoly(alienEyeShape, boss.x - 29, boss.y - 24, 27, 14, -0.16, rgba(colors.red, 0.96));
+          drawPoly(alienEyeShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 29, boss.y - 24, 27, 14, 0.16, rgba(colors.red, 0.96));
+          drawPoly(bossEyeShape, boss.x - 35, boss.y - 28, 8, 3.8, -0.16, rgba(colors.white, 0.75));
+          drawPoly(bossEyeShape, boss.x + 23, boss.y - 28, 8, 3.8, 0.16, rgba(colors.white, 0.75));
+
+          drawPoly(hunterMandibleShape, boss.x - 35, boss.y + 36, 22, 34, -0.36 + Math.sin(t * 3) * 0.06, rgba(bone, 0.82));
+          drawPoly(hunterMandibleShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 35, boss.y + 36, 22, 34, 0.36 - Math.sin(t * 3) * 0.06, rgba(bone, 0.82));
+          drawPoly(hunterMandibleShape, boss.x - 18, boss.y + 44, 15, 25, -0.12, rgba(colors.toxic, 0.5));
+          drawPoly(hunterMandibleShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 18, boss.y + 44, 15, 25, 0.12, rgba(colors.toxic, 0.5));
+
+          for (let i = -3; i <= 3; i += 1) {
+            drawPoly(hunterBladeShape, boss.x + i * 31, boss.y + 78 + Math.abs(i) * 5, 10, 38, i * 0.09 + Math.sin(t * 2 + i) * 0.08, rgba(colors.white, 0.42));
+            drawPoly(bossEyeShape, boss.x + i * 26, boss.y + 10 + Math.sin(t * 2 + i) * 5, 5, 5, 0, rgba(glow, 0.56));
+          }
+          drawPoly(lineShape, boss.x, boss.y - 74, 72, 1.8, 0, rgba(colors.white, 0.2), gl.LINES);
+
+          const barW = 300;
+          const hp = clamp(boss.hp / boss.maxHp, 0, 1);
+          drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 68, (barW * hp) / 2, 4, 0, rgba(colors.toxic, 0.95), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 64, (barW * hp) / 2, 1.3, 0, rgba(colors.white, 0.55), gl.LINES);
+          return;
+        }
         const skin = [0.48 + hurtFlash, 0.18, 0.62 + hurtFlash * 0.4];
         const deep = [0.16, 0.04, 0.22];
         const wet = [0.86, 0.62, 1.0];
@@ -1613,8 +2006,13 @@
           pushPoint(glowPoints, enemy.x, enemy.y, enemy.type === "captain" ? 96 : 78, color, enemy.type === "captain" ? 0.5 : 0.38);
         });
         if (boss) {
-          pushPoint(glowPoints, boss.x, boss.y - 10, 260, colors.flesh, 0.5);
-          pushPoint(glowPoints, boss.x, boss.y + 72, 210, colors.violet, 0.28);
+          if (boss.kind === "hunter") {
+            pushPoint(glowPoints, boss.x, boss.y - 8, 270, colors.toxic, 0.48);
+            pushPoint(glowPoints, boss.x, boss.y - 34, 120, colors.red, 0.34);
+          } else {
+            pushPoint(glowPoints, boss.x, boss.y - 10, 260, colors.flesh, 0.5);
+            pushPoint(glowPoints, boss.x, boss.y + 72, 210, colors.violet, 0.28);
+          }
         }
         pushPoint(glowPoints, player.x, player.y + 5, 124, colors.cyan, 0.42);
         bullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, 52, colors.gold, 0.55));
@@ -1673,6 +2071,11 @@
           beginGame();
           return;
         }
+        if (event.code === "KeyX") {
+          event.preventDefault();
+          if (!event.repeat) activateShield();
+          return;
+        }
         if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space", "KeyA", "KeyD", "KeyW"].includes(event.code)) {
           event.preventDefault();
           keys.add(event.code);
@@ -1683,10 +2086,6 @@
           muteBtn.textContent = muted ? "Ljud av" : "Ljud på";
           if (muted) {
             stopMelody();
-            if (ambience) {
-              ambience.amp.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
-              ambience.subAmp.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
-            }
           }
           else initAudio();
         }
@@ -1701,6 +2100,10 @@
         rightBtn.addEventListener(type, () => setTouch("ArrowRight", active));
         fireBtn.addEventListener(type, () => setTouch("Space", active));
       });
+      shieldBtn.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        activateShield();
+      });
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
@@ -1710,10 +2113,6 @@
         muteBtn.textContent = muted ? "Ljud av" : "Ljud på";
         if (muted) {
           stopMelody();
-          if (ambience) {
-            ambience.amp.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
-            ambience.subAmp.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
-          }
         }
         if (!muted) {
           initAudio();
@@ -1721,6 +2120,7 @@
         }
       });
 
+      renderLeaderboard();
       renderLives();
       requestAnimationFrame(loop);
     })();
