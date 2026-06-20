@@ -666,7 +666,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0012 · uppladdad 2026-06-21 00:12 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0018 · uppladdad 2026-06-21 00:18 CEST</div>
   </main>
 
   <script>
@@ -709,10 +709,12 @@
       const enemies = [];
       const particles = [];
       const comets = [];
+      const rifts = [];
       let boss = null;
       let bonusUfo = null;
       let bonusUfoTimer = 8;
       let cometTimer = 12;
+      let riftTimer = 16;
       const stars = Array.from({ length: 180 }, () => ({
         x: Math.random() * W,
         y: Math.random() * H,
@@ -756,6 +758,7 @@
       let bossTransitionTimer = null;
       let bossEffectTimer = null;
       const roundsBeforeBoss = 3;
+      const totalActs = 4;
       let introTimer = null;
       let encouragementTimer = 6;
       const encouragements = [
@@ -765,7 +768,8 @@
         "Mina fina grabbar",
         "Farzan Tarzan tänker på er"
       ];
-      const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel"];
+      const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
+      const bossKinds = ["octopus", "hunter", "crystal", "dreadnought"];
       const scoreNames = ["MIL", "MAX", "FTZ", "RAM", "KID", "ACE"];
       const scoreKey = "varldsrymdenAnfallerRambodal.leaderboard";
       const defaultLeaderboard = [
@@ -1311,7 +1315,7 @@
       function updateHud() {
         scoreEl.textContent = score.toString();
         hiScoreEl.textContent = getHiScore().toString();
-        waveEl.textContent = boss ? `BOSS ${act}` : `${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
+        waveEl.textContent = boss ? `BOSS ${act}/${totalActs}` : `AKT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         shieldCountEl.textContent = "∞";
         renderLives();
       }
@@ -1386,7 +1390,7 @@
 
       function formationTarget(enemy, nowSec) {
         const t = nowSec + enemy.phase + enemy.enterDelay;
-        const power = act === 2 ? 1.25 : 1;
+        const power = 1 + (act - 1) * 0.18;
         const pattern = enemy.formation;
         if (pattern === "sine") {
           return {
@@ -1421,6 +1425,30 @@
             y: enemy.homeY + Math.sin(angle) * ring * 0.72 * power
           };
         }
+        if (pattern === "spiral") {
+          const radius = 28 + enemy.row * 10 + Math.sin(t * 1.5) * 14;
+          const angle = t * (1.35 + enemy.col * 0.03) + enemy.col * 0.56;
+          return {
+            x: enemy.homeX + Math.cos(angle) * radius * power,
+            y: enemy.homeY + Math.sin(angle) * radius * 0.74 * power
+          };
+        }
+        if (pattern === "ambush") {
+          const side = enemy.col % 2 === 0 ? -1 : 1;
+          const swoop = Math.sin(t * 1.8 + enemy.row) * (62 + alienRoundsCleared * 12);
+          return {
+            x: enemy.homeX + side * swoop * power,
+            y: enemy.homeY + Math.abs(Math.sin(t * 1.05 + enemy.col)) * (36 + enemy.row * 7)
+          };
+        }
+        if (pattern === "pinwheel") {
+          const angle = t * (1.1 + enemy.row * 0.18) + (enemy.col / Math.max(1, enemy.cols)) * Math.PI * 2;
+          const radius = 22 + enemy.row * 18;
+          return {
+            x: enemy.homeX + Math.cos(angle) * radius * power,
+            y: enemy.homeY + Math.sin(angle) * radius * power
+          };
+        }
         const formationBob = Math.sin(nowSec * 1.47) * 8;
         const formationDrift = Math.sin(nowSec * 0.87) * (24 + wave * 2);
         return {
@@ -1433,16 +1461,18 @@
         enemies.length = 0;
         enemyBullets.length = 0;
         comets.length = 0;
+        rifts.length = 0;
         boss = null;
         bonusUfo = null;
         scheduleBonusUfo();
         scheduleComet();
-        const secondAct = act === 2;
-        const cols = secondAct ? 10 : 9;
-        const rows = secondAct ? 4 : Math.min(5, 3 + Math.floor(wave / 2));
-        const gapX = secondAct ? 58 : 62;
+        scheduleRift();
+        const advancedAct = act >= 2;
+        const cols = act >= 4 ? 11 : advancedAct ? 10 : 9;
+        const rows = act >= 3 ? 5 : advancedAct ? 4 : Math.min(5, 3 + Math.floor(wave / 2));
+        const gapX = act >= 4 ? 54 : advancedAct ? 58 : 62;
         const startX = W / 2 - ((cols - 1) * gapX) / 2;
-        const startY = secondAct ? 118 : 126;
+        const startY = advancedAct ? 112 : 126;
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const wavePattern = wavePatterns[(attackWave + (act - 1) * roundsBeforeBoss) % wavePatterns.length];
         setBackdropForStage("wave");
@@ -1455,7 +1485,7 @@
               homeX: startX + col * gapX,
               homeY: startY + row * 54,
               x: startX + col * gapX,
-              y: secondAct ? -140 - row * 48 - col * 12 : -80 - row * 28 - col * 7,
+              y: advancedAct ? -140 - row * 48 - col * (10 + act) : -80 - row * 28 - col * 7,
               w: type === "captain" ? 40 : 34,
               h: type === "captain" ? 36 : 32,
               type,
@@ -1463,12 +1493,12 @@
               row,
               col,
               cols,
-              enterDelay: (col * 0.055 + row * 0.18) * (secondAct ? 1.25 : 0.7),
-              hp: type === "captain" ? 2 + Math.floor(wave / 4) + (secondAct ? 1 : 0) : secondAct && row === 1 ? 2 : 1,
+              enterDelay: (col * 0.055 + row * 0.18) * (advancedAct ? Math.max(0.72, 1.25 - act * 0.1) : 0.7),
+              hp: type === "captain" ? 2 + Math.floor(wave / 4) + (advancedAct ? act - 1 : 0) : advancedAct && row <= Math.min(2, act - 1) ? 2 : 1,
               phase: Math.random() * Math.PI * 2,
               dive: null,
               cooldown: 0.8 + Math.random() * 2.4,
-              value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (secondAct ? 80 : 0)
+              value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (advancedAct ? 70 * act : 0)
             });
           }
         }
@@ -1482,26 +1512,31 @@
         bonusUfoTimer = 99;
         comets.length = 0;
         cometTimer = 99;
+        rifts.length = 0;
+        riftTimer = 99;
         clearBossTimers();
-        const hunter = act === 2;
+        const kind = bossKinds[clamp(act - 1, 0, bossKinds.length - 1)];
+        const hunter = kind === "hunter";
+        const crystal = kind === "crystal";
+        const dreadnought = kind === "dreadnought";
         setBackdropForStage("boss");
-        const hp = hunter ? 190 + wave * 16 : 115 + wave * 18;
+        const hp = dreadnought ? 260 + wave * 18 : crystal ? 220 + wave * 17 : hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
           x: W / 2,
-          y: hunter ? -210 : -155,
-          targetY: hunter ? 220 : 230,
-          w: hunter ? 230 : 210,
-          h: hunter ? 220 : 190,
-          kind: hunter ? "hunter" : "octopus",
+          y: dreadnought ? -245 : hunter ? -210 : crystal ? -190 : -155,
+          targetY: dreadnought ? 190 : hunter ? 220 : crystal ? 210 : 230,
+          w: dreadnought ? 270 : hunter ? 230 : crystal ? 220 : 210,
+          h: dreadnought ? 210 : hunter ? 220 : crystal ? 210 : 190,
+          kind,
           hp,
           maxHp: hp,
           phase: 0,
-          cooldown: hunter ? 0.95 : 1.2,
+          cooldown: dreadnought ? 0.72 : crystal ? 0.82 : hunter ? 0.95 : 1.2,
           burst: 0,
           hurt: 0
         };
-        shake = hunter ? 30 : 22;
-        play(hunter ? 92 : 74, hunter ? 0.72 : 0.55, "sawtooth", hunter ? 0.095 : 0.08);
+        shake = dreadnought ? 38 : crystal ? 34 : hunter ? 30 : 22;
+        play(dreadnought ? 58 : crystal ? 128 : hunter ? 92 : 74, dreadnought ? 0.82 : hunter ? 0.72 : 0.55, "sawtooth", dreadnought ? 0.11 : hunter ? 0.095 : 0.08);
         updateHud();
       }
 
@@ -1523,6 +1558,8 @@
         bonusUfoTimer = 8;
         comets.length = 0;
         cometTimer = 12;
+        rifts.length = 0;
+        riftTimer = 16;
         bossDefeated = false;
         clearBossTimers();
         winScene.classList.remove("visible", "finale", "intermission");
@@ -1565,14 +1602,15 @@
         state = "gameover";
         comets.length = 0;
         bonusUfo = null;
+        rifts.length = 0;
         submitScore("END");
         overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
         overlay.classList.add("visible");
       }
 
-      function startSecondAct() {
-        act = 2;
+      function startNextAct() {
+        act += 1;
         wave += 1;
         alienRoundsCleared = 0;
         boss = null;
@@ -1580,6 +1618,8 @@
         bonusUfoTimer = 7;
         comets.length = 0;
         cometTimer = 10;
+        rifts.length = 0;
+        riftTimer = 12;
         bossDefeated = false;
         clearBossTimers();
         player.lives = 3;
@@ -1588,10 +1628,10 @@
         bullets.length = 0;
         enemyBullets.length = 0;
         enemies.length = 0;
-        score += 3000;
+        score += 3000 + act * 900;
         overlay.classList.remove("visible");
         winScene.classList.remove("visible", "finale", "intermission");
-        overlayText.textContent = "Akt 2. Nya alienvågor närmar sig.";
+        overlayText.textContent = `Akt ${act}. Nya arkadvågor öppnar sig i rymden.`;
         for (let i = 0; i < 14; i += 1) {
           setTimeout(() => {
             makeParticles(W * (0.18 + Math.random() * 0.64), H * (0.2 + Math.random() * 0.42), i % 2 ? "#5ed7ff" : "#ffd86b", 30);
@@ -1612,6 +1652,8 @@
         bonusUfoTimer = 99;
         comets.length = 0;
         cometTimer = 99;
+        rifts.length = 0;
+        riftTimer = 99;
         bossDefeated = false;
         clearBossTimers();
         enemies.length = 0;
@@ -1640,23 +1682,25 @@
         winScene.classList.remove("finale");
         winScene.classList.add("intermission");
         winTitle.textContent = "Grattis du vann";
-        winSubtitle.textContent = "Spelet fortsätter - det finns en boss till att besegra!";
+        winSubtitle.textContent = act < totalActs
+          ? `Spelet fortsätter - akt ${act + 1} väntar med en ny boss!`
+          : "Finalbossen är besegrad!";
         winScene.classList.add("visible");
         renderLeaderboard();
       }
 
-      function runBossClearEffects(x, y, hunter) {
-        const palette = hunter ? ["#9dff6b", "#ffd86b", "#ff5b78", "#5ed7ff"] : ["#b66cff", "#ffd86b", "#ff5b78", "#5ed7ff"];
+      function runBossClearEffects(x, y, kind) {
+        const palette = kind === "dreadnought" ? ["#ff8a36", "#ffd86b", "#ff5b78", "#5ed7ff"] : kind === "crystal" ? ["#5ed7ff", "#ffffff", "#9b6dff", "#ffd86b"] : kind === "hunter" ? ["#9dff6b", "#ffd86b", "#ff5b78", "#5ed7ff"] : ["#b66cff", "#ffd86b", "#ff5b78", "#5ed7ff"];
         let burst = 0;
         clearBossTimers();
-        makeParticles(x, y, palette[0], hunter ? 96 : 78);
-        explosionSound(hunter ? 1.5 : 1.25);
+        makeParticles(x, y, palette[0], kind === "dreadnought" ? 112 : kind === "hunter" ? 96 : 78);
+        explosionSound(kind === "dreadnought" ? 1.7 : kind === "hunter" ? 1.5 : 1.25);
         bossEffectTimer = setInterval(() => {
           const color = palette[burst % palette.length];
-          const px = x + (Math.random() - 0.5) * (hunter ? 220 : 190);
-          const py = y + (Math.random() - 0.5) * (hunter ? 180 : 155);
-          makeParticles(px, py, color, hunter ? 42 : 34);
-          if (burst % 2 === 0) explosionSound(hunter ? 0.75 : 0.58);
+          const px = x + (Math.random() - 0.5) * (kind === "dreadnought" ? 270 : kind === "hunter" ? 220 : 190);
+          const py = y + (Math.random() - 0.5) * (kind === "dreadnought" ? 190 : kind === "hunter" ? 180 : 155);
+          makeParticles(px, py, color, kind === "dreadnought" ? 48 : kind === "hunter" ? 42 : 34);
+          if (burst % 2 === 0) explosionSound(kind === "dreadnought" ? 0.82 : kind === "hunter" ? 0.75 : 0.58);
           burst += 1;
           if (burst >= 8) {
             clearInterval(bossEffectTimer);
@@ -1799,6 +1843,42 @@
         }
       }
 
+      function scheduleRift() {
+        riftTimer = 12 + Math.random() * 16;
+      }
+
+      function spawnRift(force = false) {
+        if (!force && (boss || state !== "playing" || !enemies.length || rifts.length)) return;
+        if (!force && Math.random() > 0.55) {
+          riftTimer = 10 + Math.random() * 14;
+          return;
+        }
+        rifts.push({
+          x: 88 + Math.random() * (W - 176),
+          y: 210 + Math.random() * (H - 430),
+          r: 34 + Math.random() * 10,
+          life: 5.2,
+          phase: Math.random() * Math.PI * 2
+        });
+        play(660, 0.12, "triangle", 0.035);
+        setTimeout(() => play(990, 0.14, "square", 0.022), 80);
+      }
+
+      function collectRift(index) {
+        const rift = rifts[index];
+        if (!rift) return;
+        rifts.splice(index, 1);
+        score += 1500 + act * 450;
+        player.shieldTime = Math.max(player.shieldTime, 1.8);
+        player.invuln = Math.max(player.invuln, 1.2);
+        enemyBullets.length = 0;
+        makeParticles(rift.x, rift.y, "#5ed7ff", 46);
+        makeParticles(player.x, player.y, "#9b6dff", 30);
+        shake = Math.max(shake, 12);
+        play(880, 0.12, "triangle", 0.046);
+        setTimeout(() => play(1320, 0.16, "square", 0.03), 90);
+      }
+
       function shoot() {
         if (player.cooldown > 0 || state !== "playing") return;
         bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4 });
@@ -1840,8 +1920,8 @@
           sx: enemy.x,
           sy: enemy.y,
           side: Math.random() > 0.5 ? 1 : -1,
-          amp: (act === 2 ? 120 : 80) + Math.random() * (act === 2 ? 120 : 90),
-          freq: act === 2 ? 6.5 + Math.random() * 2.8 : 5.2
+          amp: (act >= 2 ? 110 + act * 18 : 80) + Math.random() * (act >= 2 ? 100 + act * 14 : 90),
+          freq: act >= 2 ? 5.8 + act * 0.45 + Math.random() * 2.8 : 5.2
         };
         enemyShoot(enemy);
       }
@@ -1861,35 +1941,37 @@
       function bossShoot() {
         if (!boss) return;
         const hunter = boss.kind === "hunter";
-        const count = hunter ? (boss.hp < boss.maxHp * 0.45 ? 11 : 8) : (boss.hp < boss.maxHp * 0.45 ? 9 : 7);
+        const crystal = boss.kind === "crystal";
+        const dreadnought = boss.kind === "dreadnought";
+        const count = dreadnought ? 12 : crystal ? 10 : hunter ? (boss.hp < boss.maxHp * 0.45 ? 11 : 8) : (boss.hp < boss.maxHp * 0.45 ? 9 : 7);
         for (let i = 0; i < count; i += 1) {
-          const spread = (i - (count - 1) / 2) * (hunter ? 0.14 : 0.18);
+          const spread = (i - (count - 1) / 2) * (dreadnought ? 0.11 : crystal ? 0.24 : hunter ? 0.14 : 0.18);
           const dx = player.x - boss.x;
           const dy = player.y - boss.y;
-          const base = Math.atan2(dy, dx) + spread + Math.sin(boss.phase + i) * (hunter ? 0.08 : 0.05);
-          const speed = (hunter ? 235 : 205) + wave * 18 + Math.random() * (hunter ? 70 : 40);
+          const base = (crystal ? boss.phase * 0.8 + i * Math.PI * 0.2 : Math.atan2(dy, dx)) + spread + Math.sin(boss.phase + i) * (hunter || dreadnought ? 0.08 : 0.05);
+          const speed = (dreadnought ? 255 : crystal ? 215 : hunter ? 235 : 205) + wave * 18 + Math.random() * (hunter || dreadnought ? 70 : 40);
           enemyBullets.push({
-            x: boss.x + Math.sin(boss.phase + i) * (hunter ? 92 : 74),
-            y: boss.y + (hunter ? 34 : 48) + Math.cos(boss.phase * 1.3 + i) * (hunter ? 26 : 18),
+            x: boss.x + Math.sin(boss.phase + i) * (dreadnought ? 118 : hunter ? 92 : crystal ? 82 : 74),
+            y: boss.y + (dreadnought ? 22 : hunter ? 34 : 48) + Math.cos(boss.phase * 1.3 + i) * (dreadnought ? 16 : hunter ? 26 : 18),
             vx: Math.cos(base) * speed,
             vy: Math.sin(base) * speed,
-            r: hunter ? 7 : 6
+            r: dreadnought ? 7 : hunter ? 7 : 6
           });
         }
-        if (hunter && boss.hp < boss.maxHp * 0.7) {
+        if ((hunter || dreadnought) && boss.hp < boss.maxHp * 0.7) {
           for (let i = 0; i < 10; i += 1) {
             const a = boss.phase + i * Math.PI * 0.2;
             const speed = 190 + Math.sin(boss.phase + i) * 34;
             enemyBullets.push({
-              x: boss.x + Math.cos(a) * 38,
-              y: boss.y + 18 + Math.sin(a) * 22,
+              x: boss.x + Math.cos(a) * (dreadnought ? 72 : 38),
+              y: boss.y + 18 + Math.sin(a) * (dreadnought ? 30 : 22),
               vx: Math.cos(a) * speed,
               vy: Math.sin(a) * speed + 72,
               r: 5
             });
           }
         }
-        play(hunter ? 110 : 150, hunter ? 0.22 : 0.18, "sawtooth", hunter ? 0.055 : 0.045);
+        play(dreadnought ? 82 : crystal ? 440 : hunter ? 110 : 150, dreadnought ? 0.26 : hunter ? 0.22 : 0.18, "sawtooth", dreadnought ? 0.065 : hunter ? 0.055 : 0.045);
       }
 
       function defeatBoss() {
@@ -1897,19 +1979,20 @@
         bossDefeated = true;
         const bx = boss.x;
         const by = boss.y;
-        const hunter = boss.kind === "hunter";
+        const kind = boss.kind;
+        const finale = act >= totalActs;
         boss = null;
         state = "transition";
         bullets.length = 0;
         enemyBullets.length = 0;
-        runBossClearEffects(bx, by, hunter);
-        shake = hunter ? 42 : 34;
-        if (!hunter) showBossClearScene();
+        runBossClearEffects(bx, by, kind);
+        shake = kind === "dreadnought" ? 50 : kind === "hunter" ? 42 : 34;
+        if (!finale) showBossClearScene();
         bossTransitionTimer = setTimeout(() => {
           bossTransitionTimer = null;
-          if (hunter) winGame(true);
-          else startSecondAct();
-        }, hunter ? 760 : 720);
+          if (finale) winGame(true);
+          else startNextAct();
+        }, finale ? 820 : 760);
       }
 
       function damagePlayer() {
@@ -1989,6 +2072,10 @@
           comet.phase += comet.spin * dt;
           comet.vy += 12 * dt;
         });
+        rifts.forEach((rift) => {
+          rift.life -= dt;
+          rift.phase += dt * 2.2;
+        });
 
         if (!boss && !bonusUfo && enemies.length) {
           bonusUfoTimer -= dt;
@@ -1997,6 +2084,10 @@
         if (!boss && enemies.length && comets.length < 1) {
           cometTimer -= dt;
           if (cometTimer <= 0) spawnComet();
+        }
+        if (!boss && enemies.length && !rifts.length) {
+          riftTimer -= dt;
+          if (riftTimer <= 0) spawnRift();
         }
 
         if (bonusUfo) {
@@ -2034,12 +2125,18 @@
           if (boss.kind === "hunter") {
             boss.x = W / 2 + Math.sin(boss.phase * 0.9) * 142 + Math.sin(boss.phase * 2.7) * 34;
             boss.targetY = 214 + Math.sin(boss.phase * 1.35) * 22;
+          } else if (boss.kind === "crystal") {
+            boss.x = W / 2 + Math.sin(boss.phase * 1.15) * 150;
+            boss.targetY = 205 + Math.sin(boss.phase * 2.1) * 34;
+          } else if (boss.kind === "dreadnought") {
+            boss.x = W / 2 + Math.sin(boss.phase * 0.55) * 92 + Math.sin(boss.phase * 1.7) * 42;
+            boss.targetY = 182 + Math.sin(boss.phase * 0.9) * 18;
           } else {
             boss.x = W / 2 + Math.sin(boss.phase * 0.72) * 116 + Math.sin(boss.phase * 1.9) * 24;
           }
           if (boss.cooldown <= 0) {
             bossShoot();
-            boss.cooldown = boss.kind === "hunter" ? (boss.hp < boss.maxHp * 0.45 ? 0.58 : 0.86) : (boss.hp < boss.maxHp * 0.45 ? 0.85 : 1.2);
+            boss.cooldown = boss.kind === "dreadnought" ? (boss.hp < boss.maxHp * 0.45 ? 0.46 : 0.68) : boss.kind === "crystal" ? (boss.hp < boss.maxHp * 0.45 ? 0.5 : 0.76) : boss.kind === "hunter" ? (boss.hp < boss.maxHp * 0.45 ? 0.58 : 0.86) : (boss.hp < boss.maxHp * 0.45 ? 0.85 : 1.2);
           }
         }
         enemies.forEach((enemy) => {
@@ -2049,8 +2146,8 @@
           if (enemy.dive) {
             enemy.dive.t += dt;
             const t = enemy.dive.t;
-            enemy.x = enemy.dive.sx + Math.sin(t * enemy.dive.freq) * enemy.dive.amp * enemy.dive.side + (act === 2 ? Math.sin(t * 13) * 18 : 0);
-            enemy.y = enemy.dive.sy + t * (act === 2 ? 360 + wave * 28 : 310 + wave * 24);
+            enemy.x = enemy.dive.sx + Math.sin(t * enemy.dive.freq) * enemy.dive.amp * enemy.dive.side + (act >= 2 ? Math.sin(t * (11 + act)) * (12 + act * 4) : 0);
+            enemy.y = enemy.dive.sy + t * (act >= 2 ? 340 + act * 28 + wave * 28 : 310 + wave * 24);
             if (enemy.y > H + 60) {
               enemy.dive = null;
               enemy.x = enemy.homeX;
@@ -2058,8 +2155,8 @@
             }
           } else {
             const target = formationTarget(enemy, nowSec);
-            enemy.x += (target.x - enemy.x) * Math.min(1, dt * (act === 2 ? 3.7 : 3.4));
-            enemy.y += (target.y - enemy.y) * Math.min(1, dt * (act === 2 ? 3.3 : 3));
+            enemy.x += (target.x - enemy.x) * Math.min(1, dt * (3.25 + act * 0.25));
+            enemy.y += (target.y - enemy.y) * Math.min(1, dt * (2.85 + act * 0.22));
           }
 
           if (enemy.cooldown <= 0 && enemy.y > 90 && Math.random() < 0.48) {
@@ -2071,12 +2168,12 @@
         for (let i = bullets.length - 1; i >= 0; i -= 1) {
           const b = bullets[i];
           let consumed = b.y < -20;
-          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "hunter" ? 122 : 104, ry: boss.kind === "hunter" ? 108 : 92 })) {
+          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "dreadnought" ? 142 : boss.kind === "hunter" ? 122 : boss.kind === "crystal" ? 112 : 104, ry: boss.kind === "dreadnought" ? 96 : boss.kind === "hunter" ? 108 : boss.kind === "crystal" ? 104 : 92 })) {
             consumed = true;
             boss.hp -= 1;
             boss.hurt = 0.12;
             score += 20;
-            makeParticles(b.x, b.y, boss.kind === "hunter" ? "#9dff6b" : "#b66cff", 5);
+            makeParticles(b.x, b.y, boss.kind === "dreadnought" ? "#ff8a36" : boss.kind === "hunter" ? "#9dff6b" : boss.kind === "crystal" ? "#5ed7ff" : "#b66cff", 5);
             if (boss.hp % 17 === 0) {
               shake = Math.max(shake, 8);
               explosionSound(0.55);
@@ -2120,6 +2217,16 @@
         }
 
         const playerRect = { x: player.x, y: player.y, w: player.w, h: player.h };
+        for (let i = rifts.length - 1; i >= 0; i -= 1) {
+          const rift = rifts[i];
+          if (rift.life <= 0) {
+            rifts.splice(i, 1);
+            scheduleRift();
+          } else if (Math.hypot(player.x - rift.x, player.y - rift.y) < rift.r + 18) {
+            collectRift(i);
+            scheduleRift();
+          }
+        }
         for (let i = comets.length - 1; i >= 0; i -= 1) {
           const comet = comets[i];
           if (comet.x < -140 || comet.x > W + 140 || comet.y < -140 || comet.y > H + 160) {
@@ -2152,9 +2259,13 @@
         }
 
         if (boss) {
-          const bodyHit = boss.kind === "hunter"
-            ? Math.abs(player.x - boss.x) < 102 && Math.abs(player.y - boss.y) < 88
-            : Math.abs(player.x - boss.x) < 88 && Math.abs(player.y - boss.y) < 72;
+          const bodyHit = boss.kind === "dreadnought"
+            ? Math.abs(player.x - boss.x) < 128 && Math.abs(player.y - boss.y) < 78
+            : boss.kind === "crystal"
+              ? Math.abs(player.x - boss.x) < 96 && Math.abs(player.y - boss.y) < 86
+              : boss.kind === "hunter"
+                ? Math.abs(player.x - boss.x) < 102 && Math.abs(player.y - boss.y) < 88
+                : Math.abs(player.x - boss.x) < 88 && Math.abs(player.y - boss.y) < 72;
           let tentacleHit = false;
           for (let i = -3; i <= 3; i += 1) {
             const tx = boss.x + i * (boss.kind === "hunter" ? 34 : 31) + Math.sin(boss.phase * 2.4 + i) * (boss.kind === "hunter" ? 26 : 34);
@@ -2295,10 +2406,58 @@
         drawPoly(bossEyeShape, comet.x + comet.size * 0.2, comet.y + comet.size * 0.08, comet.size * 0.3, comet.size * 0.22, comet.phase * 0.34, rgba(colors.red, 0.56));
       }
 
+      function drawRift(rift) {
+        const pulse = 1 + Math.sin(rift.phase * 3) * 0.08;
+        drawPoly(shieldShape, rift.x, rift.y, rift.r * pulse, rift.r * 0.62 * pulse, rift.phase, rgba(colors.violet, 0.22), gl.LINE_LOOP);
+        drawPoly(shieldShape, rift.x, rift.y, rift.r * 0.72, rift.r * 0.44, -rift.phase * 1.4, rgba(colors.cyan, 0.38), gl.LINE_LOOP);
+        drawPoly(bossEyeShape, rift.x, rift.y, rift.r * 0.44, rift.r * 0.24, rift.phase * 0.7, rgba(colors.white, 0.24));
+      }
+
       function drawBoss() {
         if (!boss) return;
         const t = boss.phase;
         const hurtFlash = boss.hurt > 0 ? 0.26 : 0;
+        if (boss.kind === "crystal") {
+          const core = [0.18 + hurtFlash, 0.64 + hurtFlash * 0.4, 0.92 + hurtFlash * 0.2];
+          for (let i = 0; i < 8; i += 1) {
+            const a = t * 0.7 + i * Math.PI * 0.25;
+            const px = boss.x + Math.cos(a) * 72;
+            const py = boss.y + Math.sin(a) * 48;
+            drawPoly(hunterBladeShape, px, py, 18, 58, a + Math.PI / 2, rgba(i % 2 ? colors.violet : colors.cyan, 0.72));
+            drawPoly(lineShape, boss.x, boss.y, Math.hypot(px - boss.x, py - boss.y) / 2, 1.2, a, rgba(colors.white, 0.14), gl.LINES);
+          }
+          drawPoly(bossMantleShape, boss.x, boss.y, 92, 92, t * 0.18, rgba(core, 0.92));
+          drawPoly(hunterMaskShape, boss.x, boss.y, 66, 80, -t * 0.24, rgba(colors.space, 0.36));
+          drawPoly(bossEyeShape, boss.x - 25, boss.y - 11, 22, 10, -0.1, rgba(colors.white, 0.82));
+          drawPoly(bossEyeShape, boss.x + 25, boss.y - 11, 22, 10, 0.1, rgba(colors.white, 0.82));
+          drawPoly(bossBeakShape, boss.x, boss.y + 25, 26, 34, Math.sin(t * 2) * 0.08, rgba(colors.violet, 0.72));
+          const barW = 292;
+          const hp = clamp(boss.hp / boss.maxHp, 0, 1);
+          drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 68, (barW * hp) / 2, 4, 0, rgba(colors.cyan, 0.95), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 64, (barW * hp) / 2, 1.3, 0, rgba(colors.white, 0.55), gl.LINES);
+          return;
+        }
+        if (boss.kind === "dreadnought") {
+          const hull = [0.18 + hurtFlash, 0.17 + hurtFlash * 0.25, 0.22 + hurtFlash * 0.2];
+          const ember = colors.orange;
+          drawPoly(hunterMaskShape, boss.x, boss.y, 138, 92, Math.sin(t * 0.8) * 0.025, rgba(hull, 0.98));
+          drawPoly(hunterMaskShape, boss.x, boss.y + 18, 108, 54, -Math.sin(t) * 0.018, rgba(colors.space, 0.42));
+          for (let i = -4; i <= 4; i += 1) {
+            drawPoly(hunterBladeShape, boss.x + i * 29, boss.y + 60 + Math.abs(i) * 4, 11, 42, i * 0.06, rgba(colors.white, 0.32));
+            drawPoly(bossEyeShape, boss.x + i * 25, boss.y - 6 + Math.sin(t * 2 + i) * 4, 7, 5, 0, rgba(i % 2 ? colors.red : ember, 0.78));
+          }
+          drawPoly(lineShape, boss.x - 72, boss.y - 40, 38, 2.4, -0.04, rgba(colors.gold, 0.72), gl.LINES);
+          drawPoly(lineShape, boss.x + 72, boss.y - 40, 38, 2.4, 0.04, rgba(colors.gold, 0.72), gl.LINES);
+          drawPoly(bossEyeShape, boss.x, boss.y - 20, 28, 18, 0, rgba(colors.red, 0.88));
+          drawPoly(bossEyeShape, boss.x - 6, boss.y - 24, 8, 5, 0, rgba(colors.white, 0.72));
+          const barW = 330;
+          const hp = clamp(boss.hp / boss.maxHp, 0, 1);
+          drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 68, (barW * hp) / 2, 4, 0, rgba(colors.orange, 0.95), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 64, (barW * hp) / 2, 1.3, 0, rgba(colors.white, 0.55), gl.LINES);
+          return;
+        }
         if (boss.kind === "hunter") {
           const armor = [0.12 + hurtFlash * 0.9, 0.17 + hurtFlash * 0.25, 0.15];
           const bone = [0.62 + hurtFlash, 0.68 + hurtFlash * 0.4, 0.54];
@@ -2436,8 +2595,19 @@
           pushPoint(glowPoints, comet.x, comet.y, comet.size * 4.8, colors.orange, 0.36);
           pushPoint(glowPoints, comet.x, comet.y, comet.size * 2.4, colors.gold, 0.28);
         });
+        rifts.forEach((rift) => {
+          const pulse = 0.75 + Math.sin(rift.phase * 4) * 0.25;
+          pushPoint(glowPoints, rift.x, rift.y, rift.r * 3.2, colors.violet, 0.26 * pulse);
+          pushPoint(glowPoints, rift.x, rift.y, rift.r * 2.1, colors.cyan, 0.2);
+        });
         if (boss) {
-          if (boss.kind === "hunter") {
+          if (boss.kind === "dreadnought") {
+            pushPoint(glowPoints, boss.x, boss.y - 8, 310, colors.orange, 0.5);
+            pushPoint(glowPoints, boss.x, boss.y - 28, 150, colors.red, 0.34);
+          } else if (boss.kind === "crystal") {
+            pushPoint(glowPoints, boss.x, boss.y, 285, colors.cyan, 0.46);
+            pushPoint(glowPoints, boss.x, boss.y, 140, colors.violet, 0.34);
+          } else if (boss.kind === "hunter") {
             pushPoint(glowPoints, boss.x, boss.y - 8, 270, colors.toxic, 0.48);
             pushPoint(glowPoints, boss.x, boss.y - 34, 120, colors.red, 0.34);
           } else {
@@ -2470,6 +2640,7 @@
         drawBoss();
         drawBonusUfo();
         comets.forEach(drawComet);
+        rifts.forEach(drawRift);
         enemies.forEach(drawEnemy);
         drawPlayer();
 
