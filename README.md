@@ -2,12 +2,13 @@
 
 A standalone WebGL arcade game in a single HTML file.
 
-The first boss arrives after three alien waves. Defeating it starts act 2 with three new lives, a shield pulse, sine-wave formations, and a second space hunter boss. The finale features the Toblerone victory screen.
+Each act contains three alien waves followed by a boss. The four acts are Iceworld Alpha Centauri, Vulcan Orion, Pulsar Andromeda, and Obsidian Event Horizon. After the second boss, Selene Canyon Run adds a lunar flight stage with wall collisions before act 3 begins. The finale features the Toblerone victory screen.
 
 ## Contents
 
 - `index.html` - the complete game: HTML, CSS, WebGL rendering, game logic, and Web Audio sound.
 - `package.json` - simple local launch commands.
+- `varldsrymden-anfaller/assets/backdrops/` - sixteen cinematic wave and boss backgrounds plus the long generated Selene Canyon Run environment.
 
 ## Run locally
 
