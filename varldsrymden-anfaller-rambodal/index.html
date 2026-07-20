@@ -763,7 +763,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.3 · uppladdad 2026-07-20 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.4 · uppladdad 2026-07-20 CEST</div>
   </main>
 
   <script>
@@ -1412,7 +1412,9 @@
         return pts;
       }
 
-      const playerShape = [0, -1, 0.78, 0.58, 0.2, 0.36, 0, 0.86, -0.2, 0.36, -0.78, 0.58];
+      const falconDiscShape = makeBlob(40, 0.025);
+      const falconMandibleShape = [0, 0, -0.72, 0.94, 0.72, 0.94, 0.58, -0.58, 0.3, -1, -0.3, -1, -0.58, -0.58, -0.72, 0.94];
+      const falconCockpitArmShape = [0, 0, -0.28, 0.9, 0.28, 0.9, 0.18, -0.72, 0.42, -1, -0.08, -1, -0.18, -0.72, -0.28, 0.9];
       const canopyShape = [0, -1, 0.42, 0.48, -0.42, 0.48];
       const alienHeadShape = [0, -1.1, 0.52, -0.92, 0.86, -0.48, 0.74, 0.08, 0.36, 0.42, 0.16, 0.92, 0, 1.04, -0.16, 0.92, -0.36, 0.42, -0.74, 0.08, -0.86, -0.48, -0.52, -0.92];
       const alienJawShape = [-0.72, 0.06, -0.42, 0.44, -0.2, 0.78, -0.34, 0.14, 0, 0.36, 0.34, 0.14, 0.2, 0.78, 0.42, 0.44, 0.72, 0.06, 0.28, 0.94, 0, 1.16, -0.28, 0.94];
@@ -2576,18 +2578,43 @@
             drawPoly(bossEyeShape, player.x + Math.cos(a) * 61, player.y + Math.sin(a) * 61, 3.5, 3.5, 0, rgba(colors.white, 0.82));
           }
         }
-        drawPoly(playerShape, player.x, player.y + 5, 49, 51, 0, rgba(colors.cyanDeep, 0.72));
-        drawPoly(playerShape, player.x, player.y, 43, 47, 0, rgba(colors.cyan, 0.96));
-        drawPoly(playerShape, player.x, player.y + 2, 31, 36, 0, rgba(colors.white, 0.5), gl.LINE_LOOP);
-        drawPoly(canopyShape, player.x, player.y - 7, 18, 24, 0, rgba(colors.white, 0.78));
-        drawPoly(canopyShape, player.x - 3, player.y - 10, 9, 13, 0, rgba(colors.cyan, 0.62));
-        drawPoly(hunterBladeShape, player.x - 30, player.y + 11, 7, 23, -0.72, rgba(colors.gold, 0.68));
-        drawPoly(hunterBladeShape, player.x + 30, player.y + 11, 7, 23, 0.72, rgba(colors.gold, 0.68));
-        drawPoly(lineShape, player.x - 14, player.y + 15, 16, 1, -0.55, rgba(colors.white, 0.34), gl.LINES);
-        drawPoly(lineShape, player.x + 14, player.y + 15, 16, 1, 0.55, rgba(colors.white, 0.34), gl.LINES);
-        drawPoly(boltShape, player.x - 14, player.y + 34, 9, 18 + Math.sin(t * 18) * 4, 0, rgba(colors.gold, 0.86));
-        drawPoly(boltShape, player.x + 14, player.y + 34, 9, 18 + Math.cos(t * 16) * 4, 0, rgba(colors.orange, 0.78));
-        drawPoly(boltShape, player.x, player.y + 31, 4, 25 + Math.sin(t * 22) * 5, 0, rgba(colors.white, 0.88));
+        const hull = [0.48, 0.57, 0.62];
+        const hullLight = [0.72, 0.79, 0.82];
+        const panel = [0.19, 0.25, 0.29];
+
+        drawPoly(falconMandibleShape, player.x - 16, player.y - 20, 15, 34, -0.035, rgba(colors.space, 0.92));
+        drawPoly(falconMandibleShape, player.x + 16, player.y - 20, 15, 34, 0.035, rgba(colors.space, 0.92));
+        drawPoly(falconDiscShape, player.x, player.y + 5, 52, 42, 0, rgba(colors.space, 0.88));
+        drawPoly(falconCockpitArmShape, player.x + 36, player.y - 2, 12, 27, 0.2, rgba(colors.space, 0.9));
+
+        drawPoly(falconMandibleShape, player.x - 16, player.y - 21, 12, 32, -0.035, rgba(hull, 0.98));
+        drawPoly(falconMandibleShape, player.x + 16, player.y - 21, 12, 32, 0.035, rgba(hull, 0.98));
+        drawPoly(falconDiscShape, player.x, player.y + 4, 48, 38, 0, rgba(hull, 0.98));
+        drawPoly(falconDiscShape, player.x - 2, player.y + 1, 39, 30, 0.02, rgba(panel, 0.36));
+        drawPoly(falconDiscShape, player.x - 5, player.y - 3, 23, 18, -0.06, rgba(hullLight, 0.42));
+
+        drawPoly(falconCockpitArmShape, player.x + 35, player.y - 3, 9, 25, 0.2, rgba(hull, 0.98));
+        drawPoly(bossEyeShape, player.x + 42, player.y - 12, 8, 13, 0.2, rgba(hullLight, 0.92));
+        drawPoly(bossEyeShape, player.x + 44, player.y - 15, 4, 7, 0.2, rgba(colors.cyanDeep, 0.94));
+
+        drawPoly(boltShape, player.x, player.y - 43, 6, 21, 0, rgba(colors.space, 0.94));
+        drawPoly(lineShape, player.x - 16, player.y - 23, 24, 1, Math.PI / 2 - 0.03, rgba(hullLight, 0.44), gl.LINES);
+        drawPoly(lineShape, player.x + 16, player.y - 23, 24, 1, Math.PI / 2 + 0.03, rgba(hullLight, 0.44), gl.LINES);
+
+        drawPoly(ringShape, player.x - 12, player.y - 1, 10, 7, t * 0.08, rgba(hullLight, 0.68), gl.LINE_LOOP);
+        drawPoly(lineShape, player.x - 8, player.y - 8, 12, 1, -0.6, rgba(hullLight, 0.72), gl.LINES);
+        drawPoly(bossEyeShape, player.x - 15, player.y - 3, 3, 3, 0, rgba(colors.gold, 0.76));
+
+        for (let i = -2; i <= 2; i += 1) {
+          drawPoly(lineShape, player.x + i * 13, player.y + 10 + Math.abs(i) * 3, 9, 1, i * 0.34, rgba(hullLight, 0.32), gl.LINES);
+          drawPoly(bossEyeShape, player.x + i * 15, player.y + 18, 2.5, 2.5, 0, rgba(i % 2 ? colors.red : colors.gold, 0.62));
+        }
+
+        drawPoly(lineShape, player.x, player.y + 36, 34, 3, 0, rgba(colors.cyan, 0.92), gl.LINES);
+        drawPoly(lineShape, player.x, player.y + 39, 31, 1.4, 0, rgba(colors.white, 0.82), gl.LINES);
+        drawPoly(boltShape, player.x - 18, player.y + 43, 7, 15 + Math.sin(t * 18) * 3, 0, rgba(colors.cyan, 0.34));
+        drawPoly(boltShape, player.x, player.y + 44, 8, 18 + Math.sin(t * 20) * 3, 0, rgba(colors.white, 0.42));
+        drawPoly(boltShape, player.x + 18, player.y + 43, 7, 15 + Math.cos(t * 17) * 3, 0, rgba(colors.cyan, 0.34));
       }
 
       function drawEnemy(enemy) {
