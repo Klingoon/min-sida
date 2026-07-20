@@ -763,7 +763,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.2 · uppladdad 2026-07-20 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.3 · uppladdad 2026-07-20 CEST</div>
   </main>
 
   <script>
@@ -1056,58 +1056,68 @@
         melodyTimer = null;
       }
 
-      function melodyNote(freq, when, length, gain = 0.022, type = "square") {
+      function melodyNote(freq, when, length, gain = 0.022, type = "square", slide = 1) {
         if (muted || !audioCtx) return;
         gain *= musicGain;
         const osc = audioCtx.createOscillator();
-        const sub = audioCtx.createOscillator();
+        const edge = audioCtx.createOscillator();
         const amp = audioCtx.createGain();
-        const subAmp = audioCtx.createGain();
+        const edgeAmp = audioCtx.createGain();
         const filter = audioCtx.createBiquadFilter();
         osc.type = type;
-        osc.frequency.value = freq;
-        sub.type = "triangle";
-        sub.frequency.value = freq * 0.5;
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(freq * 2.4, when);
-        filter.frequency.exponentialRampToValueAtTime(Math.max(650, freq * 1.1), when + length);
-        filter.Q.value = 7;
+        osc.frequency.setValueAtTime(freq, when);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(36, freq * slide), when + length);
+        edge.type = type === "square" ? "sawtooth" : "square";
+        edge.frequency.setValueAtTime(freq * 2.005, when);
+        edge.frequency.exponentialRampToValueAtTime(Math.max(72, freq * 2.005 * slide), when + length);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(Math.min(5200, Math.max(900, freq * 5.2)), when);
+        filter.frequency.exponentialRampToValueAtTime(Math.max(520, freq * 1.45), when + length);
+        filter.Q.value = 3.8;
         amp.gain.setValueAtTime(0.0001, when);
-        amp.gain.linearRampToValueAtTime(gain, when + 0.006);
+        amp.gain.linearRampToValueAtTime(gain, when + 0.004);
+        amp.gain.setValueAtTime(gain * 0.82, when + Math.min(0.035, length * 0.3));
         amp.gain.exponentialRampToValueAtTime(0.0001, when + length);
-        subAmp.gain.setValueAtTime(gain * 0.14, when);
-        subAmp.gain.exponentialRampToValueAtTime(0.0001, when + length * 0.65);
+        edgeAmp.gain.setValueAtTime(gain * 0.12, when);
+        edgeAmp.gain.exponentialRampToValueAtTime(0.0001, when + length * 0.72);
         osc.connect(filter).connect(amp).connect(audioCtx.destination);
-        sub.connect(subAmp).connect(audioCtx.destination);
+        edge.connect(edgeAmp).connect(audioCtx.destination);
         osc.start(when);
-        sub.start(when);
+        edge.start(when);
         osc.stop(when + length + 0.03);
-        sub.stop(when + length + 0.03);
+        edge.stop(when + length + 0.03);
       }
 
       function chipDrum(kind, when) {
         if (muted || !audioCtx) return;
         const amp = audioCtx.createGain();
         const filter = audioCtx.createBiquadFilter();
-        amp.gain.setValueAtTime((kind === "kick" ? 0.05 : 0.024) * musicGain, when);
-        amp.gain.exponentialRampToValueAtTime(0.0001, when + (kind === "kick" ? 0.11 : 0.045));
-        if (kind === "hat") {
-          const length = Math.floor(audioCtx.sampleRate * 0.04);
+        const peak = kind === "kick" ? 0.058 : kind === "snare" ? 0.032 : 0.018;
+        const decay = kind === "kick" ? 0.12 : kind === "snare" ? 0.085 : 0.032;
+        amp.gain.setValueAtTime(peak * musicGain, when);
+        amp.gain.exponentialRampToValueAtTime(0.0001, when + decay);
+        if (kind !== "kick") {
+          const length = Math.floor(audioCtx.sampleRate * decay);
           const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
           const data = buffer.getChannelData(0);
-          for (let i = 0; i < length; i += 1) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+          let held = 0;
+          for (let i = 0; i < length; i += 1) {
+            if (i % (kind === "snare" ? 4 : 2) === 0) held = Math.random() * 2 - 1;
+            data[i] = held * Math.pow(1 - i / length, kind === "snare" ? 1.5 : 2.4);
+          }
           const noise = audioCtx.createBufferSource();
           noise.buffer = buffer;
-          filter.type = "highpass";
-          filter.frequency.value = 5200;
+          filter.type = kind === "snare" ? "bandpass" : "highpass";
+          filter.frequency.value = kind === "snare" ? 1900 : 5800;
+          filter.Q.value = kind === "snare" ? 0.8 : 1.2;
           noise.connect(filter).connect(amp).connect(audioCtx.destination);
           noise.start(when);
           return;
         }
         const osc = audioCtx.createOscillator();
-        osc.type = kind === "snare" ? "triangle" : "square";
-        osc.frequency.setValueAtTime(kind === "snare" ? 180 : 92, when);
-        osc.frequency.exponentialRampToValueAtTime(kind === "snare" ? 95 : 42, when + 0.09);
+        osc.type = "square";
+        osc.frequency.setValueAtTime(118, when);
+        osc.frequency.exponentialRampToValueAtTime(42, when + 0.1);
         osc.connect(amp).connect(audioCtx.destination);
         osc.start(when);
         osc.stop(when + 0.13);
@@ -1115,25 +1125,23 @@
 
       function startMelody() {
         if (melodyTimer || muted || !audioCtx) return;
-        const lead = [659.25, 783.99, 987.77, 1174.66, 987.77, 880, 783.99, 659.25, 587.33, 659.25, 783.99, 880, 987.77, 1174.66, 1318.51, 987.77, 880, 987.77, 1174.66, 1567.98, 1318.51, 1174.66, 987.77, 783.99, 659.25, 783.99, 987.77, 880, 783.99, 659.25, 587.33, 523.25];
-        const counter = [0, 1318.51, 0, 1174.66, 0, 987.77, 0, 1567.98, 0, 1174.66, 0, 987.77, 0, 880, 0, 1318.51];
-        const arp = [329.63, 392, 493.88, 659.25, 493.88, 392, 329.63, 392, 369.99, 440, 554.37, 739.99, 554.37, 440, 369.99, 440];
-        const bass = [164.81, 164.81, 196, 196, 220, 220, 246.94, 246.94, 220, 220, 196, 196, 174.61, 174.61, 196, 246.94];
+        const lead = [659.25, 0, 783.99, 880, 987.77, 0, 880, 783.99, 659.25, 0, 587.33, 659.25, 783.99, 0, 987.77, 1174.66, 1318.51, 0, 1174.66, 987.77, 880, 0, 783.99, 659.25, 587.33, 0, 659.25, 783.99, 880, 783.99, 659.25, 0];
+        const bossLead = [329.63, 0, 329.63, 392, 466.16, 0, 440, 349.23, 311.13, 0, 311.13, 369.99, 440, 0, 523.25, 493.88];
+        const arp = [329.63, 392, 493.88, 659.25, 392, 493.88, 659.25, 783.99, 293.66, 369.99, 440, 587.33, 369.99, 440, 587.33, 739.99];
+        const bass = [82.41, 82.41, 98, 98, 110, 110, 123.47, 123.47, 73.42, 73.42, 92.5, 92.5, 98, 98, 82.41, 123.47];
         melodyTimer = setInterval(() => {
-          const now = audioCtx.currentTime + 0.025;
-          const note = lead[melodyStep % lead.length];
-          const chip = melodyStep % 8 < 4 ? "square" : "triangle";
-          if (note) melodyNote(note, now, 0.095, 0.029, chip);
-          const high = counter[melodyStep % counter.length];
-          if (high) melodyNote(high, now + 0.028, 0.052, 0.011, "square");
-          melodyNote(arp[melodyStep % arp.length], now + 0.055, 0.055, 0.012, "square");
-          if (melodyStep % 2 === 0) melodyNote(bass[(melodyStep / 2) % bass.length], now, 0.12, 0.026, "square");
-          if (melodyStep % 4 === 0) chipDrum("kick", now);
-          if (melodyStep % 8 === 4) chipDrum("snare", now + 0.01);
-          if (melodyStep % 2 === 1) chipDrum("hat", now + 0.02);
-          if (melodyStep % 16 === 14) melodyNote(1760, now + 0.035, 0.075, 0.021, "square");
+          const now = audioCtx.currentTime + 0.022;
+          const phrase = boss ? bossLead : lead;
+          const note = phrase[melodyStep % phrase.length];
+          if (note) melodyNote(note, now, boss ? 0.105 : 0.085, boss ? 0.023 : 0.027, melodyStep % 8 < 6 ? "square" : "sawtooth", boss ? 0.985 : 1);
+          if (melodyStep % 2 === 1) melodyNote(arp[melodyStep % arp.length], now + 0.016, 0.048, boss ? 0.007 : 0.01, "square");
+          if (melodyStep % 2 === 0) melodyNote(bass[(melodyStep / 2) % bass.length], now, 0.105, boss ? 0.032 : 0.026, "square", boss ? 0.97 : 1);
+          if (melodyStep % 8 === 0 || melodyStep % 8 === 5) chipDrum("kick", now);
+          if (melodyStep % 8 === 4) chipDrum("snare", now + 0.008);
+          if (melodyStep % 2 === 1) chipDrum("hat", now + 0.014);
+          if (!boss && melodyStep % 32 === 30) melodyNote(1567.98, now, 0.09, 0.016, "square", 0.5);
           melodyStep += 1;
-        }, 104);
+        }, 118);
       }
 
       function fanfareNote(freq, when, length, gain = 0.05) {
@@ -1192,22 +1200,24 @@
       }
 
       function laserSound() {
-        const base = 980 + Math.random() * 220;
-        play(base, 0.09, "sawtooth", 0.038);
-        play(base * 0.5, 0.13, "square", 0.018);
-        play(base * 1.52, 0.045, "triangle", 0.016);
+        const base = 1320 + Math.random() * 180;
+        play(base, 0.055, "square", 0.034);
+        setTimeout(() => play(base * 0.68, 0.052, "square", 0.026), 24);
+        setTimeout(() => play(base * 0.4, 0.07, "sawtooth", 0.018), 48);
       }
 
       function explosionSound(power = 1) {
         if (muted || state === "demo") return;
         initAudio();
-        const length = Math.floor(audioCtx.sampleRate * 0.72);
+        const length = Math.floor(audioCtx.sampleRate * 0.48);
         const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
+        let held = 0;
         for (let i = 0; i < length; i += 1) {
           const t = i / length;
-          const crack = Math.sin(i * 0.09) * 0.18 + Math.sin(i * 0.017) * 0.26;
-          data[i] = ((Math.random() * 2 - 1) * 0.78 + crack) * Math.pow(1 - t, 2.05);
+          if (i % 5 === 0) held = Math.random() * 2 - 1;
+          const crack = Math.sign(Math.sin(i * 0.031)) * 0.22 + Math.sin(i * 0.009) * 0.18;
+          data[i] = (held * 0.8 + crack) * Math.pow(1 - t, 1.72);
         }
         const noise = audioCtx.createBufferSource();
         const filter = audioCtx.createBiquadFilter();
@@ -1217,13 +1227,13 @@
         const thumpAmp = audioCtx.createGain();
         noise.buffer = buffer;
         filter.type = "bandpass";
-        filter.frequency.setValueAtTime(1800 * power, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.64);
-        filter.Q.value = 1.8;
+        filter.frequency.setValueAtTime(2400 * power, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.44);
+        filter.Q.value = 1.15;
         body.type = "lowpass";
         body.frequency.value = 620;
         amp.gain.setValueAtTime(0.24 * power, audioCtx.currentTime);
-        amp.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.72);
+        amp.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.48);
         thump.type = "sine";
         thump.frequency.setValueAtTime(92, audioCtx.currentTime);
         thump.frequency.exponentialRampToValueAtTime(32, audioCtx.currentTime + 0.38);
@@ -1234,8 +1244,8 @@
         noise.start();
         thump.start();
         thump.stop(audioCtx.currentTime + 0.44);
-        play(82 + Math.random() * 28, 0.42, "sawtooth", 0.08 * power);
-        setTimeout(() => play(46 + Math.random() * 12, 0.35, "triangle", 0.045 * power), 70);
+        play(110 + Math.random() * 34, 0.26, "square", 0.07 * power);
+        setTimeout(() => play(58 + Math.random() * 15, 0.28, "sawtooth", 0.042 * power), 55);
       }
 
       function shader(type, source) {
@@ -1508,7 +1518,7 @@
         attractDeadline = 0;
       }
 
-      function scheduleAttractMode(delay = 20000) {
+      function scheduleAttractMode(delay = 7000) {
         clearAttractTimer();
         attractDeadline = performance.now() + delay;
         attractTimer = setTimeout(() => {
@@ -1780,7 +1790,7 @@
         overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
         startBtn.textContent = "Spela igen";
         overlay.classList.add("visible");
-        scheduleAttractMode(20000);
+        scheduleAttractMode(7000);
       }
 
       function startNextAct(demoMode = false) {
@@ -1851,7 +1861,7 @@
           }, i * (finale ? 78 : 110));
         }
         updateHud();
-        scheduleAttractMode(20000);
+        scheduleAttractMode(7000);
       }
 
       function showBossClearScene() {
@@ -2693,10 +2703,22 @@
             drawPoly(lineShape, boss.x, boss.y, Math.hypot(px - boss.x, py - boss.y) / 2, 1.2, a, rgba(colors.white, 0.14), gl.LINES);
           }
           drawPoly(bossMantleShape, boss.x, boss.y, 92, 92, t * 0.18, rgba(core, 0.92));
+          for (let i = -3; i <= 3; i += 1) {
+            const crackAngle = i * 0.34 + Math.sin(t * 0.8 + i) * 0.04;
+            drawPoly(lineShape, boss.x + i * 8, boss.y - 5 + Math.abs(i) * 7, 38 - Math.abs(i) * 4, 1, crackAngle, rgba(colors.space, 0.54), gl.LINES);
+            drawPoly(hunterBladeShape, boss.x + i * 22, boss.y + 68 + Math.abs(i) * 4, 7, 29, i * 0.08, rgba(i % 2 ? colors.violet : colors.cyan, 0.66));
+          }
           drawPoly(hunterMaskShape, boss.x, boss.y, 66, 80, -t * 0.24, rgba(colors.space, 0.36));
           drawPoly(bossEyeShape, boss.x - 25, boss.y - 11, 22, 10, -0.1, rgba(colors.white, 0.82));
           drawPoly(bossEyeShape, boss.x + 25, boss.y - 11, 22, 10, 0.1, rgba(colors.white, 0.82));
+          drawPoly(alienEyeShape, boss.x - 25, boss.y - 10, 15, 8, -0.1, rgba(colors.space, 0.98));
+          drawPoly(alienEyeShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 25, boss.y - 10, 15, 8, 0.1, rgba(colors.space, 0.98));
+          drawPoly(bossEyeShape, boss.x - 30, boss.y - 13, 4, 4, 0, rgba(colors.cyan, 0.96));
+          drawPoly(bossEyeShape, boss.x + 20, boss.y - 13, 4, 4, 0, rgba(colors.violet, 0.96));
           drawPoly(bossBeakShape, boss.x, boss.y + 25, 26, 34, Math.sin(t * 2) * 0.08, rgba(colors.violet, 0.72));
+          for (let i = -2; i <= 2; i += 1) {
+            drawPoly(toothShape, boss.x + i * 8, boss.y + 33 + Math.abs(i) * 2, 4, 13, i * 0.06, rgba(colors.white, 0.86));
+          }
           const barW = 292;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
           drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
@@ -2709,14 +2731,24 @@
           const ember = colors.orange;
           drawPoly(hunterMaskShape, boss.x, boss.y, 138, 92, Math.sin(t * 0.8) * 0.025, rgba(hull, 0.98));
           drawPoly(hunterMaskShape, boss.x, boss.y + 18, 108, 54, -Math.sin(t) * 0.018, rgba(colors.space, 0.42));
+          for (let side = -1; side <= 1; side += 2) {
+            drawPoly(hunterBladeShape, boss.x + side * 121, boss.y - 6, 24, 64, side * 0.22, rgba(colors.space, 0.94));
+            drawPoly(bossEyeShape, boss.x + side * 124, boss.y - 22, 17, 12, 0, rgba(colors.red, 0.78));
+            drawPoly(boltShape, boss.x + side * 125, boss.y + 35, 13, 38, 0, rgba(colors.orange, 0.24));
+          }
           for (let i = -4; i <= 4; i += 1) {
             drawPoly(hunterBladeShape, boss.x + i * 29, boss.y + 60 + Math.abs(i) * 4, 11, 42, i * 0.06, rgba(colors.white, 0.32));
             drawPoly(bossEyeShape, boss.x + i * 25, boss.y - 6 + Math.sin(t * 2 + i) * 4, 7, 5, 0, rgba(i % 2 ? colors.red : ember, 0.78));
+            drawPoly(lineShape, boss.x + i * 25, boss.y + 21, 12, 1, i * 0.08, rgba(colors.orange, 0.28), gl.LINES);
           }
           drawPoly(lineShape, boss.x - 72, boss.y - 40, 38, 2.4, -0.04, rgba(colors.gold, 0.72), gl.LINES);
           drawPoly(lineShape, boss.x + 72, boss.y - 40, 38, 2.4, 0.04, rgba(colors.gold, 0.72), gl.LINES);
           drawPoly(bossEyeShape, boss.x, boss.y - 20, 28, 18, 0, rgba(colors.red, 0.88));
           drawPoly(bossEyeShape, boss.x - 6, boss.y - 24, 8, 5, 0, rgba(colors.white, 0.72));
+          drawPoly(alienJawShape, boss.x, boss.y + 34, 64, 30, Math.sin(t * 1.7) * 0.025, rgba(colors.space, 0.92));
+          for (let i = -5; i <= 5; i += 1) {
+            drawPoly(toothShape, boss.x + i * 10, boss.y + 36 + Math.abs(i) * 1.2, 4.5, 16 - Math.abs(i) * 0.7, i * 0.04, rgba(i % 2 ? colors.white : colors.gold, 0.76));
+          }
           const barW = 330;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
           drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
@@ -2751,15 +2783,25 @@
           drawPoly(bossMantleShape, boss.x, boss.y + 10, 120, 118, Math.sin(t) * 0.035, [armor[0], armor[1], armor[2], 0.98]);
           drawPoly(hunterMaskShape, boss.x, boss.y - 12, 92, 102, Math.sin(t * 1.2) * 0.03, [bone[0], bone[1], bone[2], 0.9]);
           drawPoly(hunterMaskShape, boss.x, boss.y - 8, 72, 72, -Math.sin(t * 1.5) * 0.025, [dark[0], dark[1], dark[2], 0.34]);
+          for (let i = -3; i <= 3; i += 1) {
+            drawPoly(hornShape, boss.x + i * 23, boss.y - 92 + Math.abs(i) * 7, 10, 29 - Math.abs(i) * 3, i * 0.15, rgba(bone, 0.78));
+            drawPoly(lineShape, boss.x + i * 14, boss.y - 6 + Math.abs(i) * 5, 27, 1, i * 0.22, rgba(colors.toxic, 0.18), gl.LINES);
+          }
           drawPoly(alienEyeShape, boss.x - 29, boss.y - 24, 27, 14, -0.16, rgba(colors.red, 0.96));
           drawPoly(alienEyeShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 29, boss.y - 24, 27, 14, 0.16, rgba(colors.red, 0.96));
           drawPoly(bossEyeShape, boss.x - 35, boss.y - 28, 8, 3.8, -0.16, rgba(colors.white, 0.75));
           drawPoly(bossEyeShape, boss.x + 23, boss.y - 28, 8, 3.8, 0.16, rgba(colors.white, 0.75));
+          for (let i = -2; i <= 2; i += 1) {
+            drawPoly(bossEyeShape, boss.x + i * 17, boss.y + 5 + Math.cos(t * 2 + i) * 2, 5, 3.5, 0, rgba(i === 0 ? colors.red : colors.toxic, 0.68));
+          }
 
           drawPoly(hunterMandibleShape, boss.x - 35, boss.y + 36, 22, 34, -0.36 + Math.sin(t * 3) * 0.06, rgba(bone, 0.82));
           drawPoly(hunterMandibleShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 35, boss.y + 36, 22, 34, 0.36 - Math.sin(t * 3) * 0.06, rgba(bone, 0.82));
           drawPoly(hunterMandibleShape, boss.x - 18, boss.y + 44, 15, 25, -0.12, rgba(colors.toxic, 0.5));
           drawPoly(hunterMandibleShape.map((v, i) => i % 2 === 0 ? -v : v), boss.x + 18, boss.y + 44, 15, 25, 0.12, rgba(colors.toxic, 0.5));
+          for (let i = -4; i <= 4; i += 1) {
+            drawPoly(toothShape, boss.x + i * 8, boss.y + 37 + Math.abs(i) * 1.4, 3.7, 12, i * 0.04, rgba(colors.white, 0.78));
+          }
 
           for (let i = -3; i <= 3; i += 1) {
             drawPoly(hunterBladeShape, boss.x + i * 31, boss.y + 78 + Math.abs(i) * 5, 10, 38, i * 0.09 + Math.sin(t * 2 + i) * 0.08, rgba(colors.white, 0.42));
@@ -2805,14 +2847,27 @@
         drawPoly(bossMantleShape, boss.x, boss.y - 15, 112, 100, Math.sin(t) * 0.04, [skin[0], skin[1], skin[2], 0.96]);
         drawPoly(bossMantleShape, boss.x, boss.y - 6, 88, 68, Math.sin(t * 1.3) * -0.03, [deep[0], deep[1], deep[2], 0.36]);
         drawPoly(bossMantleShape, boss.x, boss.y - 32, 72, 54, Math.sin(t * 1.7) * 0.05, [wet[0], wet[1], wet[2], 0.18]);
+        for (let i = -4; i <= 4; i += 1) {
+          drawPoly(hornShape, boss.x + i * 23, boss.y - 95 + Math.abs(i) * 5, 10, 27 - Math.abs(i) * 2, i * 0.12, rgba(i % 2 ? colors.flesh : colors.violet, 0.74));
+          const veinY = boss.y - 42 + Math.abs(i) * 8;
+          drawPoly(lineShape, boss.x + i * 12, veinY, 32 - Math.abs(i) * 3, 1, i * 0.28, rgba(colors.pink, 0.32), gl.LINES);
+        }
 
         drawPoly(bossEyeShape, boss.x - 39, boss.y - 24, 28, 20, -0.18, rgba(colors.space, 0.94));
         drawPoly(bossEyeShape, boss.x + 39, boss.y - 24, 28, 20, 0.18, rgba(colors.space, 0.94));
         drawPoly(bossEyeShape, boss.x - 47, boss.y - 31, 8, 5, -0.18, rgba(colors.white, 0.82));
         drawPoly(bossEyeShape, boss.x + 31, boss.y - 31, 8, 5, 0.18, rgba(colors.white, 0.82));
+        for (let i = -2; i <= 2; i += 1) {
+          drawPoly(bossEyeShape, boss.x + i * 22, boss.y - 58 + Math.abs(i) * 5, 7, 5, 0, rgba(i === 0 ? colors.gold : colors.red, 0.82));
+          drawPoly(bossEyeShape, boss.x + i * 22 - 2, boss.y - 60 + Math.abs(i) * 5, 2.2, 2.2, 0, rgba(colors.white, 0.78));
+        }
         drawPoly(bossBeakShape, boss.x, boss.y + 14, 34, 34, Math.sin(t * 1.6) * 0.05, rgba(colors.space, 0.86));
         for (let i = -3; i <= 3; i += 1) {
           drawPoly(toothShape, boss.x + i * 9, boss.y + 30 + Math.abs(i) * 1.5, 4.5, 13, i * 0.05, rgba(colors.white, 0.86));
+        }
+        drawPoly(alienJawShape, boss.x, boss.y + 39, 48, 24, -Math.sin(t * 1.6) * 0.04, rgba(colors.red, 0.38));
+        for (let i = -4; i <= 4; i += 1) {
+          drawPoly(toothShape, boss.x + i * 8, boss.y + 42 + Math.abs(i), 3.5, 11, Math.PI + i * 0.04, rgba(colors.white, 0.72));
         }
         drawPoly(lineShape, boss.x, boss.y - 90, 58, 1.8, 0, rgba(colors.white, 0.18), gl.LINES);
 
@@ -3012,7 +3067,7 @@
 
       renderLeaderboard();
       renderLives();
-      scheduleAttractMode(20000);
+      scheduleAttractMode(7000);
       requestAnimationFrame(loop);
     })();
   </script>
