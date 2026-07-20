@@ -9,6 +9,8 @@ Each act contains three alien waves followed by a boss. The four acts are Icewor
 - `index.html` - the complete game: HTML, CSS, WebGL rendering, game logic, and Web Audio sound.
 - `package.json` - simple local launch commands.
 - `varldsrymden-anfaller/assets/backdrops/` - sixteen cinematic wave and boss backgrounds plus the long generated Selene Canyon Run environment.
+- `varldsrymden-anfaller/assets/*-cc0.m4a` - five CC0 orchestral tracks that rotate between waves and bosses.
+- `varldsrymden-anfaller/assets/MUSIC-LICENSE.txt` - source and license details for every music recording.
 
 ## Run locally
 
@@ -35,6 +37,9 @@ npm run serve
 - Move: `←` / `→` or `A` / `D`
 - Fire: `Space`, `W`, or `↑`
 - Shield: `X`, unlimited
+- iPhone steering: hold your thumb on the ship and drag
+- iPhone fire: tap the playfield with your index finger
+- iPhone shield: hold the lower-left corner of the screen
 - Continue from intro: any key or touch
 - Start the game: `Enter`
 - Toggle sound: `M`

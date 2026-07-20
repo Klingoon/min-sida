@@ -1,11 +1,45 @@
-Music: "Mars, the Bringer of War" from The Planets, Op. 32
-Composer: Gustav Holst (1874-1934)
+MUSIC SOURCES AND LICENSES
+
+Every recording in this game is released under the CC0 1.0 Universal Public
+Domain Dedication. The recordings may be copied, modified, distributed and
+performed, including commercially, without asking permission.
+
+THE OLD CASTLE (IL VECCHIO CASTELLO)
+File: mussorgsky-castle-cc0.m4a
+Composer: Modest Mussorgsky
+Performance: Skidmore College Orchestra
+Source: Wikimedia Commons / Free Music Archive / Musopen
+Source page: https://commons.wikimedia.org/wiki/File:Skidmore_College_Orchestra_-_04_-_II_Il_vecchio_castello_Andante.ogg
+
+TUILERIES
+File: mussorgsky-tuileries-cc0.m4a
+Composer: Modest Mussorgsky
+Performance: Skidmore College Orchestra
+Source: Wikimedia Commons / Free Music Archive / Musopen
+Source page: https://commons.wikimedia.org/wiki/File:Skidmore_College_Orchestra_-_06_-_III_Tuileries_Allegretto_non_troppo_capriccioso.ogg
+
+GNOMUS
+File: mussorgsky-gnomus-cc0.m4a
+Composer: Modest Mussorgsky
+Performance: Skidmore College Orchestra
+Source: Wikimedia Commons / Free Music Archive / Musopen
+Source page: https://commons.wikimedia.org/wiki/File:Skidmore_College_Orchestra_-_02_-_I_Gnomus_Vivo.ogg
+
+BYDLO
+File: mussorgsky-bydlo-cc0.m4a
+Composer: Modest Mussorgsky
+Performance: Skidmore College Orchestra
+Source: Wikimedia Commons / Free Music Archive / Musopen
+Source page: https://commons.wikimedia.org/wiki/File:Skidmore_College_Orchestra_-_07_-_IV_Bydlo_Sempre_moderato_pesante.ogg
+
+MARS, THE BRINGER OF WAR
+File: holst-mars-cc0.m4a
+Composer: Gustav Holst
 Performance: Skidmore College Orchestra
 Source: Wikimedia Commons / Musopen
-License: CC0 1.0 Universal Public Domain Dedication
+Source page: https://commons.wikimedia.org/wiki/File:Holst,_The_Planets,_Op._32_-_I._Mars,_the_Bringer_of_War.ogg
 
-Source page:
-https://commons.wikimedia.org/wiki/File:Holst,_The_Planets,_Op._32_-_I._Mars,_the_Bringer_of_War.ogg
+License: https://creativecommons.org/publicdomain/zero/1.0/
 
-License:
-https://creativecommons.org/publicdomain/zero/1.0/
+The source recordings were converted to AAC/M4A for cross-browser playback.
+No musical content was added or recomposed.

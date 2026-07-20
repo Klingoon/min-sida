@@ -1168,7 +1168,7 @@
   <section class="intro-splash" id="introSplash" aria-label="Libertarian freedoom fighters, Max and Milton search the galaxy for their lost father">
     <img src="varldsrymden-anfaller/assets/opening-max-milton-v4.png" alt="Max and Milton in front of their spaceship in a distant galaxy, with a light-colored owl perched on the lighter-haired man's shoulder">
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
-    <p class="intro-music-credit" id="introMusicCredit">Music: Gustav Holst · Mars, the Bringer of War · CC0</p>
+    <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
       <header>
         <h1 class="intro-logo" aria-label="Libertarian freedoom fighters"><span class="title-line">Libertarian</span><span class="title-line">freedoom fighters</span></h1>
@@ -1227,7 +1227,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.20.26 · Selene Canyon Run · uploaded 2026-07-20 21:56 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.20.27 · living bosses + stage music · uploaded 2026-07-20 22:33 CEST</div>
   </main>
 
   <script>
@@ -1359,7 +1359,16 @@
       let melodyStep = 0;
       const activePadOscillators = new Set();
       const musicGain = 1.32;
-      const soundtrack = new Audio("varldsrymden-anfaller/assets/holst-mars-cc0.m4a");
+      const soundtrackCatalog = [
+        { title: "The Old Castle", src: "varldsrymden-anfaller/assets/mussorgsky-castle-cc0.m4a" },
+        { title: "Tuileries", src: "varldsrymden-anfaller/assets/mussorgsky-tuileries-cc0.m4a" },
+        { title: "Gnomus", src: "varldsrymden-anfaller/assets/mussorgsky-gnomus-cc0.m4a" },
+        { title: "Bydlo", src: "varldsrymden-anfaller/assets/mussorgsky-bydlo-cc0.m4a" },
+        { title: "Mars, the Bringer of War", src: "varldsrymden-anfaller/assets/holst-mars-cc0.m4a" }
+      ];
+      let soundtrackIndex = 0;
+      let soundtrackFadeTimer = null;
+      const soundtrack = new Audio(soundtrackCatalog[soundtrackIndex].src);
       soundtrack.loop = true;
       soundtrack.preload = "auto";
       soundtrack.volume = 0.46;
@@ -1674,6 +1683,8 @@
         canvas.style.backgroundPosition = "center";
         canvas.style.backgroundImage = `linear-gradient(180deg, rgba(3, 5, 9, 0.12), rgba(2, 3, 6, 0.34)), url("${stageBackdropUrls[activeBackdropIndex]}")`;
         shell.dataset.stageBackdrop = String(activeBackdropIndex + 1);
+        const musicIndex = mode === "boss" ? 4 : 1 + ((activeBackdropIndex + act - 1) % 3);
+        selectSoundtrack(musicIndex);
 
         const nextImage = new Image();
         nextImage.decoding = "async";
@@ -1685,6 +1696,7 @@
         canvas.style.backgroundSize = `${W}px 2880px`;
         canvas.style.backgroundPosition = `center ${-canyonRun.scroll}px`;
         shell.dataset.stageBackdrop = "selene-canyon-run";
+        selectSoundtrack(0);
       }
 
       function canyonBounds(worldY) {
@@ -1731,11 +1743,47 @@
       function stopMelody() {
         if (typeof melodyTimer === "number") clearInterval(melodyTimer);
         melodyTimer = null;
+        if (soundtrackFadeTimer) clearInterval(soundtrackFadeTimer);
+        soundtrackFadeTimer = null;
         soundtrack.pause();
         activePadOscillators.forEach((osc) => {
           try { osc.stop(); } catch (_) {}
         });
         activePadOscillators.clear();
+      }
+
+      function selectSoundtrack(index) {
+        const nextIndex = clamp(index, 0, soundtrackCatalog.length - 1);
+        if (nextIndex === soundtrackIndex) return;
+        const shouldResume = melodyTimer === "orchestral" || !soundtrack.paused;
+        soundtrackIndex = nextIndex;
+        const track = soundtrackCatalog[soundtrackIndex];
+        if (soundtrackFadeTimer) clearInterval(soundtrackFadeTimer);
+        soundtrackFadeTimer = null;
+        soundtrack.pause();
+        soundtrack.src = track.src;
+        soundtrack.load();
+        soundtrack.volume = 0.04;
+        introMusicCredit.setAttribute("aria-label", `Music: ${track.title}, CC0`);
+        document.documentElement.dataset.musicTrack = track.title;
+        if (!shouldResume || muted) {
+          soundtrack.volume = 0.46;
+          return;
+        }
+        soundtrack.play().then(() => {
+          let step = 0;
+          soundtrackFadeTimer = setInterval(() => {
+            step += 1;
+            soundtrack.volume = Math.min(0.46, 0.04 + step * 0.0525);
+            if (step >= 8) {
+              clearInterval(soundtrackFadeTimer);
+              soundtrackFadeTimer = null;
+            }
+          }, 70);
+        }).catch(() => {
+          soundtrack.volume = 0.46;
+          melodyTimer = null;
+        });
       }
 
       function melodyNote(freq, when, length, gain = 0.022, type = "square", slide = 1) {
@@ -3610,6 +3658,46 @@
         spriteCtx.restore();
       }
 
+      function drawLivingBossFrame(image, frame, columns, rows, x, y, width, height, angle, kind, phase, filter = "none") {
+        const sourceWidth = image.naturalWidth / columns;
+        const sourceHeight = image.naturalHeight / rows;
+        const column = frame % columns;
+        const row = Math.floor(frame / columns);
+        const strips = kind === "dreadnought" ? 10 : 14;
+        const sourceStrip = sourceHeight / strips;
+        const destinationStrip = height / strips;
+        const breath = Math.sin(phase * (kind === "dreadnought" ? 0.92 : 1.42));
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.filter = filter;
+        for (let i = 0; i < strips; i += 1) {
+          const k = (i + 0.5) / strips;
+          const lower = Math.pow(k, kind === "octopus" ? 1.8 : 2.5);
+          const wave = Math.sin(phase * (1.35 + k * 0.52) + k * 7.2);
+          const secondary = Math.sin(phase * 2.05 - k * 5.4);
+          const organicStrength = kind === "octopus" ? 12 : kind === "hunter" ? 8 : kind === "crystal" ? 4.5 : 2.2;
+          const offsetX = wave * organicStrength * lower + secondary * organicStrength * 0.18;
+          const jawDrop = kind === "dreadnought" && k > 0.58 ? Math.max(0, Math.sin(phase * 1.75)) * (k - 0.58) * 20 : 0;
+          const scaleX = 1 + breath * (kind === "octopus" ? 0.028 : kind === "hunter" ? 0.019 : 0.012) * Math.sin(k * Math.PI);
+          const scaleY = 1 - breath * 0.012 * Math.sin(k * Math.PI);
+          const destinationWidth = width * scaleX;
+          const destinationY = -height / 2 + i * destinationStrip + jawDrop;
+          spriteCtx.drawImage(
+            image,
+            column * sourceWidth,
+            row * sourceHeight + i * sourceStrip,
+            sourceWidth,
+            sourceStrip + 1,
+            -destinationWidth / 2 + offsetX,
+            destinationY,
+            destinationWidth,
+            destinationStrip * scaleY + 1.8
+          );
+        }
+        spriteCtx.restore();
+      }
+
       function blinkClosure(phase, offset = 0, period = 5.4) {
         const cycle = ((phase + offset) % period + period) % period;
         const first = clamp(1 - Math.abs(cycle - 0.18) / 0.13, 0, 1);
@@ -3680,9 +3768,10 @@
         for (let i = -2; i <= 2; i += 1) {
           const toothX = localX + i * width * 0.31;
           const toothH = height * (0.28 + (2 - Math.abs(i)) * 0.055);
+          const toothWidth = Math.min(2.4, width * 0.08);
           spriteCtx.beginPath();
-          spriteCtx.moveTo(toothX - 2.4, localY - height * open * 0.78 + jawShift);
-          spriteCtx.lineTo(toothX + 2.4, localY - height * open * 0.78 + jawShift);
+          spriteCtx.moveTo(toothX - toothWidth, localY - height * open * 0.78 + jawShift);
+          spriteCtx.lineTo(toothX + toothWidth, localY - height * open * 0.78 + jawShift);
           spriteCtx.lineTo(toothX, localY - height * open * 0.78 + toothH + jawShift);
           spriteCtx.closePath();
           spriteCtx.fill();
@@ -3858,25 +3947,30 @@
         const sizes = { octopus: [332, 332], hunter: [314, 314], crystal: [292, 292], dreadnought: [328, 328] };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
-        const pulseX = 1 + inhale * 0.0045;
-        const pulseY = 1 - inhale * 0.003;
+        const pulseX = 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
+        const pulseY = 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
         const filter = boss.hurt > 0 ? "brightness(1.42) saturate(0.72)" : "none";
-        const angle = Math.sin(boss.phase * 0.63) * 0.007;
-        const drawX = boss.x + Math.sin(boss.phase * 0.88) * 1.1;
-        const drawY = boss.y + Math.cos(boss.phase * 1.05) * 1.5;
-        drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, drawX, drawY, width * pulseX, height * pulseY, angle, "transparent", 0, 1, filter);
+        const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : 0.025);
+        const drawX = boss.x + Math.sin(boss.phase * 0.88) * 3.2;
+        const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5;
+        if (boss.kind === "octopus" || boss.kind === "hunter") {
+          drawBossStrands(drawX, drawY, angle, boss.kind, boss.phase);
+        }
+        drawLivingBossFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, drawX, drawY, width * pulseX, height * pulseY, angle, boss.kind, boss.phase, filter);
         if (boss.kind === "octopus") {
           [[-57, -47], [-29, -38], [29, -38], [57, -47]].forEach(([eyeX, eyeY], index) => {
             drawBossEyeLight(drawX, drawY, angle, eyeX, eyeY, 6, boss.phase + index * 0.21, "#8c4db6");
             drawBossBlink(drawX, drawY, angle, eyeX, eyeY, 7, 5, boss.phase, index < 2 ? 0 : 0.04, "rgba(42,14,52,0.94)");
           });
           drawBossMawShadow(drawX, drawY, angle, 0, 11, 6.5, 29, boss.phase, "rgba(27,4,32,0.58)");
+          drawBossMouth(drawX, drawY, angle, 0, 18, 8, 27, boss.phase, "rgba(193,96,218,0.7)");
         } else if (boss.kind === "hunter") {
           drawBossEyeLight(drawX, drawY, angle, -29, -43, 8, boss.phase, "#d83424");
           drawBossEyeLight(drawX, drawY, angle, 29, -43, 8, boss.phase + 0.1, "#d83424");
           drawBossBlink(drawX, drawY, angle, -29, -43, 10, 4.5, boss.phase, 0, "rgba(50,42,31,0.96)");
           drawBossBlink(drawX, drawY, angle, 29, -43, 10, 4.5, boss.phase, 0.03, "rgba(50,42,31,0.96)");
           drawBossMawShadow(drawX, drawY, angle, 0, -1, 13, 14, boss.phase + 0.8, "rgba(25,4,5,0.54)");
+          drawBossMouth(drawX, drawY, angle, 0, 8, 15, 12, boss.phase + 0.8, "rgba(188,42,29,0.72)");
         } else if (boss.kind === "crystal") {
           const crystalPulse = 0.72 + Math.sin(boss.phase * 2.35) * 0.18;
           spriteCtx.save();
@@ -3895,6 +3989,7 @@
           drawBossEyeLight(drawX, drawY, angle, 0, -45, 13, boss.phase, "#ff5a1f");
           drawBossBlink(drawX, drawY, angle, 0, -45, 15, 12, boss.phase, 0.7, "rgba(31,28,28,0.96)");
           drawBossMawShadow(drawX, drawY, angle, 0, 29, 19, 29, boss.phase + 0.35, "rgba(29,3,2,0.62)");
+          drawBossMouth(drawX, drawY, angle, 0, 35, 21, 21, boss.phase + 0.35, "rgba(255,94,35,0.66)");
         }
       }
 

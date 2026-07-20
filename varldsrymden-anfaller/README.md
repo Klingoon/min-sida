@@ -9,6 +9,8 @@ Each act contains three alien waves followed by a boss. The four acts are Icewor
 - `index.html` - the complete game: HTML, CSS, WebGL rendering, game logic, and Web Audio sound.
 - `package.json` - simple local launch commands.
 - `assets/backdrops/` - sixteen optimized cinematic wave and boss backgrounds plus the long generated Selene Canyon Run environment.
+- `assets/*-cc0.m4a` - five CC0 orchestral tracks that rotate between waves and bosses.
+- `assets/MUSIC-LICENSE.txt` - source and license details for every music recording.
 
 ## Run locally
 
