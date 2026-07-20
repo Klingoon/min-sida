@@ -763,7 +763,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.4 · uppladdad 2026-07-20 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.5 · uppladdad 2026-07-20 CEST</div>
   </main>
 
   <script>
@@ -851,6 +851,7 @@
       let shake = 0;
       let melodyTimer = null;
       let melodyStep = 0;
+      const activePadOscillators = new Set();
       const musicGain = 1.32;
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
@@ -1054,6 +1055,10 @@
       function stopMelody() {
         if (melodyTimer) clearInterval(melodyTimer);
         melodyTimer = null;
+        activePadOscillators.forEach((osc) => {
+          try { osc.stop(); } catch (_) {}
+        });
+        activePadOscillators.clear();
       }
 
       function melodyNote(freq, when, length, gain = 0.022, type = "square", slide = 1) {
@@ -1123,25 +1128,84 @@
         osc.stop(when + 0.13);
       }
 
+      function spacePadNote(freq, when, length = 3.6, gain = 0.008) {
+        if (muted || !audioCtx) return;
+        const filter = audioCtx.createBiquadFilter();
+        const amp = audioCtx.createGain();
+        const shimmer = audioCtx.createGain();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(620, when);
+        filter.frequency.linearRampToValueAtTime(1450, when + length * 0.48);
+        filter.frequency.exponentialRampToValueAtTime(480, when + length);
+        filter.Q.value = 1.6;
+        amp.gain.setValueAtTime(0.0001, when);
+        amp.gain.linearRampToValueAtTime(gain * musicGain, when + 0.38);
+        amp.gain.setValueAtTime(gain * musicGain * 0.72, when + length * 0.62);
+        amp.gain.exponentialRampToValueAtTime(0.0001, when + length);
+        shimmer.gain.value = 0.16;
+        [
+          { ratio: 1, type: "triangle", detune: -7 },
+          { ratio: 1.5, type: "sine", detune: 5 },
+          { ratio: 2.01, type: "sine", detune: 0 }
+        ].forEach((voice, index) => {
+          const osc = audioCtx.createOscillator();
+          osc.type = voice.type;
+          osc.frequency.value = freq * voice.ratio;
+          osc.detune.value = voice.detune;
+          if (index === 2) osc.connect(shimmer).connect(filter);
+          else osc.connect(filter);
+          activePadOscillators.add(osc);
+          osc.onended = () => activePadOscillators.delete(osc);
+          osc.start(when);
+          osc.stop(when + length + 0.04);
+        });
+        filter.connect(amp).connect(audioCtx.destination);
+      }
+
+      function starPing(freq, when, gain = 0.014) {
+        if (muted || !audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const amp = audioCtx.createGain();
+        const delay = audioCtx.createDelay(0.8);
+        const echo = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, when);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.72, when + 0.28);
+        amp.gain.setValueAtTime(gain * musicGain, when);
+        amp.gain.exponentialRampToValueAtTime(0.0001, when + 0.34);
+        delay.delayTime.value = 0.19;
+        echo.gain.value = 0.24;
+        osc.connect(amp).connect(audioCtx.destination);
+        amp.connect(delay).connect(echo).connect(audioCtx.destination);
+        osc.start(when);
+        osc.stop(when + 0.38);
+      }
+
       function startMelody() {
         if (melodyTimer || muted || !audioCtx) return;
-        const lead = [659.25, 0, 783.99, 880, 987.77, 0, 880, 783.99, 659.25, 0, 587.33, 659.25, 783.99, 0, 987.77, 1174.66, 1318.51, 0, 1174.66, 987.77, 880, 0, 783.99, 659.25, 587.33, 0, 659.25, 783.99, 880, 783.99, 659.25, 0];
-        const bossLead = [329.63, 0, 329.63, 392, 466.16, 0, 440, 349.23, 311.13, 0, 311.13, 369.99, 440, 0, 523.25, 493.88];
-        const arp = [329.63, 392, 493.88, 659.25, 392, 493.88, 659.25, 783.99, 293.66, 369.99, 440, 587.33, 369.99, 440, 587.33, 739.99];
-        const bass = [82.41, 82.41, 98, 98, 110, 110, 123.47, 123.47, 73.42, 73.42, 92.5, 92.5, 98, 98, 82.41, 123.47];
+        const lead = [659.25, 0, 0, 783.99, 880, 0, 987.77, 0, 783.99, 0, 659.25, 0, 587.33, 0, 659.25, 783.99, 523.25, 0, 0, 659.25, 739.99, 0, 880, 0, 659.25, 0, 587.33, 0, 493.88, 0, 587.33, 0];
+        const bossLead = [329.63, 0, 0, 392, 466.16, 0, 0, 440, 311.13, 0, 0, 369.99, 440, 0, 523.25, 0];
+        const arp = [329.63, 493.88, 659.25, 783.99, 293.66, 440, 587.33, 739.99, 261.63, 392, 523.25, 659.25, 196, 293.66, 392, 587.33];
+        const bass = [82.41, 82.41, 73.42, 73.42, 65.41, 65.41, 98, 98, 82.41, 82.41, 110, 110, 73.42, 73.42, 98, 98];
+        const padRoots = [82.41, 73.42, 65.41, 98];
+        const pings = [1318.51, 1567.98, 1174.66, 1760, 987.77, 1479.98, 1318.51, 1975.53];
         melodyTimer = setInterval(() => {
           const now = audioCtx.currentTime + 0.022;
           const phrase = boss ? bossLead : lead;
           const note = phrase[melodyStep % phrase.length];
-          if (note) melodyNote(note, now, boss ? 0.105 : 0.085, boss ? 0.023 : 0.027, melodyStep % 8 < 6 ? "square" : "sawtooth", boss ? 0.985 : 1);
-          if (melodyStep % 2 === 1) melodyNote(arp[melodyStep % arp.length], now + 0.016, 0.048, boss ? 0.007 : 0.01, "square");
-          if (melodyStep % 2 === 0) melodyNote(bass[(melodyStep / 2) % bass.length], now, 0.105, boss ? 0.032 : 0.026, "square", boss ? 0.97 : 1);
-          if (melodyStep % 8 === 0 || melodyStep % 8 === 5) chipDrum("kick", now);
-          if (melodyStep % 8 === 4) chipDrum("snare", now + 0.008);
-          if (melodyStep % 2 === 1) chipDrum("hat", now + 0.014);
-          if (!boss && melodyStep % 32 === 30) melodyNote(1567.98, now, 0.09, 0.016, "square", 0.5);
+          if (note) melodyNote(note, now, boss ? 0.14 : 0.12, boss ? 0.019 : 0.022, melodyStep % 8 < 6 ? "triangle" : "square", boss ? 0.975 : 1);
+          if (melodyStep % 2 === 1) melodyNote(arp[melodyStep % arp.length], now + 0.02, 0.072, boss ? 0.006 : 0.0085, "square", 0.995);
+          if (melodyStep % 4 === 0) melodyNote(bass[(melodyStep / 4) % bass.length], now, 0.2, boss ? 0.027 : 0.021, "triangle", boss ? 0.96 : 0.985);
+          if (melodyStep % 32 === 0) {
+            const root = padRoots[(melodyStep / 32) % padRoots.length] * (boss ? 0.5 : 1);
+            spacePadNote(root, now, boss ? 4.1 : 3.7, boss ? 0.009 : 0.007);
+          }
+          if (melodyStep % 8 === 6) starPing(pings[(melodyStep / 8) % pings.length] * (boss ? 0.5 : 1), now, boss ? 0.01 : 0.014);
+          if (melodyStep % 16 === 0 || melodyStep % 16 === 10) chipDrum("kick", now);
+          if (melodyStep % 16 === 8) chipDrum("snare", now + 0.008);
+          if (melodyStep % 4 === 3) chipDrum("hat", now + 0.016);
           melodyStep += 1;
-        }, 118);
+        }, 136);
       }
 
       function fanfareNote(freq, when, length, gain = 0.05) {
