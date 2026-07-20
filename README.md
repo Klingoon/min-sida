@@ -1,4 +1,4 @@
-# Världsrymden Anfaller Rambodal
+# Libertarian freedoom fighters
 
 Ett fristående WebGL-arkadspel i en enda HTML-fil.
 
@@ -34,7 +34,7 @@ npm run serve
 - Flytta: `←` / `→` eller `A` / `D`
 - Skjut: `Space`, `W` eller `↑`
 - Sköld: `X`, obegränsat
-- Starta/hoppa över intro: `Enter` / `Space`
+- Starta: `Enter`
 - Ljud av/på: `M`
 
 ## Notering

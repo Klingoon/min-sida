@@ -1,4 +1,4 @@
-# Världsrymden Anfaller
+# Libertarian freedoom fighters
 
 Ett fristående WebGL-arkadspel i en enda HTML-fil.
 

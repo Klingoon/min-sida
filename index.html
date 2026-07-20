@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Världsrymden Anfaller</title>
+  <title>Libertarian freedoom fighters</title>
   <style>
     :root {
       color-scheme: dark;
@@ -86,6 +86,144 @@
       inset: 0;
       z-index: 3;
       pointer-events: none;
+    }
+
+    .intro-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #02040a;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 900ms ease, visibility 900ms step-end;
+      cursor: pointer;
+    }
+
+    .intro-splash.leaving {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-splash img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.035);
+      animation: intro-drift 18s ease-out both;
+    }
+
+    .intro-splash::before,
+    .intro-splash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .intro-splash::before {
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(0, 2, 8, 0.78) 0%, rgba(0, 2, 8, 0.06) 34%, rgba(0, 2, 8, 0.04) 66%, rgba(0, 2, 8, 0.76) 100%),
+        radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.42) 100%);
+    }
+
+    .intro-splash::after {
+      z-index: 2;
+      opacity: 0.28;
+      background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 4px);
+      mix-blend-mode: soft-light;
+    }
+
+    .intro-copy {
+      position: relative;
+      z-index: 3;
+      align-self: stretch;
+      width: min(1180px, calc(100% - 36px));
+      padding: clamp(28px, 6vh, 72px) 0 clamp(24px, 5vh, 58px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    .intro-splash.ready .intro-copy {
+      animation: intro-copy-in 1100ms ease-out 180ms both;
+    }
+
+    .intro-logo {
+      margin: 0;
+      color: rgba(248, 251, 255, 0.96);
+      font-family: "Helvetica Neue", "Avenir Next", Avenir, Arial, sans-serif;
+      font-size: clamp(34px, 5.6vw, 82px);
+      font-weight: 300;
+      line-height: 1.04;
+      letter-spacing: 0;
+      text-shadow: 0 2px 28px rgba(0, 0, 0, 0.95);
+    }
+
+    .intro-logo span {
+      display: block;
+    }
+
+    .intro-sequence {
+      display: grid;
+      place-items: center;
+      width: min(760px, 92vw);
+      min-height: 64px;
+    }
+
+    .intro-phrase,
+    .intro-enter {
+      margin: 0;
+      color: rgba(246, 249, 252, 0.92);
+      font-family: "Helvetica Neue", "Avenir Next", Avenir, Arial, sans-serif;
+      font-weight: 300;
+      letter-spacing: 0;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.98);
+    }
+
+    .intro-phrase {
+      grid-area: 1 / 1;
+      font-size: clamp(17px, 2.25vw, 30px);
+      line-height: 1.35;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 1250ms ease, transform 1250ms ease;
+    }
+
+    .intro-phrase.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .intro-enter {
+      margin-top: 14px;
+      font-size: clamp(11px, 1.25vw, 14px);
+      opacity: 0;
+      animation: intro-enter-pulse 3.2s ease-in-out 1.8s infinite;
+    }
+
+    @keyframes intro-drift {
+      to { transform: scale(1); }
+    }
+
+    @keyframes intro-copy-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes intro-enter-pulse {
+      0%, 100% { opacity: 0.28; }
+      50% { opacity: 0.8; }
     }
 
     .hud {
@@ -351,19 +489,13 @@
     .space-logo {
       margin: 3px 0 16px;
       color: #d9f3f7;
-      font-family: Impact, Haettenschweiler, "Arial Black", system-ui, sans-serif;
-      font-size: clamp(34px, 7.4vw, 56px);
-      line-height: 0.91;
+      font-family: "Helvetica Neue", "Avenir Next", Avenir, Arial, sans-serif;
+      font-size: clamp(27px, 5.4vw, 43px);
+      font-weight: 300;
+      line-height: 1.04;
       letter-spacing: 0;
-      text-transform: uppercase;
       text-align: center;
-      -webkit-text-stroke: clamp(1px, 0.25vw, 2px) #173a42;
-      text-shadow:
-        0 0 12px rgba(94, 215, 255, 0.48),
-        3px 3px 0 rgba(255, 94, 40, 0.34),
-        0 10px 24px rgba(0, 0, 0, 0.72);
-      transform: scaleX(1.08);
-      transform-origin: center;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.9), 0 0 18px rgba(94, 215, 255, 0.28);
     }
 
     .space-logo span {
@@ -609,6 +741,18 @@
     }
 
     @media (max-width: 460px) {
+      .intro-splash img {
+        object-fit: contain;
+      }
+
+      .intro-copy {
+        padding-block: 26px 22px;
+      }
+
+      .intro-logo {
+        font-size: clamp(31px, 10.5vw, 48px);
+      }
+
       .shell {
         width: 100vw;
         height: 100vh;
@@ -650,7 +794,21 @@
   </style>
 </head>
 <body>
-  <main class="shell" aria-label="Världsrymden Anfaller, arkadskjutspel">
+  <section class="intro-splash" id="introSplash" aria-label="Libertarian freedoom fighters, Max and Milton search the galaxy for their lost father">
+    <img src="varldsrymden-anfaller/assets/opening-max-milton.jpg" alt="Max och Milton framför sitt rymdskepp i en avlägsen galax">
+    <div class="intro-copy">
+      <header>
+        <h1 class="intro-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
+      </header>
+      <footer>
+        <div class="intro-sequence" aria-live="polite">
+          <p class="intro-phrase" id="introPhrase">Searching the galaxy for their lost father</p>
+        </div>
+        <p class="intro-enter">Press any key · Touch to enter</p>
+      </footer>
+    </div>
+  </section>
+  <main class="shell" aria-label="Libertarian freedoom fighters, arkadskjutspel">
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
@@ -662,7 +820,7 @@
 
     <section class="overlay visible" id="overlay">
       <div class="panel">
-        <h1 class="space-logo"><span>Världsrymden</span><span>Anfaller</span></h1>
+        <h1 class="space-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
         <p id="overlayText">Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar hela vågen om du skjuter ner det. Skjut inte kometen - den delar sig i fler mindre delar.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score-lista"></div>
         <div class="actions">
@@ -689,7 +847,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.14 · levande bossar · uppladdad 2026-07-20 17:55 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.16 · freedoom fighters · uppladdad 2026-07-20 18:48 CEST</div>
   </main>
 
   <script>
@@ -729,6 +887,8 @@
       const rightBtn = document.querySelector("#rightBtn");
       const fireBtn = document.querySelector("#fireBtn");
       const shieldBtn = document.querySelector("#shieldBtn");
+      const introSplash = document.querySelector("#introSplash");
+      const introPhrase = document.querySelector("#introPhrase");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -815,6 +975,18 @@
       let demoFireTimer = 0;
       let attractTimer = null;
       let attractDeadline = 0;
+      let introActive = true;
+      let introPhraseIndex = 0;
+      let introPhraseTimer = null;
+      let introPhraseFadeTimer = null;
+      const introPhrases = [
+        "Searching the galaxy for their lost father",
+        "Fighting the aliens",
+        "Visiting all the Exo planets",
+        "Improvise",
+        "Adapt",
+        "Overcome"
+      ];
       let alienRoundsCleared = 0;
       let bossDefeated = false;
       let bossTransitionTimer = null;
@@ -1695,6 +1867,37 @@
         attractDeadline = 0;
       }
 
+      function finishIntro() {
+        if (!introActive) return;
+        introActive = false;
+        if (introPhraseTimer) clearInterval(introPhraseTimer);
+        if (introPhraseFadeTimer) clearTimeout(introPhraseFadeTimer);
+        introPhraseTimer = null;
+        introPhraseFadeTimer = null;
+        introSplash.classList.add("leaving");
+        introSplash.setAttribute("aria-hidden", "true");
+        scheduleAttractMode(7000);
+      }
+
+      function cycleIntroPhrase() {
+        if (!introActive) return;
+        introPhrase.classList.remove("visible");
+        if (introPhraseFadeTimer) clearTimeout(introPhraseFadeTimer);
+        introPhraseFadeTimer = setTimeout(() => {
+          if (!introActive) return;
+          introPhraseIndex = (introPhraseIndex + 1) % introPhrases.length;
+          introPhrase.textContent = introPhrases[introPhraseIndex];
+          introPhrase.classList.add("visible");
+        }, 1250);
+      }
+
+      function beginIntro() {
+        requestAnimationFrame(() => introSplash.classList.add("ready"));
+        introPhrase.textContent = introPhrases[introPhraseIndex];
+        introPhraseFadeTimer = setTimeout(() => introPhrase.classList.add("visible"), 550);
+        introPhraseTimer = setInterval(cycleIntroPhrase, 4600);
+      }
+
       function scheduleAttractMode(delay = 7000) {
         clearAttractTimer();
         attractDeadline = performance.now() + delay;
@@ -1920,6 +2123,7 @@
       }
 
       function startGame() {
+        if (introActive) return;
         if (state === "transition") return;
         if (winScene.classList.contains("visible") && performance.now() < winSceneUnlockAt) return;
         clearAttractTimer();
@@ -2938,6 +3142,69 @@
         spriteCtx.restore();
       }
 
+      function drawAnchoredBossMotion(x, y, angle, kind, phase) {
+        if (kind !== "octopus" && kind !== "hunter") return;
+        const octopus = kind === "octopus";
+        const roots = octopus
+          ? [[-68, 42], [-34, 60], [34, 60], [68, 42]]
+          : [[-58, -58], [-66, -32], [58, -58], [66, -32]];
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.lineCap = "round";
+        roots.forEach(([rootX, rootY], index) => {
+          const side = rootX < 0 ? -1 : 1;
+          const motion = Math.sin(phase * (octopus ? 1.45 : 1.2) + index * 1.7);
+          const endX = octopus
+            ? rootX + side * 18 + motion * 11
+            : rootX + side * 34 + motion * 7;
+          const endY = octopus
+            ? rootY + 86 + Math.cos(phase * 1.2 + index) * 7
+            : rootY + 92 + Math.cos(phase * 1.05 + index) * 6;
+          const controlX = rootX + side * (octopus ? 22 : 38) - motion * 8;
+          const controlY = rootY + (octopus ? 43 : 46);
+          spriteCtx.strokeStyle = octopus ? "rgba(91,45,111,0.7)" : "rgba(15,18,18,0.76)";
+          spriteCtx.lineWidth = octopus ? 7 : 6;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(rootX, rootY);
+          spriteCtx.quadraticCurveTo(controlX, controlY, endX, endY);
+          spriteCtx.stroke();
+          spriteCtx.strokeStyle = octopus ? "rgba(200,125,220,0.24)" : "rgba(118,126,112,0.2)";
+          spriteCtx.lineWidth = 1.2;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(rootX - side, rootY);
+          spriteCtx.quadraticCurveTo(controlX - side * 2, controlY, endX - side * 2, endY);
+          spriteCtx.stroke();
+        });
+        spriteCtx.restore();
+      }
+
+      function drawBossBlink(x, y, angle, localX, localY, radiusX, radiusY, phase, offset = 0) {
+        const blink = Math.pow(Math.max(0, Math.sin(phase * 0.72 + offset)), 32);
+        if (blink < 0.04) return;
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.fillStyle = `rgba(2,3,5,${0.42 + blink * 0.5})`;
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY, radiusX, Math.max(1, radiusY * blink), 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.restore();
+      }
+
+      function drawBossMawShadow(x, y, angle, localX, localY, width, height, phase, tint) {
+        const breath = 0.82 + (Math.sin(phase * 1.7) + 1) * 0.09;
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.globalCompositeOperation = "multiply";
+        spriteCtx.fillStyle = tint;
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY + Math.sin(phase * 1.15) * 1.2, width * breath, height * breath, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.restore();
+      }
+
       function drawEngineFlame(x, y, width, length, phase) {
         const sway = Math.sin(phase * 1.7) * width * 0.28;
         const gradient = spriteCtx.createLinearGradient(x, y, x + sway, y + length);
@@ -2988,29 +3255,28 @@
         const sizes = { octopus: [332, 332], hunter: [314, 314], crystal: [292, 292], dreadnought: [328, 328] };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
-        const pulseX = 1 + inhale * 0.014;
-        const pulseY = 1 - inhale * 0.01;
+        const pulseX = 1 + inhale * 0.007;
+        const pulseY = 1 - inhale * 0.005;
         const filter = boss.hurt > 0 ? "brightness(1.65)" : "none";
-        const angle = Math.sin(boss.phase * 0.7) * 0.022;
-        const drawX = boss.x + Math.sin(boss.phase * 1.1) * 2.4;
-        const drawY = boss.y + Math.cos(boss.phase * 1.35) * 3.2;
-        drawBossStrands(drawX, drawY, angle, boss.kind, boss.phase);
+        const angle = Math.sin(boss.phase * 0.7) * 0.012;
+        const drawX = boss.x + Math.sin(boss.phase * 1.1) * 1.6;
+        const drawY = boss.y + Math.cos(boss.phase * 1.35) * 2.2;
+        drawAnchoredBossMotion(drawX, drawY, angle, boss.kind, boss.phase);
         drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, drawX, drawY, width * pulseX, height * pulseY, angle, "transparent", 0, 1, filter);
         if (boss.kind === "octopus") {
-          [-48, -24, 0, 24, 48].forEach((eyeX, index) => drawLivingEye(drawX, drawY, angle, eyeX, -52 + Math.abs(index - 2) * 8, 9, 6, "#b66cff", boss.phase, index * 0.55));
-          drawBossMouth(drawX, drawY, angle, 0, 13, 18, 34, boss.phase, "rgba(180,75,205,0.72)");
+          [[-57, -47], [-29, -38], [29, -38], [57, -47]].forEach(([eyeX, eyeY], index) => {
+            drawBossBlink(drawX, drawY, angle, eyeX, eyeY, 7, 5, boss.phase, index * 0.19);
+          });
+          drawBossMawShadow(drawX, drawY, angle, 0, 14, 7, 31, boss.phase, "rgba(30,5,35,0.26)");
         } else if (boss.kind === "hunter") {
-          drawLivingEye(drawX, drawY, angle, -31, -45, 12, 5, "#ff3f57", boss.phase, 0);
-          drawLivingEye(drawX, drawY, angle, 31, -45, 12, 5, "#ff3f57", boss.phase, 0.12);
-          drawBossMouth(drawX, drawY, angle, 0, 5, 32, 17, boss.phase + 0.8, "rgba(159,255,107,0.62)");
+          drawBossBlink(drawX, drawY, angle, -29, -43, 9, 4, boss.phase, 0);
+          drawBossBlink(drawX, drawY, angle, 29, -43, 9, 4, boss.phase, 0.08);
+          drawBossMawShadow(drawX, drawY, angle, 0, -2, 15, 16, boss.phase + 0.8, "rgba(20,5,7,0.2)");
         } else if (boss.kind === "crystal") {
-          drawLivingEye(drawX, drawY, angle, 0, -9, 19 + Math.sin(boss.phase * 3.2) * 2, 15, "#b66cff", boss.phase, 1.2);
-          drawBossMouth(drawX, drawY, angle, 0, 42, 21, 11, boss.phase + 1.4, "rgba(94,215,255,0.72)");
+          drawBossBlink(drawX, drawY, angle, 0, -6, 13, 9, boss.phase, 1.2);
         } else {
-          drawLivingEye(drawX, drawY, angle, 0, -48, 18, 18, "#ff8a36", boss.phase, 0.7);
-          drawLivingEye(drawX, drawY, angle, -42, -33, 7, 5, "#ff3f57", boss.phase, 0);
-          drawLivingEye(drawX, drawY, angle, 42, -33, 7, 5, "#ff3f57", boss.phase, 0.2);
-          drawBossMouth(drawX, drawY, angle, 0, 25, 38, 22, boss.phase + 0.35, "rgba(255,104,45,0.7)");
+          drawBossBlink(drawX, drawY, angle, 0, -45, 14, 12, boss.phase, 0.7);
+          drawBossMawShadow(drawX, drawY, angle, 0, 28, 21, 31, boss.phase + 0.35, "rgba(22,4,3,0.24)");
         }
       }
 
@@ -3503,6 +3769,11 @@
       }
 
       window.addEventListener("keydown", (event) => {
+        if (introActive) {
+          event.preventDefault();
+          if (!event.repeat) finishIntro();
+          return;
+        }
         if (event.code === "KeyX") {
           event.preventDefault();
           if (!event.repeat) activateShield();
@@ -3536,6 +3807,10 @@
         event.preventDefault();
         activateShield();
       });
+      introSplash.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        finishIntro();
+      });
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
@@ -3553,7 +3828,7 @@
 
       renderLeaderboard();
       renderLives();
-      scheduleAttractMode(7000);
+      beginIntro();
       new Phaser.Game({
         type: Phaser.HEADLESS,
         width: W,
