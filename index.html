@@ -831,6 +831,185 @@
       }
     }
 
+    /* In-game surfaces share the bosses' bone, gunmetal, violet and ember palette. */
+    .shell {
+      background:
+        radial-gradient(ellipse at 50% 72%, rgba(126, 55, 148, 0.13), transparent 42%),
+        radial-gradient(ellipse at 72% 24%, rgba(210, 91, 40, 0.08), transparent 30%),
+        linear-gradient(180deg, rgba(9, 12, 18, 0.9), rgba(2, 3, 7, 0.99));
+      border-inline-color: rgba(190, 205, 205, 0.18);
+      box-shadow:
+        0 0 70px rgba(0, 0, 0, 0.68),
+        inset 0 0 92px rgba(103, 49, 125, 0.09),
+        inset 0 0 20px rgba(228, 112, 50, 0.035);
+    }
+
+    .shell::after {
+      background:
+        linear-gradient(90deg, rgba(107, 38, 74, 0.05), transparent 22%, transparent 76%, rgba(199, 90, 41, 0.045)),
+        repeating-linear-gradient(0deg, rgba(224, 232, 225, 0.018) 0 1px, transparent 1px 5px),
+        radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.58) 100%);
+      opacity: 0.82;
+    }
+
+    .hud {
+      color: #d9dfd8;
+      font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", sans-serif;
+      font-weight: 700;
+    }
+
+    .hud-pill {
+      border-color: rgba(176, 187, 179, 0.34);
+      border-top-color: rgba(229, 224, 204, 0.56);
+      background:
+        linear-gradient(115deg, rgba(134, 143, 139, 0.15), transparent 24%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
+        linear-gradient(180deg, rgba(34, 38, 40, 0.9), rgba(8, 10, 13, 0.9));
+      box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.38),
+        inset 0 1px rgba(255, 244, 214, 0.09),
+        inset 0 -9px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .hud-pill:nth-child(2),
+    .hud-pill:nth-child(3) {
+      border-bottom-color: rgba(143, 74, 161, 0.52);
+    }
+
+    .hud strong {
+      color: #f4d9b2;
+      text-shadow: 0 0 8px rgba(226, 96, 43, 0.32);
+    }
+
+    .dot {
+      border-radius: 50%;
+      background: #e45f32;
+      box-shadow: 0 0 5px #ffb064, 0 0 15px rgba(228, 95, 50, 0.78);
+    }
+
+    .life {
+      background: linear-gradient(135deg, #d8d3c1, #6d7775 46%, #252b2d 47%);
+      filter: drop-shadow(0 0 4px rgba(219, 102, 51, 0.5));
+      box-shadow: none;
+    }
+
+    .overlay:not(.demo-mode) {
+      background:
+        radial-gradient(ellipse at 50% 38%, rgba(93, 43, 112, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(1, 2, 4, 0.38), rgba(1, 2, 4, 0.72));
+    }
+
+    .panel,
+    .win-card {
+      border-color: rgba(185, 192, 182, 0.48);
+      border-top-color: rgba(235, 225, 196, 0.68);
+      border-left-color: rgba(187, 73, 44, 0.64);
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(128, 58, 139, 0.16), transparent 38%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 9px),
+        linear-gradient(145deg, rgba(43, 47, 47, 0.9), rgba(10, 12, 15, 0.88) 52%, rgba(29, 13, 16, 0.84));
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.62),
+        inset 0 1px rgba(255, 239, 198, 0.1),
+        inset 0 0 36px rgba(81, 35, 94, 0.12);
+    }
+
+    .panel::before {
+      border-color: rgba(204, 199, 176, 0.2);
+    }
+
+    .panel::after {
+      background: linear-gradient(90deg, #b9442d 0 18%, transparent 18% 68%, #755086 68% 86%, #d7cba9 86% 100%);
+      box-shadow: 0 0 10px rgba(202, 80, 43, 0.28);
+    }
+
+    .space-logo {
+      color: #e1dac7;
+      text-shadow: 0 2px 24px #000, 0 0 14px rgba(143, 74, 161, 0.3);
+    }
+
+    .panel p,
+    .win-card p {
+      color: #adb4af;
+    }
+
+    .leaderboard {
+      border-color: rgba(176, 187, 179, 0.32);
+      border-left-color: rgba(190, 71, 43, 0.56);
+      background:
+        repeating-linear-gradient(0deg, rgba(217, 224, 214, 0.022) 0 1px, transparent 1px 5px),
+        rgba(2, 4, 6, 0.34);
+      box-shadow: inset 0 0 22px rgba(91, 45, 105, 0.1);
+    }
+
+    .leaderboard-title {
+      color: #d8d0b8;
+      text-shadow: 0 0 9px rgba(151, 78, 166, 0.45);
+    }
+
+    .leaderboard li:first-child {
+      color: #f0a15c;
+      text-shadow: 0 0 9px rgba(216, 82, 40, 0.48), 0 1px 3px #000;
+    }
+
+    button {
+      border-color: rgba(230, 209, 168, 0.7);
+      background:
+        linear-gradient(180deg, #e5ded0, #aaa99f 48%, #747a78 49%, #c9c4b8);
+      color: #141719;
+      box-shadow: 0 0 14px rgba(214, 91, 43, 0.18), inset 0 2px rgba(255, 251, 233, 0.45);
+    }
+
+    button.secondary,
+    .touch button {
+      border-color: rgba(170, 178, 171, 0.44);
+      background:
+        linear-gradient(180deg, rgba(130, 139, 136, 0.18), rgba(31, 35, 37, 0.5)),
+        rgba(5, 7, 9, 0.62);
+      color: #d8ddd7;
+    }
+
+    .touch button:nth-child(2),
+    .touch button:nth-child(3) {
+      background: linear-gradient(180deg, rgba(182, 80, 48, 0.88), rgba(78, 28, 29, 0.94));
+      border-color: rgba(238, 170, 103, 0.68);
+      color: #fff1db;
+    }
+
+    .encouragement {
+      color: rgba(225, 215, 188, 0.86);
+      -webkit-text-stroke-color: rgba(20, 11, 18, 0.9);
+      text-shadow: 0 0 7px rgba(147, 72, 162, 0.68), 0 0 16px rgba(210, 82, 43, 0.28), 2px 2px #000;
+      filter: drop-shadow(0 0 6px rgba(91, 43, 105, 0.36));
+    }
+
+    .win-scene,
+    .win-scene.finale {
+      background:
+        radial-gradient(ellipse at 50% 35%, rgba(132, 63, 147, 0.25), transparent 30%),
+        radial-gradient(ellipse at 50% 72%, rgba(205, 75, 38, 0.18), transparent 35%),
+        rgba(2, 3, 6, 0.82);
+    }
+
+    .win-scene::before,
+    .win-scene::after {
+      background: repeating-conic-gradient(from 0deg, rgba(221, 207, 174, 0.12) 0deg 5deg, transparent 5deg 19deg);
+      opacity: 0.22;
+    }
+
+    .win-title,
+    .win-scene.finale .win-title {
+      color: #e5dcc5;
+      -webkit-text-stroke-color: #8a382f;
+      text-shadow: 0 0 13px rgba(229, 220, 197, 0.45), 0 0 32px rgba(145, 66, 157, 0.42), 4px 4px #090506;
+    }
+
+    .win-subtitle,
+    .win-scene.finale .win-subtitle {
+      color: #e59155;
+      text-shadow: 0 0 14px rgba(206, 76, 39, 0.56), 2px 2px #000;
+    }
+
     @media (pointer: coarse), (max-width: 720px) {
       .touch {
         display: grid;
@@ -932,7 +1111,7 @@
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
-        <p id="overlayText">Shoot aliens with Space, move with the arrow keys or A/D, and activate your shield with X. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
+        <p id="overlayText">Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
         <div class="actions">
           <button id="startBtn" type="button">Start</button>
@@ -958,7 +1137,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.20.22 · Millenium Owl · uploaded 2026-07-20 19:53 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.20.24 · boss visual system · uploaded 2026-07-20 20:42 CEST</div>
   </main>
 
   <script>
@@ -971,6 +1150,7 @@
         return;
       }
       const canvas = document.querySelector("#game");
+      const shell = document.querySelector(".shell");
       const gl = canvas.getContext("webgl", { antialias: true, alpha: false });
       if (!gl) {
         document.body.innerHTML = "<p style='padding:24px'>Your browser needs WebGL to run this version of the game.</p>";
@@ -1153,6 +1333,11 @@
       physicsEngine.gravity.scale = 0;
       const physicalItems = new Set();
       let playerInput = 0;
+      let directDragPointerId = null;
+      let directDragTarget = null;
+      let directDragOffset = { x: 0, y: 0 };
+      const touchShieldPointers = new Set();
+      const touchTapPointers = new Map();
 
       function attachPhysicsBody(item, kind) {
         if (item.body) return item.body;
@@ -1202,9 +1387,20 @@
         comets.forEach((item) => attachPhysicsBody(item, "comet"));
         debris.forEach((item) => attachPhysicsBody(item, "debris"));
 
-        const desired = playerInput * player.speed / 60;
-        const smoothed = player.body.velocity.x + (desired - player.body.velocity.x) * Math.min(1, dt * 13);
-        matter.Body.setVelocity(player.body, { x: smoothed, y: 0 });
+        if (directDragPointerId !== null && directDragTarget) {
+          const targetX = clamp(directDragTarget.x + directDragOffset.x, 54, W - 54);
+          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 72);
+          const follow = Math.min(1, dt * 22);
+          matter.Body.setPosition(player.body, {
+            x: player.body.position.x + (targetX - player.body.position.x) * follow,
+            y: player.body.position.y + (targetY - player.body.position.y) * follow
+          });
+          matter.Body.setVelocity(player.body, { x: 0, y: 0 });
+        } else {
+          const desired = playerInput * player.speed / 60;
+          const smoothed = player.body.velocity.x + (desired - player.body.velocity.x) * Math.min(1, dt * 13);
+          matter.Body.setVelocity(player.body, { x: smoothed, y: 0 });
+        }
         comets.forEach((item) => {
           matter.Body.setVelocity(item.body, {
             x: item.body.velocity.x,
@@ -1221,8 +1417,9 @@
         matter.Engine.update(physicsEngine, Math.min(16, dt * 1000));
 
         const boundedX = clamp(player.body.position.x, 54, W - 54);
-        if (boundedX !== player.body.position.x) {
-          matter.Body.setPosition(player.body, { x: boundedX, y: player.y });
+        const boundedY = clamp(player.body.position.y, 120, H - 72);
+        if (boundedX !== player.body.position.x || boundedY !== player.body.position.y) {
+          matter.Body.setPosition(player.body, { x: boundedX, y: boundedY });
           matter.Body.setVelocity(player.body, { x: 0, y: 0 });
         }
         player.x = player.body.position.x;
@@ -2223,6 +2420,7 @@
       }
 
       function resetGame() {
+        resetDirectTouchControls();
         score = 0;
         scoreSubmitted = false;
         wave = 1;
@@ -2268,7 +2466,7 @@
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Shoot aliens with Space, move with the arrow keys or A/D, and activate your shield with X. The bonus UFO clears the wave, but do not shoot the comet.";
+        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, drag the ship with your thumb, tap the playfield with your index finger to fire, and hold the lower-left corner for the shield. The bonus UFO clears the wave, but do not shoot the comet.";
         updateHud();
       }
 
@@ -2857,6 +3055,9 @@
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
+        if (touchShieldPointers.size > 0 && state === "playing") {
+          player.shieldTime = Math.max(player.shieldTime, 0.18);
+        }
         playerInput = 0;
         if (state === "demo") {
           runDemoPilot(dt);
@@ -3147,15 +3348,22 @@
         spriteCtx.restore();
       }
 
+      function blinkClosure(phase, offset = 0, period = 5.4) {
+        const cycle = ((phase + offset) % period + period) % period;
+        const first = clamp(1 - Math.abs(cycle - 0.18) / 0.13, 0, 1);
+        const second = clamp(1 - Math.abs(cycle - 0.46) / 0.1, 0, 1) * 0.72;
+        return Math.sin(Math.max(first, second) * Math.PI * 0.5);
+      }
+
       function drawAnimatedEye(x, y, angle, localX, localY, radiusX, radiusY, color, phase, offset = 0) {
-        const blink = Math.pow(Math.max(0, Math.sin(phase * 0.72 + offset)), 22);
-        if (blink < 0.28) return;
+        const blink = blinkClosure(phase, offset, 4.8 + offset * 0.4);
+        if (blink < 0.025) return;
         spriteCtx.save();
         spriteCtx.translate(x + renderShake.x, y + renderShake.y);
         spriteCtx.rotate(angle);
-        spriteCtx.fillStyle = `rgba(2,3,5,${blink * 0.9})`;
+        spriteCtx.fillStyle = `rgba(5,4,7,${0.42 + blink * 0.5})`;
         spriteCtx.beginPath();
-        spriteCtx.ellipse(localX, localY, radiusX * 1.12, radiusY * blink, 0, 0, Math.PI * 2);
+        spriteCtx.ellipse(localX, localY, radiusX * 1.08, Math.max(0.45, radiusY * blink), 0, 0, Math.PI * 2);
         spriteCtx.fill();
         spriteCtx.restore();
       }
@@ -3292,65 +3500,48 @@
         spriteCtx.restore();
       }
 
-      function drawAnchoredBossMotion(x, y, angle, kind, phase) {
-        if (kind !== "octopus" && kind !== "hunter") return;
-        const octopus = kind === "octopus";
-        const roots = octopus
-          ? [[-68, 42], [-34, 60], [34, 60], [68, 42]]
-          : [[-58, -58], [-66, -32], [58, -58], [66, -32]];
+      function drawBossBlink(x, y, angle, localX, localY, radiusX, radiusY, phase, offset = 0, lid = "rgba(8,5,10,0.92)") {
+        const blink = blinkClosure(phase, offset, 5.8);
+        if (blink < 0.025) return;
         spriteCtx.save();
         spriteCtx.translate(x + renderShake.x, y + renderShake.y);
         spriteCtx.rotate(angle);
-        spriteCtx.lineCap = "round";
-        roots.forEach(([rootX, rootY], index) => {
-          const side = rootX < 0 ? -1 : 1;
-          const motion = Math.sin(phase * (octopus ? 1.45 : 1.2) + index * 1.7);
-          const endX = octopus
-            ? rootX + side * 18 + motion * 11
-            : rootX + side * 34 + motion * 7;
-          const endY = octopus
-            ? rootY + 86 + Math.cos(phase * 1.2 + index) * 7
-            : rootY + 92 + Math.cos(phase * 1.05 + index) * 6;
-          const controlX = rootX + side * (octopus ? 22 : 38) - motion * 8;
-          const controlY = rootY + (octopus ? 43 : 46);
-          spriteCtx.strokeStyle = octopus ? "rgba(91,45,111,0.7)" : "rgba(15,18,18,0.76)";
-          spriteCtx.lineWidth = octopus ? 7 : 6;
-          spriteCtx.beginPath();
-          spriteCtx.moveTo(rootX, rootY);
-          spriteCtx.quadraticCurveTo(controlX, controlY, endX, endY);
-          spriteCtx.stroke();
-          spriteCtx.strokeStyle = octopus ? "rgba(200,125,220,0.24)" : "rgba(118,126,112,0.2)";
-          spriteCtx.lineWidth = 1.2;
-          spriteCtx.beginPath();
-          spriteCtx.moveTo(rootX - side, rootY);
-          spriteCtx.quadraticCurveTo(controlX - side * 2, controlY, endX - side * 2, endY);
-          spriteCtx.stroke();
-        });
+        spriteCtx.fillStyle = lid;
+        spriteCtx.globalAlpha = 0.3 + blink * 0.7;
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY, radiusX, Math.max(0.7, radiusY * blink), 0, 0, Math.PI * 2);
+        spriteCtx.fill();
         spriteCtx.restore();
       }
 
-      function drawBossBlink(x, y, angle, localX, localY, radiusX, radiusY, phase, offset = 0) {
-        const blink = Math.pow(Math.max(0, Math.sin(phase * 0.72 + offset)), 32);
-        if (blink < 0.04) return;
+      function drawBossEyeLight(x, y, angle, localX, localY, radius, phase, color) {
+        const lookX = Math.sin(phase * 0.71) * radius * 0.22;
+        const lookY = Math.cos(phase * 0.53) * radius * 0.12;
+        const pulse = 0.7 + Math.sin(phase * 2.2) * 0.16;
         spriteCtx.save();
         spriteCtx.translate(x + renderShake.x, y + renderShake.y);
         spriteCtx.rotate(angle);
-        spriteCtx.fillStyle = `rgba(2,3,5,${0.42 + blink * 0.5})`;
+        spriteCtx.globalCompositeOperation = "lighter";
+        spriteCtx.fillStyle = color;
+        spriteCtx.globalAlpha = pulse;
+        spriteCtx.shadowColor = color;
+        spriteCtx.shadowBlur = radius * 1.35;
         spriteCtx.beginPath();
-        spriteCtx.ellipse(localX, localY, radiusX, Math.max(1, radiusY * blink), 0, 0, Math.PI * 2);
+        spriteCtx.ellipse(localX + lookX, localY + lookY, radius * 0.34, radius * 0.2, 0, 0, Math.PI * 2);
         spriteCtx.fill();
         spriteCtx.restore();
       }
 
       function drawBossMawShadow(x, y, angle, localX, localY, width, height, phase, tint) {
-        const breath = 0.82 + (Math.sin(phase * 1.7) + 1) * 0.09;
+        const breath = 0.91 + Math.sin(phase * 1.34) * 0.045;
         spriteCtx.save();
         spriteCtx.translate(x + renderShake.x, y + renderShake.y);
         spriteCtx.rotate(angle);
         spriteCtx.globalCompositeOperation = "multiply";
         spriteCtx.fillStyle = tint;
+        spriteCtx.globalAlpha = 0.34 + Math.sin(phase * 1.34) * 0.08;
         spriteCtx.beginPath();
-        spriteCtx.ellipse(localX, localY + Math.sin(phase * 1.15) * 1.2, width * breath, height * breath, 0, 0, Math.PI * 2);
+        spriteCtx.ellipse(localX, localY + Math.sin(phase * 1.1) * 0.8, width * breath, height * (0.96 + Math.sin(phase * 1.34) * 0.025), 0, 0, Math.PI * 2);
         spriteCtx.fill();
         spriteCtx.restore();
       }
@@ -3405,28 +3596,43 @@
         const sizes = { octopus: [332, 332], hunter: [314, 314], crystal: [292, 292], dreadnought: [328, 328] };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
-        const pulseX = 1 + inhale * 0.007;
-        const pulseY = 1 - inhale * 0.005;
-        const filter = boss.hurt > 0 ? "brightness(1.65)" : "none";
-        const angle = Math.sin(boss.phase * 0.7) * 0.012;
-        const drawX = boss.x + Math.sin(boss.phase * 1.1) * 1.6;
-        const drawY = boss.y + Math.cos(boss.phase * 1.35) * 2.2;
-        drawAnchoredBossMotion(drawX, drawY, angle, boss.kind, boss.phase);
+        const pulseX = 1 + inhale * 0.0045;
+        const pulseY = 1 - inhale * 0.003;
+        const filter = boss.hurt > 0 ? "brightness(1.42) saturate(0.72)" : "none";
+        const angle = Math.sin(boss.phase * 0.63) * 0.007;
+        const drawX = boss.x + Math.sin(boss.phase * 0.88) * 1.1;
+        const drawY = boss.y + Math.cos(boss.phase * 1.05) * 1.5;
         drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, drawX, drawY, width * pulseX, height * pulseY, angle, "transparent", 0, 1, filter);
         if (boss.kind === "octopus") {
           [[-57, -47], [-29, -38], [29, -38], [57, -47]].forEach(([eyeX, eyeY], index) => {
-            drawBossBlink(drawX, drawY, angle, eyeX, eyeY, 7, 5, boss.phase, index * 0.19);
+            drawBossEyeLight(drawX, drawY, angle, eyeX, eyeY, 6, boss.phase + index * 0.21, "#8c4db6");
+            drawBossBlink(drawX, drawY, angle, eyeX, eyeY, 7, 5, boss.phase, index < 2 ? 0 : 0.04, "rgba(42,14,52,0.94)");
           });
-          drawBossMawShadow(drawX, drawY, angle, 0, 14, 7, 31, boss.phase, "rgba(30,5,35,0.26)");
+          drawBossMawShadow(drawX, drawY, angle, 0, 11, 6.5, 29, boss.phase, "rgba(27,4,32,0.58)");
         } else if (boss.kind === "hunter") {
-          drawBossBlink(drawX, drawY, angle, -29, -43, 9, 4, boss.phase, 0);
-          drawBossBlink(drawX, drawY, angle, 29, -43, 9, 4, boss.phase, 0.08);
-          drawBossMawShadow(drawX, drawY, angle, 0, -2, 15, 16, boss.phase + 0.8, "rgba(20,5,7,0.2)");
+          drawBossEyeLight(drawX, drawY, angle, -29, -43, 8, boss.phase, "#d83424");
+          drawBossEyeLight(drawX, drawY, angle, 29, -43, 8, boss.phase + 0.1, "#d83424");
+          drawBossBlink(drawX, drawY, angle, -29, -43, 10, 4.5, boss.phase, 0, "rgba(50,42,31,0.96)");
+          drawBossBlink(drawX, drawY, angle, 29, -43, 10, 4.5, boss.phase, 0.03, "rgba(50,42,31,0.96)");
+          drawBossMawShadow(drawX, drawY, angle, 0, -1, 13, 14, boss.phase + 0.8, "rgba(25,4,5,0.54)");
         } else if (boss.kind === "crystal") {
-          drawBossBlink(drawX, drawY, angle, 0, -6, 13, 9, boss.phase, 1.2);
+          const crystalPulse = 0.72 + Math.sin(boss.phase * 2.35) * 0.18;
+          spriteCtx.save();
+          spriteCtx.translate(drawX + renderShake.x, drawY + renderShake.y);
+          spriteCtx.rotate(angle);
+          spriteCtx.globalCompositeOperation = "lighter";
+          spriteCtx.fillStyle = "#9b63ff";
+          spriteCtx.globalAlpha = crystalPulse;
+          spriteCtx.shadowColor = "#62cfff";
+          spriteCtx.shadowBlur = 20 + crystalPulse * 8;
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(0, -5, 7.5, 11.5, 0, 0, Math.PI * 2);
+          spriteCtx.fill();
+          spriteCtx.restore();
         } else {
-          drawBossBlink(drawX, drawY, angle, 0, -45, 14, 12, boss.phase, 0.7);
-          drawBossMawShadow(drawX, drawY, angle, 0, 28, 21, 31, boss.phase + 0.35, "rgba(22,4,3,0.24)");
+          drawBossEyeLight(drawX, drawY, angle, 0, -45, 13, boss.phase, "#ff5a1f");
+          drawBossBlink(drawX, drawY, angle, 0, -45, 15, 12, boss.phase, 0.7, "rgba(31,28,28,0.96)");
+          drawBossMawShadow(drawX, drawY, angle, 0, 29, 19, 29, boss.phase + 0.35, "rgba(29,3,2,0.62)");
         }
       }
 
@@ -3435,13 +3641,14 @@
         if (blink) return;
         const t = performance.now() / 1000;
         if (player.shieldTime > 0) {
-          const pulse = 1 + Math.sin(t * 16) * 0.05;
-          drawPoly(shieldShape, player.x, player.y, 64 * pulse, 64 * pulse, t * 0.4, rgba(colors.cyan, 0.24));
-          drawPoly(ringShape, player.x, player.y, 68 * pulse, 68 * pulse, -t * 0.7, rgba(colors.white, 0.62), gl.LINE_LOOP);
-          drawPoly(ringShape, player.x, player.y, 52 * pulse, 52 * pulse, t, rgba(colors.cyan, 0.32), gl.LINE_LOOP);
-          for (let i = 0; i < 6; i += 1) {
-            const a = t * 2.4 + i * Math.PI / 3;
-            drawPoly(bossEyeShape, player.x + Math.cos(a) * 61, player.y + Math.sin(a) * 61, 3.5, 3.5, 0, rgba(colors.white, 0.82));
+          const pulse = 1 + Math.sin(t * 10) * 0.025;
+          drawPoly(shieldShape, player.x, player.y, 64 * pulse, 64 * pulse, t * 0.12, rgba(colors.violet, 0.12));
+          drawPoly(ringShape, player.x, player.y, 68 * pulse, 68 * pulse, -t * 0.24, rgba(colors.white, 0.48), gl.LINE_LOOP);
+          drawPoly(ringShape, player.x, player.y, 53 * pulse, 53 * pulse, t * 0.32, rgba(colors.orange, 0.25), gl.LINE_LOOP);
+          for (let i = 0; i < 8; i += 1) {
+            const a = t * 0.7 + i * Math.PI / 4;
+            const plateColor = i % 2 ? colors.violet : colors.orange;
+            drawPoly(hunterBladeShape, player.x + Math.cos(a) * 61, player.y + Math.sin(a) * 61, 3.2, 8, a + Math.PI / 2, rgba(plateColor, 0.62));
           }
         }
         if (realisticSpritesReady) {
@@ -3873,11 +4080,11 @@
         });
 
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        for (let y = H % 48; y < H; y += 48) {
-          drawPoly(lineShape, W / 2, y, W / 2, 1, 0, rgba(colors.cyan, 0.07), gl.LINES);
+        for (let y = H % 56; y < H; y += 56) {
+          drawPoly(lineShape, W / 2, y, W / 2, 1, 0, rgba(colors.white, 0.035), gl.LINES);
         }
-        for (let x = 70; x < W; x += 92) {
-          drawPoly(lineShape, x - 35, H / 2, H / 2, 1, Math.PI / 2 + 0.075, rgba(colors.green, 0.055), gl.LINES);
+        for (let x = 76; x < W; x += 108) {
+          drawPoly(lineShape, x - 38, H / 2, H / 2, 1, Math.PI / 2 + 0.06, rgba(colors.violet, 0.03), gl.LINES);
         }
 
         bullets.forEach((b) => {
@@ -3917,6 +4124,118 @@
         if (active) keys.add(code);
         else keys.delete(code);
       }
+
+      function pointerToGame(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (event.clientX - rect.left) * W / rect.width,
+          y: (event.clientY - rect.top) * H / rect.height
+        };
+      }
+
+      function resetDirectTouchControls() {
+        directDragPointerId = null;
+        directDragTarget = null;
+        directDragOffset = { x: 0, y: 0 };
+        touchShieldPointers.clear();
+        touchTapPointers.clear();
+      }
+
+      function releaseGesturePointer(pointerId) {
+        try {
+          if (shell.hasPointerCapture(pointerId)) shell.releasePointerCapture(pointerId);
+        } catch (_) {}
+      }
+
+      function captureGesturePointer(pointerId) {
+        try { shell.setPointerCapture(pointerId); } catch (_) {}
+      }
+
+      function handleGamePointerDown(event) {
+        if (state !== "playing" || introActive) return;
+        const point = pointerToGame(event);
+        const inShieldCorner = point.x <= W * 0.28 && point.y >= H * 0.72;
+
+        if (inShieldCorner) {
+          event.preventDefault();
+          event.stopPropagation();
+          touchShieldPointers.add(event.pointerId);
+          captureGesturePointer(event.pointerId);
+          shell.dataset.lastGesture = "shield";
+          activateShield();
+          return;
+        }
+
+        const interactiveTarget = event.target instanceof Element && event.target.closest("button, .overlay, .win-scene");
+        if (interactiveTarget) return;
+
+        if (directDragPointerId === null && Math.hypot(point.x - player.x, point.y - player.y) <= 86) {
+          event.preventDefault();
+          event.stopPropagation();
+          directDragPointerId = event.pointerId;
+          directDragTarget = point;
+          directDragOffset = { x: player.x - point.x, y: player.y - point.y };
+          captureGesturePointer(event.pointerId);
+          shell.dataset.lastGesture = "drag";
+          return;
+        }
+
+        event.preventDefault();
+        touchTapPointers.set(event.pointerId, {
+          x: point.x,
+          y: point.y,
+          startedAt: performance.now(),
+          moved: false
+        });
+        captureGesturePointer(event.pointerId);
+      }
+
+      function handleGamePointerMove(event) {
+        if (event.pointerId === directDragPointerId) {
+          event.preventDefault();
+          directDragTarget = pointerToGame(event);
+          shell.dataset.lastDragTarget = `${Math.round(directDragTarget.x)},${Math.round(directDragTarget.y)}`;
+          return;
+        }
+        const tap = touchTapPointers.get(event.pointerId);
+        if (!tap) return;
+        const point = pointerToGame(event);
+        if (Math.hypot(point.x - tap.x, point.y - tap.y) > 22) tap.moved = true;
+      }
+
+      function finishGamePointer(event, allowTap) {
+        if (event.pointerId === directDragPointerId) {
+          event.preventDefault();
+          directDragPointerId = null;
+          directDragTarget = null;
+          directDragOffset = { x: 0, y: 0 };
+          releaseGesturePointer(event.pointerId);
+          return;
+        }
+
+        if (touchShieldPointers.delete(event.pointerId)) {
+          event.preventDefault();
+          if (touchShieldPointers.size === 0) player.shieldTime = Math.min(player.shieldTime, 0.12);
+          releaseGesturePointer(event.pointerId);
+          updateHud();
+          return;
+        }
+
+        const tap = touchTapPointers.get(event.pointerId);
+        if (!tap) return;
+        event.preventDefault();
+        touchTapPointers.delete(event.pointerId);
+        releaseGesturePointer(event.pointerId);
+        if (allowTap && !tap.moved && performance.now() - tap.startedAt <= 360) {
+          shoot();
+          shell.dataset.lastGesture = "fire";
+        }
+      }
+
+      shell.addEventListener("pointerdown", handleGamePointerDown, { capture: true });
+      shell.addEventListener("pointermove", handleGamePointerMove, { capture: true });
+      shell.addEventListener("pointerup", (event) => finishGamePointer(event, true), { capture: true });
+      shell.addEventListener("pointercancel", (event) => finishGamePointer(event, false), { capture: true });
 
       window.addEventListener("keydown", (event) => {
         if (introActive) {

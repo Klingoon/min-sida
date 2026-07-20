@@ -34,6 +34,9 @@ npm run serve
 - Move: `←` / `→` or `A` / `D`
 - Fire: `Space`, `W`, or `↑`
 - Shield: `X`, unlimited
+- iPhone steering: hold your thumb on the ship and drag
+- iPhone fire: tap the playfield with your index finger
+- iPhone shield: hold the lower-left corner of the screen
 - Continue from intro: any key or touch
 - Start the game: `Enter`
 - Toggle sound: `M`
