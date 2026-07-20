@@ -1,0 +1,10 @@
+{
+  "name": "varldsrymden-anfaller",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ett fristående WebGL-arkadspel i en enda HTML-fil.",
+  "scripts": {
+    "serve": "python3 -m http.server 4173",
+    "serve:alt": "python3 -m http.server 5173"
+  }
+}

@@ -748,11 +748,11 @@
           realisticSpritesReady = loadedRealisticSprites === Object.keys(realisticSprites).length;
         }, { once: true });
       });
-      realisticSprites.player.src = "varldsrymden-anfaller/assets/player-realistic.png";
-      realisticSprites.enemies.src = "varldsrymden-anfaller/assets/enemies-realistic.png";
-      realisticSprites.bosses.src = "varldsrymden-anfaller/assets/bosses-realistic.png";
-      realisticSprites.ufo.src = "varldsrymden-anfaller/assets/ufo-realistic.png";
-      realisticSprites.meteor.src = "varldsrymden-anfaller/assets/meteor-realistic.png";
+      realisticSprites.player.src = "assets/player-realistic.png";
+      realisticSprites.enemies.src = "assets/enemies-realistic.png";
+      realisticSprites.bosses.src = "assets/bosses-realistic.png";
+      realisticSprites.ufo.src = "assets/ufo-realistic.png";
+      realisticSprites.meteor.src = "assets/meteor-realistic.png";
       const keys = new Set();
       const bullets = [];
       const enemyBullets = [];
@@ -807,7 +807,7 @@
       let melodyStep = 0;
       const activePadOscillators = new Set();
       const musicGain = 1.32;
-      const soundtrack = new Audio("varldsrymden-anfaller/assets/holst-mars-cc0.m4a");
+      const soundtrack = new Audio("assets/holst-mars-cc0.m4a");
       soundtrack.loop = true;
       soundtrack.preload = "auto";
       soundtrack.volume = 0.46;
