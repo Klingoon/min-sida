@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -211,6 +211,35 @@
       font-size: clamp(11px, 1.25vw, 14px);
       opacity: 0;
       animation: intro-enter-pulse 3.2s ease-in-out 1.8s infinite;
+    }
+
+    .intro-audio {
+      position: absolute;
+      z-index: 4;
+      right: clamp(16px, 3vw, 34px);
+      bottom: clamp(16px, 3vw, 32px);
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 4px;
+      background: rgba(2, 5, 12, 0.5);
+      color: rgba(255, 255, 255, 0.92);
+      font: 18px/1 Arial, sans-serif;
+      cursor: pointer;
+      opacity: 0.72;
+      transition: opacity 300ms ease, background 300ms ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .intro-audio:hover,
+    .intro-audio:focus-visible {
+      opacity: 1;
+      background: rgba(13, 24, 38, 0.82);
+    }
+
+    html[data-music-state="playing"] .intro-audio {
+      opacity: 0;
+      pointer-events: none;
     }
 
     @keyframes intro-drift {
@@ -795,7 +824,8 @@
 </head>
 <body>
   <section class="intro-splash" id="introSplash" aria-label="Libertarian freedoom fighters, Max and Milton search the galaxy for their lost father">
-    <img src="assets/opening-max-milton.jpg" alt="Max och Milton framför sitt rymdskepp i en avlägsen galax">
+    <img src="assets/opening-max-milton.jpg" alt="Max and Milton in front of their spaceship in a distant galaxy">
+    <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <div class="intro-copy">
       <header>
         <h1 class="intro-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
@@ -808,46 +838,46 @@
       </footer>
     </div>
   </section>
-  <main class="shell" aria-label="Libertarian freedoom fighters, arkadskjutspel">
+  <main class="shell" aria-label="Libertarian freedoom fighters, arcade shooter">
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
-      <div class="hud-pill"><span class="dot"></span><span>Poäng&nbsp;<strong id="score">0</strong></span></div>
+      <div class="hud-pill"><span class="dot"></span><span>Score&nbsp;<strong id="score">0</strong></span></div>
       <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
-      <div class="hud-pill">Våg&nbsp;<strong id="wave">1</strong></div>
-      <div class="hud-pill"><span>Liv</span><span class="lives" id="lives"></span><span>X&nbsp;Sköld&nbsp;<strong id="shieldCount">∞</strong></span></div>
+      <div class="hud-pill">Wave&nbsp;<strong id="wave">1</strong></div>
+      <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">∞</strong></span></div>
     </div>
 
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
-        <p id="overlayText">Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar hela vågen om du skjuter ner det. Skjut inte kometen - den delar sig i fler mindre delar.</p>
-        <div class="leaderboard" id="leaderboard" aria-label="High score-lista"></div>
+        <p id="overlayText">Shoot aliens with Space, move with the arrow keys or A/D, and activate your shield with X. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
+        <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
         <div class="actions">
-          <button id="startBtn" type="button">Starta</button>
-          <button class="secondary" id="muteBtn" type="button">Ljud på</button>
+          <button id="startBtn" type="button">Start</button>
+          <button class="secondary" id="muteBtn" type="button">Sound on</button>
         </div>
       </div>
     </section>
 
     <div class="touch" aria-hidden="true">
       <button id="leftBtn" type="button">←</button>
-      <button id="fireBtn" type="button">Skjut</button>
-      <button id="shieldBtn" type="button">Sköld</button>
+      <button id="fireBtn" type="button">Fire</button>
+      <button id="shieldBtn" type="button">Shield</button>
       <button id="rightBtn" type="button">→</button>
     </div>
     <section class="win-scene" id="winScene" aria-live="assertive">
       <div class="win-card">
-        <h2 class="win-title">Grattis du vann</h2>
-        <p class="win-subtitle">Farzan Tarzan bjuder på Kebab!</p>
-        <div class="leaderboard" id="winLeaderboard" aria-label="High score-lista"></div>
+        <h2 class="win-title">Congratulations, you won</h2>
+        <p class="win-subtitle">Farzan Tarzan is buying kebab!</p>
+        <div class="leaderboard" id="winLeaderboard" aria-label="High score leaderboard"></div>
         <div class="actions win-actions">
-          <button id="winRestartBtn" type="button">Spela igen</button>
+          <button id="winRestartBtn" type="button">Play again</button>
         </div>
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.16 · freedoom fighters · uppladdad 2026-07-20 18:48 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.20.18 · English edition · uploaded 2026-07-20 19:09 CEST</div>
   </main>
 
   <script>
@@ -856,13 +886,13 @@
   <script>
     (() => {
       if (!window.Phaser) {
-        document.body.innerHTML = "<p style='padding:24px'>Spelmotorn kunde inte starta. Ladda om sidan och försök igen.</p>";
+        document.body.innerHTML = "<p style='padding:24px'>The game engine could not start. Reload the page and try again.</p>";
         return;
       }
       const canvas = document.querySelector("#game");
       const gl = canvas.getContext("webgl", { antialias: true, alpha: false });
       if (!gl) {
-        document.body.innerHTML = "<p style='padding:24px'>Din webbläsare behöver WebGL för den här versionen av spelet.</p>";
+        document.body.innerHTML = "<p style='padding:24px'>Your browser needs WebGL to run this version of the game.</p>";
         return;
       }
       const spriteCanvas = document.querySelector("#spriteLayer");
@@ -888,6 +918,7 @@
       const fireBtn = document.querySelector("#fireBtn");
       const shieldBtn = document.querySelector("#shieldBtn");
       const introSplash = document.querySelector("#introSplash");
+      const introAudioBtn = document.querySelector("#introAudioBtn");
       const introPhrase = document.querySelector("#introPhrase");
 
       const W = canvas.width;
@@ -971,6 +1002,9 @@
       soundtrack.loop = true;
       soundtrack.preload = "auto";
       soundtrack.volume = 0.46;
+      soundtrack.addEventListener("play", () => document.documentElement.dataset.musicState = "playing");
+      soundtrack.addEventListener("pause", () => document.documentElement.dataset.musicState = "paused");
+      soundtrack.addEventListener("error", () => document.documentElement.dataset.musicState = "error");
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
       let attractTimer = null;
@@ -997,11 +1031,11 @@
       const totalActs = 4;
       let encouragementTimer = 6;
       const encouragements = [
-        "Bra Milton",
-        "Bra Maxen",
-        "Bra grabbar",
-        "Mina fina grabbar",
-        "Farzan Tarzan tänker på er"
+        "Great job, Milton",
+        "Great job, Max",
+        "Well done, boys",
+        "My wonderful boys",
+        "Farzan Tarzan is thinking of you"
       ];
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const bossKinds = ["octopus", "hunter", "crystal", "dreadnought"];
@@ -1501,6 +1535,15 @@
         });
       }
 
+      function startIntroMusic() {
+        if (muted || melodyTimer) return;
+        soundtrack.play().then(() => {
+          melodyTimer = "orchestral";
+        }).catch(() => {
+          melodyTimer = null;
+        });
+      }
+
       function fanfareNote(freq, when, length, gain = 0.05) {
         if (muted || !audioCtx) return;
         const osc = audioCtx.createOscillator();
@@ -1796,7 +1839,7 @@
       function updateHud() {
         scoreEl.textContent = score.toString();
         hiScoreEl.textContent = getHiScore().toString();
-        waveEl.textContent = boss ? `BOSS ${act}/${totalActs}` : `AKT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
+        waveEl.textContent = boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         shieldCountEl.textContent = "∞";
         renderLives();
       }
@@ -1896,6 +1939,7 @@
         introPhrase.textContent = introPhrases[introPhraseIndex];
         introPhraseFadeTimer = setTimeout(() => introPhrase.classList.add("visible"), 550);
         introPhraseTimer = setInterval(cycleIntroPhrase, 4600);
+        startIntroMusic();
       }
 
       function scheduleAttractMode(delay = 7000) {
@@ -2096,8 +2140,8 @@
         bossDefeated = false;
         clearBossTimers();
         winScene.classList.remove("visible", "finale", "intermission");
-        winTitle.textContent = "Grattis du vann";
-        winSubtitle.textContent = "Farzan Tarzan bjuder på Kebab!";
+        winTitle.textContent = "Congratulations, you won";
+        winSubtitle.textContent = "Farzan Tarzan is buying kebab!";
         bullets.length = 0;
         enemyBullets.length = 0;
         particles.length = 0;
@@ -2117,8 +2161,8 @@
         demoFireTimer = 0.4;
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
-        startBtn.textContent = "Starta";
-        overlayText.textContent = "Demo-läge kör i bakgrunden. Tryck Starta för att spela. Skjut aliens med mellanslag, flytta med piltangenterna eller A/D och aktivera sköld med X. Bonus-UFO rensar vågen, men skjut inte kometen.";
+        startBtn.textContent = "Start";
+        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Shoot aliens with Space, move with the arrow keys or A/D, and activate your shield with X. The bonus UFO clears the wave, but do not shoot the comet.";
         updateHud();
       }
 
@@ -2161,8 +2205,8 @@
         bonusUfo = null;
         rifts.length = 0;
         submitScore("END");
-        overlayText.textContent = `Game over. Du fick ${score} poäng. HI-score ${getHiScore()}.`;
-        startBtn.textContent = "Spela igen";
+        overlayText.textContent = `Game over. You scored ${score} points. High score ${getHiScore()}.`;
+        startBtn.textContent = "Play again";
         overlay.classList.add("visible");
         scheduleAttractMode(7000);
       }
@@ -2189,7 +2233,7 @@
         score += 3000 + act * 900;
         if (!demoMode) overlay.classList.remove("visible");
         winScene.classList.remove("visible", "finale", "intermission");
-        overlayText.textContent = `Akt ${act}. Nya arkadvågor öppnar sig i rymden.`;
+        overlayText.textContent = `Act ${act}. New arcade waves are opening across space.`;
         for (let i = 0; i < 14; i += 1) {
           setTimeout(() => {
             makeParticles(W * (0.18 + Math.random() * 0.64), H * (0.2 + Math.random() * 0.42), i % 2 ? "#5ed7ff" : "#ffd86b", 30);
@@ -2222,8 +2266,8 @@
         submitScore(finale ? "WIN" : "BOS");
         winScene.classList.remove("intermission");
         winScene.classList.toggle("finale", finale);
-        winTitle.textContent = finale ? "Grattis du har vunnit" : "Grattis du vann";
-        winSubtitle.textContent = finale ? "en Toblerone av farzan tarzan" : "Farzan Tarzan bjuder på Kebab!";
+        winTitle.textContent = finale ? "Congratulations, you have won" : "Congratulations, you won";
+        winSubtitle.textContent = finale ? "a Toblerone from Farzan Tarzan" : "Farzan Tarzan is buying kebab!";
         winScene.classList.add("visible");
         winSceneUnlockAt = performance.now() + winSceneMinimumMs;
         shake = finale ? 46 : 34;
@@ -2242,10 +2286,10 @@
       function showBossClearScene() {
         winScene.classList.remove("finale");
         winScene.classList.add("intermission");
-        winTitle.textContent = "Grattis du vann";
+        winTitle.textContent = "Congratulations, you won";
         winSubtitle.textContent = act < totalActs
-          ? `Spelet fortsätter - akt ${act + 1} väntar med en ny boss!`
-          : "Finalbossen är besegrad!";
+          ? `The game continues - act ${act + 1} awaits with a new boss!`
+          : "The final boss has been defeated!";
         winScene.classList.add("visible");
         winSceneUnlockAt = performance.now() + winSceneMinimumMs;
         renderLeaderboard();
@@ -3771,7 +3815,10 @@
       window.addEventListener("keydown", (event) => {
         if (introActive) {
           event.preventDefault();
-          if (!event.repeat) finishIntro();
+          if (!event.repeat) {
+            initAudio();
+            finishIntro();
+          }
           return;
         }
         if (event.code === "KeyX") {
@@ -3786,7 +3833,7 @@
         if (event.code === "Enter" && state !== "playing") startGame();
         if (event.code === "KeyM") {
           muted = !muted;
-          muteBtn.textContent = muted ? "Ljud av" : "Ljud på";
+          muteBtn.textContent = muted ? "Sound off" : "Sound on";
           if (muted) {
             stopMelody();
           }
@@ -3809,14 +3856,23 @@
       });
       introSplash.addEventListener("pointerdown", (event) => {
         event.preventDefault();
+        initAudio();
         finishIntro();
+      });
+      introAudioBtn.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+      });
+      introAudioBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        initAudio();
       });
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
       muteBtn.addEventListener("click", () => {
         muted = !muted;
-        muteBtn.textContent = muted ? "Ljud av" : "Ljud på";
+        muteBtn.textContent = muted ? "Sound off" : "Sound on";
         if (muted) {
           stopMelody();
         }

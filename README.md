@@ -1,42 +1,43 @@
 # Libertarian freedoom fighters
 
-Ett fristående WebGL-arkadspel i en enda HTML-fil.
+A standalone WebGL arcade game in a single HTML file.
 
-Efter tre alienvågor kommer första bossen. När den besegras startar akt 2 med tre nya liv, skyddspuls, sinusformationer och en andra rymdjägarboss. Finalen visar Toblerone-vinstskärmen.
+The first boss arrives after three alien waves. Defeating it starts act 2 with three new lives, a shield pulse, sine-wave formations, and a second space hunter boss. The finale features the Toblerone victory screen.
 
-## Innehåll
+## Contents
 
-- `index.html` - hela spelet: HTML, CSS, WebGL-rendering, spellogik och Web Audio-ljud.
-- `package.json` - enkla lokala startkommandon.
+- `index.html` - the complete game: HTML, CSS, WebGL rendering, game logic, and Web Audio sound.
+- `package.json` - simple local launch commands.
 
-## Starta lokalt
+## Run locally
 
-Med Python:
+With Python:
 
 ```bash
 python3 -m http.server 4173
 ```
 
-Öppna sedan:
+Then open:
 
 ```text
 http://127.0.0.1:4173/
 ```
 
-Med npm:
+With npm:
 
 ```bash
 npm run serve
 ```
 
-## Kontroller
+## Controls
 
-- Flytta: `←` / `→` eller `A` / `D`
-- Skjut: `Space`, `W` eller `↑`
-- Sköld: `X`, obegränsat
-- Starta: `Enter`
-- Ljud av/på: `M`
+- Move: `←` / `→` or `A` / `D`
+- Fire: `Space`, `W`, or `↑`
+- Shield: `X`, unlimited
+- Continue from intro: any key or touch
+- Start the game: `Enter`
+- Toggle sound: `M`
 
-## Notering
+## Note
 
-Spelet är byggt utan externa dependencies och kan laddas upp som statisk HTML på en hemsida.
+The game has no external dependencies and can be deployed as static HTML on a website.
