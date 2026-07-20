@@ -55,6 +55,20 @@
       overflow: hidden;
     }
 
+    .shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255, 70, 120, 0.018), transparent 28%, transparent 72%, rgba(94, 215, 255, 0.025)),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 4px),
+        radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.42) 100%);
+      mix-blend-mode: normal;
+      opacity: 0.72;
+    }
+
     canvas {
       display: block;
       width: 100%;
@@ -72,6 +86,8 @@
       font-size: clamp(12px, 2.4vw, 15px);
       letter-spacing: 0;
       text-transform: uppercase;
+      z-index: 7;
+      filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.72));
     }
 
     .encouragement {
@@ -125,10 +141,14 @@
     .hud-pill {
       min-height: 36px;
       padding: 8px 10px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(23, 34, 58, 0.84), rgba(7, 12, 24, 0.78));
+      border: 1px solid rgba(94, 215, 255, 0.34);
+      border-top-color: rgba(255, 255, 255, 0.46);
+      background:
+        linear-gradient(90deg, rgba(94, 215, 255, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(23, 34, 58, 0.9), rgba(4, 8, 19, 0.86));
       backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px rgba(94, 215, 255, 0.08), inset 0 0 18px rgba(255, 255, 255, 0.04);
+      box-shadow: 0 0 22px rgba(94, 215, 255, 0.13), inset 0 0 18px rgba(255, 255, 255, 0.055);
+      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -229,6 +249,7 @@
       letter-spacing: 0;
       text-shadow: 0 0 8px rgba(94, 215, 255, 0.45), 1px 1px 0 rgba(0, 0, 0, 0.75);
       text-transform: uppercase;
+      z-index: 9;
     }
 
     .overlay {
@@ -742,7 +763,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.06.21.0120 · uppladdad 2026-06-21 01:20 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.2 · uppladdad 2026-07-20 CEST</div>
   </main>
 
   <script>
@@ -784,6 +805,7 @@
       const enemyBullets = [];
       const enemies = [];
       const particles = [];
+      const shockwaves = [];
       const comets = [];
       const rifts = [];
       let boss = null;
@@ -796,7 +818,8 @@
         y: Math.random() * H,
         r: Math.random() * 2.2 + 0.25,
         s: Math.random() * 1.25 + 0.2,
-        a: Math.random() * 0.72 + 0.22
+        a: Math.random() * 0.72 + 0.22,
+        phase: Math.random() * Math.PI * 2
       }));
       const nebulae = Array.from({ length: 7 }, () => ({
         x: Math.random() * W,
@@ -1259,9 +1282,12 @@
         varying vec2 v_local;
         varying vec4 v_color;
         void main() {
-          float topLight = smoothstep(1.0, -0.8, v_local.y) * 0.38;
-          float core = 1.0 - length(v_local) * 0.16;
-          vec3 color = v_color.rgb * (0.72 + topLight) + vec3(1.0) * topLight * 0.22;
+          float d = length(v_local);
+          float topLight = smoothstep(1.05, -0.72, v_local.y) * 0.42;
+          float rim = smoothstep(0.56, 1.08, d) * 0.34;
+          float ribs = sin((v_local.x * 1.6 + v_local.y * 0.7) * 18.0) * 0.035;
+          float core = 1.04 - d * 0.14;
+          vec3 color = v_color.rgb * (0.68 + topLight + ribs) + vec3(0.72, 0.9, 1.0) * (topLight * 0.2 + rim);
           gl_FragColor = vec4(color * core, v_color.a);
         }
       `);
@@ -1286,10 +1312,12 @@
         void main() {
           vec2 uv = gl_PointCoord * 2.0 - 1.0;
           float d = length(uv);
-          float core = smoothstep(1.0, 0.0, d);
-          float ring = smoothstep(0.52, 0.0, d);
-          float alpha = core * v_color.a;
-          vec3 color = v_color.rgb * (0.38 + ring * 0.9) + vec3(1.0) * ring * 0.18;
+          float halo = smoothstep(1.0, 0.02, d);
+          float core = smoothstep(0.28, 0.0, d);
+          float spikes = pow(max(0.0, 1.0 - abs(uv.x) * 8.0), 2.0) + pow(max(0.0, 1.0 - abs(uv.y) * 8.0), 2.0);
+          float energy = halo * 0.68 + core * 1.35 + spikes * (1.0 - d) * 0.2;
+          float alpha = min(1.0, energy) * v_color.a;
+          vec3 color = v_color.rgb * (0.28 + energy) + vec3(1.0) * core * 0.46;
           gl_FragColor = vec4(color, alpha);
         }
       `);
@@ -1365,6 +1393,15 @@
         return pts;
       }
 
+      function makeRing(count) {
+        const pts = [];
+        for (let i = 0; i <= count; i += 1) {
+          const a = (i / count) * Math.PI * 2;
+          pts.push(Math.cos(a), Math.sin(a));
+        }
+        return pts;
+      }
+
       const playerShape = [0, -1, 0.78, 0.58, 0.2, 0.36, 0, 0.86, -0.2, 0.36, -0.78, 0.58];
       const canopyShape = [0, -1, 0.42, 0.48, -0.42, 0.48];
       const alienHeadShape = [0, -1.1, 0.52, -0.92, 0.86, -0.48, 0.74, 0.08, 0.36, 0.42, 0.16, 0.92, 0, 1.04, -0.16, 0.92, -0.36, 0.42, -0.74, 0.08, -0.86, -0.48, -0.52, -0.92];
@@ -1381,6 +1418,7 @@
       const hunterMandibleShape = [-0.14, -1, 0.38, -0.3, 0.52, 0.82, 0.14, 1.08, -0.16, 0.08];
       const hunterBladeShape = [-0.12, -1, 0.18, -0.62, 0.14, 0.9, -0.14, 0.9, -0.18, -0.62];
       const shieldShape = makeBlob(48, 0.025);
+      const ringShape = makeRing(56);
       const ufoSaucerShape = [-1, -0.08, -0.78, -0.38, -0.34, -0.52, 0.34, -0.52, 0.78, -0.38, 1, -0.08, 0.72, 0.28, 0.22, 0.46, -0.22, 0.46, -0.72, 0.28];
       const ufoDomeShape = [-0.52, 0.02, -0.38, -0.46, 0, -0.72, 0.38, -0.46, 0.52, 0.02];
       const boltShape = [-0.16, -1, 0.16, -1, 0.1, 1, -0.1, 1];
@@ -1672,6 +1710,7 @@
         bullets.length = 0;
         enemyBullets.length = 0;
         particles.length = 0;
+        shockwaves.length = 0;
         spawnWave();
         updateHud();
       }
@@ -1700,6 +1739,7 @@
           bullets.length = 0;
           enemyBullets.length = 0;
           particles.length = 0;
+          shockwaves.length = 0;
           comets.length = 0;
           rifts.length = 0;
         }
@@ -1871,7 +1911,20 @@
             rgb: Math.random() > 0.18 ? hot : hexToRgb(color),
             r: Math.random() * 8.2 + 2.2,
             spin: Math.random() * Math.PI,
-            flare: Math.random() > 0.72
+            drag: 0.965 + Math.random() * 0.025,
+            flare: Math.random() > 0.66
+          });
+        }
+        if (count >= 26) {
+          shockwaves.push({
+            x,
+            y,
+            radius: 8,
+            speed: 150 + Math.min(count, 120) * 1.3,
+            life: 0.52 + Math.min(count, 100) * 0.002,
+            max: 0.72,
+            rgb: hexToRgb(color),
+            twist: Math.random() * Math.PI
           });
         }
       }
@@ -2200,11 +2253,21 @@
             nebula.x = Math.random() * W;
           }
         });
+        shockwaves.forEach((ring) => {
+          ring.radius += ring.speed * dt;
+          ring.life -= dt;
+          ring.twist += dt * 1.8;
+        });
+        for (let i = shockwaves.length - 1; i >= 0; i -= 1) {
+          if (shockwaves[i].life <= 0) shockwaves.splice(i, 1);
+        }
 
         if (!activeRun) {
           particles.forEach((p) => {
             p.x += p.vx * dt;
             p.y += p.vy * dt;
+            p.vx *= Math.pow(p.drag || 0.98, dt * 60);
+            p.vy *= Math.pow(p.drag || 0.98, dt * 60);
             p.life -= dt;
           });
           for (let i = particles.length - 1; i >= 0; i -= 1) {
@@ -2452,7 +2515,10 @@
         particles.forEach((p) => {
           p.x += p.vx * dt;
           p.y += p.vy * dt;
+          p.vx *= Math.pow(p.drag || 0.98, dt * 60);
+          p.vy *= Math.pow(p.drag || 0.98, dt * 60);
           p.vy += 70 * dt;
+          p.spin += dt * 7;
           p.life -= dt;
         });
         for (let i = particles.length - 1; i >= 0; i -= 1) {
@@ -2492,17 +2558,26 @@
         const t = performance.now() / 1000;
         if (player.shieldTime > 0) {
           const pulse = 1 + Math.sin(t * 16) * 0.05;
-          drawPoly(shieldShape, player.x, player.y, 62 * pulse, 62 * pulse, t * 0.4, rgba(colors.cyan, 0.28));
-          drawPoly(shieldShape, player.x, player.y, 66 * pulse, 66 * pulse, -t * 0.7, rgba(colors.white, 0.44), gl.LINE_LOOP);
-          drawPoly(shieldShape, player.x, player.y, 48 * pulse, 48 * pulse, t, rgba(colors.cyan, 0.12), gl.LINE_LOOP);
+          drawPoly(shieldShape, player.x, player.y, 64 * pulse, 64 * pulse, t * 0.4, rgba(colors.cyan, 0.24));
+          drawPoly(ringShape, player.x, player.y, 68 * pulse, 68 * pulse, -t * 0.7, rgba(colors.white, 0.62), gl.LINE_LOOP);
+          drawPoly(ringShape, player.x, player.y, 52 * pulse, 52 * pulse, t, rgba(colors.cyan, 0.32), gl.LINE_LOOP);
+          for (let i = 0; i < 6; i += 1) {
+            const a = t * 2.4 + i * Math.PI / 3;
+            drawPoly(bossEyeShape, player.x + Math.cos(a) * 61, player.y + Math.sin(a) * 61, 3.5, 3.5, 0, rgba(colors.white, 0.82));
+          }
         }
+        drawPoly(playerShape, player.x, player.y + 5, 49, 51, 0, rgba(colors.cyanDeep, 0.72));
         drawPoly(playerShape, player.x, player.y, 43, 47, 0, rgba(colors.cyan, 0.96));
-        drawPoly(playerShape, player.x, player.y + 2, 30, 35, 0, rgba(colors.white, 0.34), gl.LINE_LOOP);
+        drawPoly(playerShape, player.x, player.y + 2, 31, 36, 0, rgba(colors.white, 0.5), gl.LINE_LOOP);
         drawPoly(canopyShape, player.x, player.y - 7, 18, 24, 0, rgba(colors.white, 0.78));
+        drawPoly(canopyShape, player.x - 3, player.y - 10, 9, 13, 0, rgba(colors.cyan, 0.62));
+        drawPoly(hunterBladeShape, player.x - 30, player.y + 11, 7, 23, -0.72, rgba(colors.gold, 0.68));
+        drawPoly(hunterBladeShape, player.x + 30, player.y + 11, 7, 23, 0.72, rgba(colors.gold, 0.68));
         drawPoly(lineShape, player.x - 14, player.y + 15, 16, 1, -0.55, rgba(colors.white, 0.34), gl.LINES);
         drawPoly(lineShape, player.x + 14, player.y + 15, 16, 1, 0.55, rgba(colors.white, 0.34), gl.LINES);
         drawPoly(boltShape, player.x - 14, player.y + 34, 9, 18 + Math.sin(t * 18) * 4, 0, rgba(colors.gold, 0.86));
         drawPoly(boltShape, player.x + 14, player.y + 34, 9, 18 + Math.cos(t * 16) * 4, 0, rgba(colors.orange, 0.78));
+        drawPoly(boltShape, player.x, player.y + 31, 4, 25 + Math.sin(t * 22) * 5, 0, rgba(colors.white, 0.88));
       }
 
       function drawEnemy(enemy) {
@@ -2523,6 +2598,7 @@
         drawPoly(alienHeadShape, enemy.x, enemy.y - 2, w * pulse, h, angle, rgba(main, 0.9));
         drawPoly(alienHeadShape, enemy.x, enemy.y + 1, w * 0.9, h * 0.72, angle, rgba(shadow, 0.28));
         drawPoly(alienHeadShape, enemy.x, enemy.y - 1, w * 0.82, h * 0.84, angle, rgba(colors.white, captain ? 0.22 : 0.15), gl.LINE_LOOP);
+        drawPoly(ringShape, enemy.x, enemy.y - 4, w * 0.62, h * 0.64, -angle, rgba(main, captain ? 0.28 : 0.16), gl.LINE_LOOP);
         drawPoly(alienJawShape, enemy.x, enemy.y + 11, w * 0.86, h * 0.5, angle, rgba(shadow, guard ? 0.76 : 0.6));
         drawPoly(leftEye, enemy.x - 9, enemy.y - 6, captain ? 17 : 14, captain ? 12 : 10, angle - 0.06, rgba(colors.space, 0.94));
         drawPoly(rightEye, enemy.x + 9, enemy.y - 6, captain ? 17 : 14, captain ? 12 : 10, angle + 0.06, rgba(colors.space, 0.94));
@@ -2532,6 +2608,7 @@
         for (let i = -2; i <= 2; i += 1) {
           drawPoly(toothShape, enemy.x + i * 6, enemy.y + 12, 3.2, 7, angle + i * 0.035, rgba(colors.white, 0.75));
         }
+        drawPoly(bossEyeShape, enemy.x, enemy.y + 4, captain ? 5 : 3.5, captain ? 5 : 3.5, 0, rgba(main, 0.82));
         drawPoly(tentacleShape, enemy.x - 15, enemy.y + 23, 6, guard ? 18 : 14, angle + Math.sin(enemy.phase) * 0.32, rgba(shadow, 0.7));
         drawPoly(tentacleShape, enemy.x - 5, enemy.y + 25, 5, captain ? 20 : 15, angle - Math.sin(enemy.phase * 1.4) * 0.24, rgba(main, 0.54));
         drawPoly(tentacleShape, enemy.x + 5, enemy.y + 25, 5, captain ? 20 : 15, angle + Math.sin(enemy.phase * 1.2) * 0.24, rgba(main, 0.54));
@@ -2552,6 +2629,7 @@
         const bob = Math.sin(t * 6) * 2.5;
         const tilt = Math.sin(t * 3.2) * 0.08;
         drawPoly(ufoSaucerShape, bonusUfo.x, bonusUfo.y + bob, 48, 24, tilt, rgba(colors.cyanDeep, 0.96));
+        drawPoly(ringShape, bonusUfo.x, bonusUfo.y + 2 + bob, 57, 25, tilt, rgba(colors.cyan, 0.34), gl.LINE_LOOP);
         drawPoly(ufoSaucerShape, bonusUfo.x, bonusUfo.y + bob + 1, 36, 14, tilt, rgba(colors.white, 0.16), gl.LINE_LOOP);
         drawPoly(ufoDomeShape, bonusUfo.x, bonusUfo.y - 10 + bob, 25, 19, tilt, rgba(colors.white, 0.52));
         drawPoly(ufoDomeShape, bonusUfo.x - 3, bonusUfo.y - 12 + bob, 15, 10, tilt, rgba(colors.cyan, 0.45));
@@ -2560,6 +2638,7 @@
           drawPoly(bossEyeShape, bonusUfo.x + i * 17, bonusUfo.y + 9 + bob, 5.5, 3.5, 0, rgba(lamp, 0.82 + Math.sin(t * 10 + i) * 0.12));
         }
         drawPoly(lineShape, bonusUfo.x, bonusUfo.y + 22 + bob, 36, 1.4, 0, rgba(colors.gold, 0.34), gl.LINES);
+        drawPoly(boltShape, bonusUfo.x, bonusUfo.y + 31 + bob, 18, 32 + Math.sin(t * 7) * 6, 0, rgba(colors.cyan, 0.11));
       }
 
       function drawComet(comet) {
@@ -2568,11 +2647,11 @@
         const tailX = -comet.vx / speed;
         const tailY = -comet.vy / speed;
         const tail = comet.size * (2.8 + comet.level * 0.32);
-        for (let i = 0; i < 5; i += 1) {
-          const k = i / 5;
+        for (let i = 0; i < 9; i += 1) {
+          const k = i / 9;
           const x = comet.x + tailX * tail * (k + 0.22) + Math.sin(comet.phase * 2 + i) * comet.size * 0.12;
           const y = comet.y + tailY * tail * (k + 0.22) + Math.cos(comet.phase * 1.7 + i) * comet.size * 0.1;
-          const color = i < 2 ? colors.gold : i < 4 ? colors.orange : colors.red;
+          const color = i < 3 ? colors.gold : i < 6 ? colors.orange : colors.red;
           drawPoly(boltShape, x, y, comet.size * (0.26 - k * 0.025), comet.size * (1.15 - k * 0.12), angle, rgba(color, 0.34 - k * 0.045));
         }
         drawPoly(bossEyeShape, comet.x, comet.y, comet.size * 0.86, comet.size * 0.62, comet.phase * 0.22, rgba(colors.orange, 0.92));
@@ -2582,15 +2661,28 @@
 
       function drawRift(rift) {
         const pulse = 1 + Math.sin(rift.phase * 3) * 0.08;
-        drawPoly(shieldShape, rift.x, rift.y, rift.r * pulse, rift.r * 0.62 * pulse, rift.phase, rgba(colors.violet, 0.22), gl.LINE_LOOP);
-        drawPoly(shieldShape, rift.x, rift.y, rift.r * 0.72, rift.r * 0.44, -rift.phase * 1.4, rgba(colors.cyan, 0.38), gl.LINE_LOOP);
+        drawPoly(ringShape, rift.x, rift.y, rift.r * pulse, rift.r * 0.62 * pulse, rift.phase, rgba(colors.violet, 0.44), gl.LINE_LOOP);
+        drawPoly(ringShape, rift.x, rift.y, rift.r * 0.72, rift.r * 0.44, -rift.phase * 1.4, rgba(colors.cyan, 0.58), gl.LINE_LOOP);
+        drawPoly(ringShape, rift.x, rift.y, rift.r * 1.18, rift.r * 0.28, rift.phase * 0.4, rgba(colors.white, 0.18), gl.LINE_LOOP);
         drawPoly(bossEyeShape, rift.x, rift.y, rift.r * 0.44, rift.r * 0.24, rift.phase * 0.7, rgba(colors.white, 0.24));
+        for (let i = 0; i < 6; i += 1) {
+          const a = -rift.phase * 2 + i * Math.PI / 3;
+          drawPoly(bossEyeShape, rift.x + Math.cos(a) * rift.r, rift.y + Math.sin(a) * rift.r * 0.58, 2.8, 2.8, 0, rgba(i % 2 ? colors.cyan : colors.violet, 0.75));
+        }
       }
 
       function drawBoss() {
         if (!boss) return;
         const t = boss.phase;
         const hurtFlash = boss.hurt > 0 ? 0.26 : 0;
+        const auraColor = boss.kind === "dreadnought" ? colors.orange : boss.kind === "hunter" ? colors.toxic : boss.kind === "crystal" ? colors.cyan : colors.violet;
+        const auraW = boss.kind === "dreadnought" ? 164 : boss.kind === "hunter" ? 142 : 132;
+        drawPoly(ringShape, boss.x, boss.y, auraW * (1 + Math.sin(t * 2.1) * 0.025), auraW * 0.72, t * 0.08, rgba(auraColor, 0.18), gl.LINE_LOOP);
+        drawPoly(ringShape, boss.x, boss.y, auraW * 0.88, auraW * 0.61, -t * 0.12, rgba(colors.white, 0.08), gl.LINE_LOOP);
+        for (let i = 0; i < 8; i += 1) {
+          const a = t * (boss.kind === "crystal" ? 1.2 : 0.48) + i * Math.PI / 4;
+          drawPoly(bossEyeShape, boss.x + Math.cos(a) * auraW, boss.y + Math.sin(a) * auraW * 0.7, 3.5 + (i % 2) * 2, 3.5 + (i % 2) * 2, 0, rgba(auraColor, 0.48));
+        }
         if (boss.kind === "crystal") {
           const core = [0.18 + hurtFlash, 0.64 + hurtFlash * 0.4, 0.92 + hurtFlash * 0.2];
           for (let i = 0; i < 8; i += 1) {
@@ -2735,6 +2827,7 @@
         const rgb = color === "#ffd86b" ? colors.gold : colors.pink;
         const angle = b.vx || b.vy ? Math.atan2(b.vy || 1, b.vx || 0) + Math.PI / 2 : 0;
         drawPoly(boltShape, b.x, b.y, width, length, angle, rgba(rgb, 0.9));
+        drawPoly(boltShape, b.x - (b.vx || 0) * 0.028, b.y - (b.vy || 0) * 0.028, width * 1.8, length * 1.9, angle, rgba(rgb, 0.18));
         drawPoly(boltShape, b.x, b.y, width * 0.34, length * 0.78, angle, rgba(colors.white, 0.88));
       }
 
@@ -2795,6 +2888,24 @@
         particles.forEach((p) => pushPoint(glowPoints, p.x, p.y, p.r * 6.5, p.rgb, clamp(p.life / p.max, 0, 1) * 0.65));
         drawPoints(glowPoints, true);
 
+        const starCores = [];
+        stars.forEach((star, index) => {
+          const twinkle = 0.55 + Math.sin(nowSec * (1.4 + star.s) + star.phase) * 0.45;
+          pushPoint(starCores, star.x, star.y, 1.6 + star.r * 2.2, index % 11 === 0 ? colors.cyan : colors.white, star.a * twinkle);
+          if (star.r > 1.75 && index % 3 === 0) {
+            drawPoly(lineShape, star.x, star.y, 4 + star.r * 2.6, 1, 0, rgba(colors.white, 0.18 * twinkle), gl.LINES);
+            drawPoly(lineShape, star.x, star.y, 3 + star.r * 2.2, 1, Math.PI / 2, rgba(colors.cyan, 0.13 * twinkle), gl.LINES);
+          }
+        });
+        drawPoints(starCores, true);
+
+        shockwaves.forEach((ring) => {
+          const a = clamp(ring.life / ring.max, 0, 1);
+          const stretch = 0.72 + (1 - a) * 0.2;
+          drawPoly(ringShape, ring.x, ring.y, ring.radius, ring.radius * stretch, ring.twist * 0.08, [ring.rgb[0], ring.rgb[1], ring.rgb[2], a * 0.78], gl.LINE_LOOP);
+          drawPoly(ringShape, ring.x, ring.y, ring.radius * 0.86, ring.radius * stretch * 0.86, -ring.twist * 0.12, rgba(colors.white, a * 0.28), gl.LINE_LOOP);
+        });
+
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         for (let y = H % 48; y < H; y += 48) {
           drawPoly(lineShape, W / 2, y, W / 2, 1, 0, rgba(colors.cyan, 0.07), gl.LINES);
@@ -2824,7 +2935,8 @@
           pushPoint(sparkPoints, p.x, p.y, p.r * (p.flare ? 3.8 : 2.4), p.rgb, a);
           if (p.flare) {
             const angle = Math.atan2(p.vy, p.vx);
-            drawPoly(boltShape, p.x, p.y, p.r * 0.35, p.r * 2.4, angle, [p.rgb[0], p.rgb[1], p.rgb[2], a * 0.75]);
+            const speedStretch = clamp(Math.hypot(p.vx, p.vy) / 90, 1, 4.5);
+            drawPoly(boltShape, p.x, p.y, p.r * 0.3, p.r * 2.2 * speedStretch, angle + Math.PI / 2, [p.rgb[0], p.rgb[1], p.rgb[2], a * 0.78]);
           }
         });
         drawPoints(sparkPoints, true);
