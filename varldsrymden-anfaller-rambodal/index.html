@@ -778,7 +778,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.10 · realistisk grafik · uppladdad 2026-07-20 14:47 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.11 · levande varelser · uppladdad 2026-07-20 16:37 CEST</div>
   </main>
 
   <script>
@@ -2891,19 +2891,90 @@
         spriteCtx.restore();
       }
 
-      function drawRealisticPlayer(t) {
-        const bank = player.body ? clamp(player.body.velocity.x * 0.012, -0.08, 0.08) : 0;
-        const pulse = 0.82 + Math.sin(t * 16) * 0.12;
+      function drawWarpedSpriteFrame(image, frame, columns, rows, x, y, width, height, angle, glow, glowSize, phase, motion, slices = 8, filter = "none") {
+        const sourceWidth = image.naturalWidth / columns;
+        const sourceHeight = image.naturalHeight / rows;
+        const column = frame % columns;
+        const row = Math.floor(frame / columns);
+        const sliceSourceHeight = sourceHeight / slices;
+        const sliceHeight = height / slices;
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.filter = filter;
+        spriteCtx.shadowColor = glow;
+        spriteCtx.shadowBlur = glowSize;
+        for (let slice = 0; slice < slices; slice += 1) {
+          const progress = slice / Math.max(1, slices - 1);
+          const flexible = Math.max(0, (progress - 0.22) / 0.78);
+          const offsetX = Math.sin(phase + slice * 0.82) * motion * flexible;
+          const offsetY = Math.cos(phase * 0.72 + slice * 0.48) * motion * 0.12 * flexible;
+          spriteCtx.drawImage(
+            image,
+            column * sourceWidth,
+            row * sourceHeight + slice * sliceSourceHeight,
+            sourceWidth,
+            sliceSourceHeight + 1,
+            -width / 2 + offsetX,
+            -height / 2 + slice * sliceHeight + offsetY,
+            width,
+            sliceHeight + 1.5
+          );
+        }
+        spriteCtx.restore();
+      }
+
+      function drawAnimatedEye(x, y, angle, localX, localY, radiusX, radiusY, color, phase, offset = 0) {
+        const blink = Math.pow(Math.max(0, Math.sin(phase * 0.72 + offset)), 22);
+        const open = Math.max(0.08, 1 - blink);
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.globalCompositeOperation = "lighter";
+        spriteCtx.shadowColor = color;
+        spriteCtx.shadowBlur = 14;
+        const gradient = spriteCtx.createRadialGradient(localX - radiusX * 0.25, localY - radiusY * 0.3, 0, localX, localY, radiusX * 1.4);
+        gradient.addColorStop(0, `rgba(255,255,255,${0.92 * open})`);
+        gradient.addColorStop(0.28, color);
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+        spriteCtx.fillStyle = gradient;
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY, radiusX, radiusY * open, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.restore();
+      }
+
+      function drawEngineFlame(x, y, width, length, phase) {
+        const sway = Math.sin(phase * 1.7) * width * 0.28;
+        const gradient = spriteCtx.createLinearGradient(x, y, x + sway, y + length);
+        gradient.addColorStop(0, "rgba(255,255,255,0.98)");
+        gradient.addColorStop(0.2, "rgba(118,235,255,0.94)");
+        gradient.addColorStop(0.62, "rgba(26,123,255,0.58)");
+        gradient.addColorStop(1, "rgba(86,56,255,0)");
         spriteCtx.save();
         spriteCtx.globalCompositeOperation = "lighter";
-        spriteCtx.fillStyle = `rgba(94, 215, 255, ${pulse * 0.34})`;
+        spriteCtx.fillStyle = gradient;
         spriteCtx.shadowColor = "#5ed7ff";
-        spriteCtx.shadowBlur = 24;
-        [-18, 0, 18].forEach((offset, index) => {
-          const plume = 14 + Math.sin(t * (18 + index)) * 4;
-          spriteCtx.fillRect(player.x + offset - 2 + renderShake.x, player.y + 38 + renderShake.y, 4, plume);
-        });
+        spriteCtx.shadowBlur = 22;
+        spriteCtx.beginPath();
+        spriteCtx.moveTo(x - width / 2, y);
+        spriteCtx.quadraticCurveTo(x - width * 0.38 + sway, y + length * 0.48, x + sway, y + length);
+        spriteCtx.quadraticCurveTo(x + width * 0.38 + sway, y + length * 0.48, x + width / 2, y);
+        spriteCtx.closePath();
+        spriteCtx.fill();
+        spriteCtx.fillStyle = "rgba(255,255,255,0.78)";
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(x, y + length * 0.28, width * 0.2, length * 0.3, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
         spriteCtx.restore();
+      }
+
+      function drawRealisticPlayer(t) {
+        const bank = player.body ? clamp(player.body.velocity.x * 0.012, -0.08, 0.08) : 0;
+        [-18, 0, 18].forEach((offset, index) => {
+          const flicker = 24 + Math.sin(t * (19 + index * 1.7) + index) * 8 + Math.sin(t * 43 + index) * 3;
+          drawEngineFlame(player.x + offset + renderShake.x, player.y + 41 + renderShake.y, index === 1 ? 13 : 10, flicker, t * (8 + index * 0.7) + index);
+        });
         drawSpriteFrame(realisticSprites.player, 0, 1, 1, player.x, player.y, 112, 112, bank, "#5ed7ff", 20);
       }
 
@@ -2912,7 +2983,11 @@
         const glow = frame === 2 ? "#ffd86b" : frame === 1 ? "#ff5b78" : "#9b6dff";
         const size = frame === 2 ? 76 : frame === 1 ? 72 : 68;
         const pulse = 1 + Math.sin(enemy.phase * 2.2) * 0.035;
-        drawSpriteFrame(realisticSprites.enemies, frame, 3, 1, enemy.x, enemy.y, size * pulse, size * 0.92 * pulse, angle, glow, frame === 2 ? 14 : 10);
+        const bob = Math.sin(enemy.phase * 2.8 + enemy.col * 0.45) * 2.2;
+        drawWarpedSpriteFrame(realisticSprites.enemies, frame, 3, 1, enemy.x, enemy.y + bob, size * pulse, size * 0.92 * pulse, angle, glow, frame === 2 ? 14 : 10, enemy.phase * 2.4, frame === 0 ? 3.2 : 2.2, 6, "contrast(1.05) saturate(1.08)");
+        const eyeColor = frame === 2 ? "#ffd86b" : frame === 1 ? "#ff3f57" : "#b66cff";
+        drawAnimatedEye(enemy.x, enemy.y + bob, angle, -10, -9, 4.8, 2.2, eyeColor, enemy.phase, 0);
+        drawAnimatedEye(enemy.x, enemy.y + bob, angle, 10, -9, 4.8, 2.2, eyeColor, enemy.phase, 0.16);
       }
 
       function drawRealisticBoss() {
@@ -2922,7 +2997,21 @@
         const [width, height] = sizes[boss.kind];
         const pulse = 1 + Math.sin(boss.phase * 2) * 0.018;
         const filter = boss.hurt > 0 ? "brightness(1.75) contrast(1.08)" : "contrast(1.04) saturate(1.08)";
-        drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, boss.x, boss.y, width * pulse, height * pulse, Math.sin(boss.phase * 0.7) * 0.018, glows[boss.kind], 26, 1, filter);
+        const angle = Math.sin(boss.phase * 0.7) * 0.018;
+        const motion = boss.kind === "octopus" ? 10 : boss.kind === "hunter" ? 5.5 : boss.kind === "crystal" ? 3.5 : 4;
+        drawWarpedSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, boss.x, boss.y, width * pulse, height * pulse, angle, glows[boss.kind], 26, boss.phase * (boss.kind === "octopus" ? 2.2 : 1.55), motion, boss.kind === "octopus" ? 11 : 9, filter);
+        if (boss.kind === "octopus") {
+          [-48, -24, 0, 24, 48].forEach((eyeX, index) => drawAnimatedEye(boss.x, boss.y, angle, eyeX, -52 + Math.abs(index - 2) * 8, 9, 6, "#b66cff", boss.phase, index * 0.55));
+        } else if (boss.kind === "hunter") {
+          drawAnimatedEye(boss.x, boss.y, angle, -31, -45, 12, 5, "#ff3f57", boss.phase, 0);
+          drawAnimatedEye(boss.x, boss.y, angle, 31, -45, 12, 5, "#ff3f57", boss.phase, 0.12);
+        } else if (boss.kind === "crystal") {
+          drawAnimatedEye(boss.x, boss.y, angle, 0, -9, 20 + Math.sin(boss.phase * 4) * 4, 16, "#b66cff", boss.phase, 1.2);
+        } else {
+          drawAnimatedEye(boss.x, boss.y, angle, 0, -48, 18, 18, "#ff8a36", boss.phase, 0.7);
+          drawAnimatedEye(boss.x, boss.y, angle, -42, -33, 7, 5, "#ff3f57", boss.phase, 0);
+          drawAnimatedEye(boss.x, boss.y, angle, 42, -33, 7, 5, "#ff3f57", boss.phase, 0.2);
+        }
       }
 
       function drawPlayer() {
