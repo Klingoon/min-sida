@@ -689,7 +689,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.13 · ny startskärm · uppladdad 2026-07-20 17:27 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.14 · levande bossar · uppladdad 2026-07-20 17:55 CEST</div>
   </main>
 
   <script>
@@ -819,6 +819,8 @@
       let bossDefeated = false;
       let bossTransitionTimer = null;
       let bossEffectTimer = null;
+      let winSceneUnlockAt = 0;
+      const winSceneMinimumMs = 6200;
       const roundsBeforeBoss = 3;
       const totalActs = 4;
       let encouragementTimer = 6;
@@ -1918,6 +1920,8 @@
       }
 
       function startGame() {
+        if (state === "transition") return;
+        if (winScene.classList.contains("visible") && performance.now() < winSceneUnlockAt) return;
         clearAttractTimer();
         overlay.classList.remove("demo-mode");
         if (state === "demo") {
@@ -2017,6 +2021,7 @@
         winTitle.textContent = finale ? "Grattis du har vunnit" : "Grattis du vann";
         winSubtitle.textContent = finale ? "en Toblerone av farzan tarzan" : "Farzan Tarzan bjuder på Kebab!";
         winScene.classList.add("visible");
+        winSceneUnlockAt = performance.now() + winSceneMinimumMs;
         shake = finale ? 46 : 34;
         for (let i = 0; i < (finale ? 34 : 18); i += 1) {
           setTimeout(() => {
@@ -2027,7 +2032,7 @@
           }, i * (finale ? 78 : 110));
         }
         updateHud();
-        scheduleAttractMode(7000);
+        scheduleAttractMode(15000);
       }
 
       function showBossClearScene() {
@@ -2038,6 +2043,7 @@
           ? `Spelet fortsätter - akt ${act + 1} väntar med en ny boss!`
           : "Finalbossen är besegrad!";
         winScene.classList.add("visible");
+        winSceneUnlockAt = performance.now() + winSceneMinimumMs;
         renderLeaderboard();
       }
 
@@ -2385,7 +2391,8 @@
         runBossClearEffects(bx, by, kind);
         shake = kind === "dreadnought" ? 50 : kind === "hunter" ? 42 : 34;
         if (!finale && !demoMode) showBossClearScene();
-        bossTransitionTimer = setTimeout(() => finishBossTransition(finale, demoMode), finale ? 820 : 760);
+        const transitionDelay = demoMode ? (finale ? 820 : 760) : finale ? 1100 : 6800;
+        bossTransitionTimer = setTimeout(() => finishBossTransition(finale, demoMode), transitionDelay);
       }
 
       function damagePlayer() {
@@ -2799,6 +2806,138 @@
         spriteCtx.restore();
       }
 
+      function drawLivingEye(x, y, angle, localX, localY, radiusX, radiusY, color, phase, offset = 0) {
+        const blink = Math.pow(Math.max(0, Math.sin(phase * 0.78 + offset)), 18);
+        const lookX = Math.sin(phase * 0.92 + offset * 2.1) * radiusX * 0.24;
+        const lookY = Math.cos(phase * 0.67 + offset) * radiusY * 0.16;
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.fillStyle = "rgba(2,3,5,0.72)";
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY, radiusX * 0.58, radiusY * 0.64, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.fillStyle = color;
+        spriteCtx.globalAlpha = 0.82;
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX + lookX, localY + lookY, radiusX * 0.29, radiusY * 0.38, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.globalAlpha = 0.88;
+        spriteCtx.fillStyle = "#f7ffff";
+        spriteCtx.beginPath();
+        spriteCtx.arc(localX + lookX - radiusX * 0.08, localY + lookY - radiusY * 0.12, Math.max(1.2, radiusX * 0.09), 0, Math.PI * 2);
+        spriteCtx.fill();
+        if (blink > 0.18) {
+          spriteCtx.globalAlpha = 1;
+          spriteCtx.fillStyle = `rgba(2,3,5,${Math.min(0.96, blink)})`;
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(localX, localY, radiusX * 1.08, radiusY * blink, 0, 0, Math.PI * 2);
+          spriteCtx.fill();
+        }
+        spriteCtx.restore();
+      }
+
+      function drawBossMouth(x, y, angle, localX, localY, width, height, phase, innerColor) {
+        const open = 0.42 + (Math.sin(phase * 2.35) + 1) * 0.22;
+        const jawShift = Math.sin(phase * 1.18) * 2.2;
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.fillStyle = "rgba(1,2,4,0.82)";
+        spriteCtx.beginPath();
+        spriteCtx.ellipse(localX, localY + jawShift, width, height * open, 0, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.strokeStyle = innerColor;
+        spriteCtx.globalAlpha = 0.54;
+        spriteCtx.lineWidth = 2;
+        spriteCtx.stroke();
+        spriteCtx.globalAlpha = 0.78;
+        spriteCtx.fillStyle = "#dce5df";
+        for (let i = -2; i <= 2; i += 1) {
+          const toothX = localX + i * width * 0.31;
+          const toothH = height * (0.28 + (2 - Math.abs(i)) * 0.055);
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(toothX - 2.4, localY - height * open * 0.78 + jawShift);
+          spriteCtx.lineTo(toothX + 2.4, localY - height * open * 0.78 + jawShift);
+          spriteCtx.lineTo(toothX, localY - height * open * 0.78 + toothH + jawShift);
+          spriteCtx.closePath();
+          spriteCtx.fill();
+        }
+        spriteCtx.restore();
+      }
+
+      function drawBossStrands(x, y, angle, kind, phase) {
+        const configs = {
+          octopus: { count: 9, color: "rgba(73,31,92,0.88)", highlight: "rgba(190,118,215,0.46)", width: 8 },
+          hunter: { count: 10, color: "rgba(17,22,23,0.92)", highlight: "rgba(105,120,104,0.42)", width: 7 },
+          crystal: { count: 6, color: "rgba(55,116,162,0.86)", highlight: "rgba(150,226,255,0.48)", width: 6 },
+          dreadnought: { count: 8, color: "rgba(28,31,34,0.94)", highlight: "rgba(255,111,49,0.38)", width: 7 }
+        };
+        const cfg = configs[kind];
+        spriteCtx.save();
+        spriteCtx.translate(x + renderShake.x, y + renderShake.y);
+        spriteCtx.rotate(angle);
+        spriteCtx.lineCap = "round";
+        for (let i = 0; i < cfg.count; i += 1) {
+          const center = (cfg.count - 1) / 2;
+          const n = i - center;
+          let rootX;
+          let rootY;
+          let controlX;
+          let controlY;
+          let endX;
+          let endY;
+          if (kind === "octopus") {
+            rootX = n * 18;
+            rootY = 35 + Math.abs(n) * 3;
+            controlX = rootX + Math.sin(phase * 1.8 + i) * (14 + Math.abs(n) * 2);
+            controlY = 84;
+            endX = rootX + Math.sin(phase * 2.2 + i * 0.8) * 28;
+            endY = 132 + Math.cos(phase * 1.4 + i) * 12;
+          } else if (kind === "hunter") {
+            const side = i < cfg.count / 2 ? -1 : 1;
+            const lane = i % (cfg.count / 2);
+            rootX = side * (42 + lane * 7);
+            rootY = -74 + lane * 14;
+            controlX = side * (84 + lane * 8) + Math.sin(phase * 1.45 + i) * 9;
+            controlY = -25 + lane * 13;
+            endX = side * (108 + lane * 5) + Math.sin(phase * 2 + i) * 13;
+            endY = 62 + lane * 11 + Math.cos(phase * 1.3 + i) * 8;
+          } else if (kind === "crystal") {
+            const side = i < cfg.count / 2 ? -1 : 1;
+            const lane = i % (cfg.count / 2);
+            rootX = side * (55 + lane * 17);
+            rootY = 8 + lane * 22;
+            controlX = side * (98 + lane * 15) + Math.sin(phase * 1.7 + i) * 7;
+            controlY = 46 + lane * 18;
+            endX = side * (126 + lane * 14) + Math.sin(phase * 2.1 + i) * 12;
+            endY = 96 + lane * 22 + Math.cos(phase * 1.5 + i) * 8;
+          } else {
+            const side = i < cfg.count / 2 ? -1 : 1;
+            const lane = i % (cfg.count / 2);
+            rootX = side * (54 + lane * 13);
+            rootY = -28 + lane * 23;
+            controlX = side * (92 + lane * 12) + Math.sin(phase * 1.6 + i) * 8;
+            controlY = 18 + lane * 22;
+            endX = side * (118 + lane * 8) + Math.sin(phase * 2.05 + i) * 12;
+            endY = 88 + lane * 18 + Math.cos(phase * 1.4 + i) * 7;
+          }
+          spriteCtx.strokeStyle = cfg.color;
+          spriteCtx.lineWidth = cfg.width;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(rootX, rootY);
+          spriteCtx.quadraticCurveTo(controlX, controlY, endX, endY);
+          spriteCtx.stroke();
+          spriteCtx.strokeStyle = cfg.highlight;
+          spriteCtx.lineWidth = Math.max(1.2, cfg.width * 0.2);
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(rootX - 1, rootY);
+          spriteCtx.quadraticCurveTo(controlX - 2, controlY, endX - 2, endY);
+          spriteCtx.stroke();
+        }
+        spriteCtx.restore();
+      }
+
       function drawEngineFlame(x, y, width, length, phase) {
         const sway = Math.sin(phase * 1.7) * width * 0.28;
         const gradient = spriteCtx.createLinearGradient(x, y, x + sway, y + length);
@@ -2848,21 +2987,30 @@
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
         const sizes = { octopus: [332, 332], hunter: [314, 314], crystal: [292, 292], dreadnought: [328, 328] };
         const [width, height] = sizes[boss.kind];
-        const pulse = 1 + Math.sin(boss.phase * 1.8) * 0.012;
+        const inhale = Math.sin(boss.phase * 1.55);
+        const pulseX = 1 + inhale * 0.014;
+        const pulseY = 1 - inhale * 0.01;
         const filter = boss.hurt > 0 ? "brightness(1.65)" : "none";
-        const angle = Math.sin(boss.phase * 0.7) * 0.018;
-        drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, boss.x, boss.y, width * pulse, height * pulse, angle, "transparent", 0, 1, filter);
+        const angle = Math.sin(boss.phase * 0.7) * 0.022;
+        const drawX = boss.x + Math.sin(boss.phase * 1.1) * 2.4;
+        const drawY = boss.y + Math.cos(boss.phase * 1.35) * 3.2;
+        drawBossStrands(drawX, drawY, angle, boss.kind, boss.phase);
+        drawSpriteFrame(realisticSprites.bosses, frames[boss.kind], 2, 2, drawX, drawY, width * pulseX, height * pulseY, angle, "transparent", 0, 1, filter);
         if (boss.kind === "octopus") {
-          [-48, -24, 0, 24, 48].forEach((eyeX, index) => drawAnimatedEye(boss.x, boss.y, angle, eyeX, -52 + Math.abs(index - 2) * 8, 9, 6, "#b66cff", boss.phase, index * 0.55));
+          [-48, -24, 0, 24, 48].forEach((eyeX, index) => drawLivingEye(drawX, drawY, angle, eyeX, -52 + Math.abs(index - 2) * 8, 9, 6, "#b66cff", boss.phase, index * 0.55));
+          drawBossMouth(drawX, drawY, angle, 0, 13, 18, 34, boss.phase, "rgba(180,75,205,0.72)");
         } else if (boss.kind === "hunter") {
-          drawAnimatedEye(boss.x, boss.y, angle, -31, -45, 12, 5, "#ff3f57", boss.phase, 0);
-          drawAnimatedEye(boss.x, boss.y, angle, 31, -45, 12, 5, "#ff3f57", boss.phase, 0.12);
+          drawLivingEye(drawX, drawY, angle, -31, -45, 12, 5, "#ff3f57", boss.phase, 0);
+          drawLivingEye(drawX, drawY, angle, 31, -45, 12, 5, "#ff3f57", boss.phase, 0.12);
+          drawBossMouth(drawX, drawY, angle, 0, 5, 32, 17, boss.phase + 0.8, "rgba(159,255,107,0.62)");
         } else if (boss.kind === "crystal") {
-          drawAnimatedEye(boss.x, boss.y, angle, 0, -9, 20 + Math.sin(boss.phase * 4) * 4, 16, "#b66cff", boss.phase, 1.2);
+          drawLivingEye(drawX, drawY, angle, 0, -9, 19 + Math.sin(boss.phase * 3.2) * 2, 15, "#b66cff", boss.phase, 1.2);
+          drawBossMouth(drawX, drawY, angle, 0, 42, 21, 11, boss.phase + 1.4, "rgba(94,215,255,0.72)");
         } else {
-          drawAnimatedEye(boss.x, boss.y, angle, 0, -48, 18, 18, "#ff8a36", boss.phase, 0.7);
-          drawAnimatedEye(boss.x, boss.y, angle, -42, -33, 7, 5, "#ff3f57", boss.phase, 0);
-          drawAnimatedEye(boss.x, boss.y, angle, 42, -33, 7, 5, "#ff3f57", boss.phase, 0.2);
+          drawLivingEye(drawX, drawY, angle, 0, -48, 18, 18, "#ff8a36", boss.phase, 0.7);
+          drawLivingEye(drawX, drawY, angle, -42, -33, 7, 5, "#ff3f57", boss.phase, 0);
+          drawLivingEye(drawX, drawY, angle, 42, -33, 7, 5, "#ff3f57", boss.phase, 0.2);
+          drawBossMouth(drawX, drawY, angle, 0, 25, 38, 22, boss.phase + 0.35, "rgba(255,104,45,0.7)");
         }
       }
 
