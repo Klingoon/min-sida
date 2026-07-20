@@ -763,7 +763,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.6 · uppladdad 2026-07-20 CEST</div>
+    <div class="build-mark" aria-label="Version och uppladdningstid">v-2026.07.20.7 · uppladdad 2026-07-20 CEST</div>
   </main>
 
   <script>
@@ -1183,37 +1183,55 @@
 
       function startMelody() {
         if (melodyTimer || muted || !audioCtx) return;
-        const bubbleLead = [587.33, 0, 739.99, 880, 0, 739.99, 659.25, 0, 493.88, 0, 659.25, 783.99, 880, 0, 987.77, 0, 523.25, 0, 659.25, 739.99, 0, 880, 739.99, 0, 587.33, 0, 493.88, 587.33, 659.25, 0, 523.25, 0];
-        const bubbleArp = [293.66, 369.99, 440, 587.33, 329.63, 415.3, 493.88, 659.25, 261.63, 329.63, 392, 523.25, 293.66, 440, 523.25, 739.99];
-        const bubbleBass = [73.42, 73.42, 82.41, 82.41, 65.41, 65.41, 73.42, 98];
-        const bounceLead = [523.25, 659.25, 0, 783.99, 880, 0, 783.99, 659.25, 587.33, 0, 698.46, 880, 0, 1046.5, 880, 0, 659.25, 783.99, 987.77, 0, 880, 783.99, 0, 659.25, 587.33, 698.46, 0, 783.99, 659.25, 0, 523.25, 0];
-        const bounceArp = [261.63, 392, 523.25, 659.25, 293.66, 440, 587.33, 698.46, 329.63, 493.88, 659.25, 783.99, 220, 329.63, 440, 659.25];
-        const bounceBass = [65.41, 65.41, 73.42, 73.42, 82.41, 82.41, 55, 73.42];
-        const pings = [1318.51, 1760, 1174.66, 1567.98, 987.77, 1479.98, 1046.5, 1975.53];
+        // Maple Leaf Rag (Scott Joplin, 1899), voiced as a public-domain space arcade rag.
+        const mapleLead = [
+          0, 415.3, 622.25, 415.3, 523.25, 622.25, 622.25, 392,
+          622.25, 392, 466.16, 622.25, 622.25, 0, 0, 0,
+          0, 415.3, 622.25, 415.3, 523.25, 622.25, 622.25, 392,
+          622.25, 392, 466.16, 622.25, 622.25, 0, 622.25, 622.25,
+          0, 415.3, 493.88, 698.46, 0, 622.25, 0, 622.25,
+          0, 415.3, 493.88, 698.46, 0, 622.25, 0, 0,
+          0, 207.65, 246.94, 415.3, 0, 415.3, 493.88, 830.61,
+          0, 415.3, 493.88, 830.61, 0, 415.3, 493.88, 830.61,
+          830.61, 830.61, 830.61, 830.61, 830.61, 622.25, 698.46, 523.25,
+          622.25, 698.46, 698.46, 415.3, 415.3, 466.16, 493.88, 415.3,
+          466.16, 523.25, 523.25, 415.3, 523.25, 415.3, 466.16, 622.25,
+          523.25, 0, 0, 415.3, 830.61, 830.61, 830.61, 830.61,
+          392, 622.25, 392, 466.16, 587.33, 587.33, 392, 554.37,
+          392, 466.16, 523.25, 523.25, 311.13, 466.16, 311.13, 523.25,
+          523.25, 311.13, 392, 698.46, 466.16, 554.37, 698.46, 622.25,
+          523.25, 622.25, 523.25, 392, 523.25, 0, 0, 0
+        ];
+        const mapleStride = [
+          103.83, 311.13, 116.54, 311.13, 103.83, 311.13, 116.54, 155.56,
+          123.47, 311.13, 116.54, 311.13, 103.83, 311.13, 155.56, 311.13,
+          116.54, 311.13, 103.83, 311.13, 116.54, 311.13, 130.81, 311.13,
+          138.59, 349.23, 116.54, 349.23, 103.83, 311.13, 155.56, 311.13
+        ];
         melodyTimer = setInterval(() => {
           const now = audioCtx.currentTime + 0.022;
-          const theme = Math.floor(melodyStep / 64) % 2;
-          const localStep = melodyStep % 64;
-          const lead = theme === 0 ? bubbleLead : bounceLead;
-          const arp = theme === 0 ? bubbleArp : bounceArp;
-          const bass = theme === 0 ? bubbleBass : bounceBass;
+          const localStep = melodyStep % mapleLead.length;
           const pitch = boss ? 0.5 : 1;
-          const swing = theme === 1 && localStep % 2 ? 0.018 : 0;
-          const note = lead[localStep % lead.length];
-          if (note) melodyNote(note * pitch, now + swing, theme === 0 ? 0.092 : 0.13, boss ? 0.018 : 0.023, theme === 0 ? "square" : "triangle", boss ? 0.975 : 1);
-          if (localStep % 2 === 1) melodyNote(arp[localStep % arp.length] * pitch, now + 0.024 + swing, theme === 0 ? 0.055 : 0.082, boss ? 0.006 : 0.0085, "square", theme === 0 ? 1.01 : 0.995);
-          if (localStep % 4 === 0) melodyNote(bass[(localStep / 4) % bass.length] * pitch, now, theme === 0 ? 0.16 : 0.22, boss ? 0.027 : 0.021, theme === 0 ? "square" : "triangle", boss ? 0.96 : 0.985);
-          if (localStep % 32 === 0) {
-            const root = bass[(localStep / 4) % bass.length] * pitch;
-            spacePadNote(root, now, boss ? 4 : 3.5, boss ? 0.008 : 0.0065);
+          const swing = localStep % 4 === 3 ? 0.014 : 0;
+          const note = mapleLead[localStep];
+          if (note) {
+            const held = mapleLead[(localStep + mapleLead.length - 1) % mapleLead.length] === note;
+            melodyNote(note * pitch, now + swing, held ? 0.14 : 0.092, boss ? 0.018 : 0.024, localStep % 16 < 8 ? "square" : "triangle", boss ? 0.975 : 1);
           }
-          if (localStep % 8 === (theme === 0 ? 6 : 3)) starPing(pings[Math.floor(localStep / 8) % pings.length] * pitch, now + swing, boss ? 0.009 : 0.013);
-          if (localStep % 16 === 0 || (theme === 1 && localStep % 16 === 10)) chipDrum("kick", now);
-          if (localStep % 16 === 8) chipDrum("snare", now + 0.008);
-          if (localStep % (theme === 0 ? 4 : 2) === (theme === 0 ? 3 : 1)) chipDrum("hat", now + 0.016 + swing);
-          if (localStep === 0) starPing((theme === 0 ? 2093 : 1567.98) * pitch, now + 0.04, 0.012);
+          if (localStep % 4 === 0) {
+            const stride = mapleStride[(localStep / 4) % mapleStride.length] * pitch;
+            melodyNote(stride, now, localStep % 8 === 0 ? 0.19 : 0.13, boss ? 0.029 : 0.023, localStep % 8 === 0 ? "triangle" : "square", boss ? 0.96 : 0.99);
+          }
+          if (localStep % 32 === 0) {
+            const root = mapleStride[(localStep / 4) % mapleStride.length] * pitch;
+            spacePadNote(root, now, boss ? 4 : 3.2, boss ? 0.0075 : 0.0055);
+          }
+          if (localStep % 16 === 14) starPing((localStep % 32 ? 1244.51 : 1661.22) * pitch, now, boss ? 0.008 : 0.011);
+          if (localStep % 8 === 0) chipDrum("kick", now);
+          if (localStep % 8 === 4) chipDrum("snare", now + 0.008);
+          if (localStep % 2 === 1) chipDrum("hat", now + 0.012 + swing);
           melodyStep += 1;
-        }, 136);
+        }, 124);
       }
 
       function fanfareNote(freq, when, length, gain = 0.05) {
