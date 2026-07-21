@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.45 · eleven animated canyon aliens · updated 2026-07-21 17:36 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.47 · 24-frame canyon creatures · updated 2026-07-21 19:31 CEST</div>
   </main>
 
   <script>
@@ -2320,6 +2320,24 @@
       realisticSprites.bosses.src = "assets/bosses-realistic.png";
       realisticSprites.ufo.src = "assets/ufo-realistic.png";
       realisticSprites.meteor.src = "assets/meteor-realistic.png";
+      const bossAnimationSprites = {
+        octopus: new Image(),
+        hunter: new Image(),
+        crystal: new Image(),
+        dreadnought: new Image()
+      };
+      Object.values(bossAnimationSprites).forEach((image) => {
+        image.decoding = "async";
+      });
+      bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-24f.webp";
+      bossAnimationSprites.hunter.src = "assets/bosses/varkuun-24f.webp";
+      bossAnimationSprites.crystal.src = "assets/bosses/astrax-24f.webp";
+      bossAnimationSprites.dreadnought.src = "assets/bosses/mordrath-24f.webp";
+
+      function bossAnimationReady(kind) {
+        const image = bossAnimationSprites[kind];
+        return Boolean(image && image.complete && image.naturalWidth);
+      }
       const keys = new Set();
       const bullets = [];
       let shotSequence = 0;
@@ -2532,17 +2550,17 @@
         { progress: 0.970, name: "Deep Space Observatory Basin", id: "RELIC-SELENE-OBSERVATORY", focalY: 0.030 }
       ];
       const canyonAlienSpecies = [
-        { name: "Apollo Ash Scarab", id: "CANYON-ALIEN-01-APOLLO-SCARAB", progress: 0.010, size: 116, drift: 34, accent: "#ffb35c", imageUrl: "assets/canyon-aliens/apollo-ash-scarab.webp" },
-        { name: "Red Dune Mantis", id: "CANYON-ALIEN-02-DUNE-MANTIS", progress: 0.110, size: 122, drift: 46, accent: "#a8ff68", imageUrl: "assets/canyon-aliens/red-dune-mantis.webp" },
-        { name: "Golden Signal Wraith", id: "CANYON-ALIEN-03-SIGNAL-WRAITH", progress: 0.215, size: 126, drift: 54, accent: "#5ed7ff", imageUrl: "assets/canyon-aliens/golden-signal-wraith.webp" },
-        { name: "Torus Coil Eel", id: "CANYON-ALIEN-04-TORUS-EEL", progress: 0.321, size: 128, drift: 42, accent: "#8cecff", imageUrl: "assets/canyon-aliens/torus-coil-eel.webp" },
-        { name: "Obsidian Vault Horror", id: "CANYON-ALIEN-05-VAULT-HORROR", progress: 0.411, size: 124, drift: 38, accent: "#ff4d67", imageUrl: "assets/canyon-aliens/obsidian-vault-horror.webp" },
-        { name: "Truss Nest Ravager", id: "CANYON-ALIEN-06-TRUSS-RAVAGER", progress: 0.522, size: 134, drift: 48, accent: "#ffb84f", imageUrl: "assets/canyon-aliens/truss-nest-ravager.webp" },
-        { name: "Aperture Stalker", id: "CANYON-ALIEN-07-APERTURE-STALKER", progress: 0.604, size: 126, drift: 52, accent: "#62cfff", imageUrl: "assets/canyon-aliens/aperture-stalker.webp" },
-        { name: "Cosmonaut Shell Crawler", id: "CANYON-ALIEN-08-SHELL-CRAWLER", progress: 0.726, size: 132, drift: 40, accent: "#ff8a36", imageUrl: "assets/canyon-aliens/cosmonaut-shell-crawler.webp" },
-        { name: "Cryostasis Mourner", id: "CANYON-ALIEN-09-CRYO-MOURNER", progress: 0.814, size: 130, drift: 58, accent: "#c09cff", imageUrl: "assets/canyon-aliens/cryostasis-mourner.webp" },
-        { name: "Gate-Spine Leviathan", id: "CANYON-ALIEN-10-GATE-LEVIATHAN", progress: 0.899, size: 138, drift: 44, accent: "#b66cff", imageUrl: "assets/canyon-aliens/gate-spine-leviathan.webp" },
-        { name: "Parallax Dish Oracle", id: "CANYON-ALIEN-11-DISH-ORACLE", progress: 0.970, size: 142, drift: 50, accent: "#f7fcff", imageUrl: "assets/canyon-aliens/parallax-dish-oracle.webp" }
+        { name: "Apollo Ash Scarab", id: "CANYON-ALIEN-01-APOLLO-SCARAB", progress: 0.010, size: 116, drift: 34, accent: "#ffb35c", imageUrl: "assets/canyon-aliens/apollo-ash-scarab-24f.webp" },
+        { name: "Red Dune Mantis", id: "CANYON-ALIEN-02-DUNE-MANTIS", progress: 0.110, size: 122, drift: 46, accent: "#a8ff68", imageUrl: "assets/canyon-aliens/red-dune-mantis-24f.webp" },
+        { name: "Golden Signal Wraith", id: "CANYON-ALIEN-03-SIGNAL-WRAITH", progress: 0.215, size: 126, drift: 54, accent: "#5ed7ff", imageUrl: "assets/canyon-aliens/golden-signal-wraith-24f.webp" },
+        { name: "Torus Coil Eel", id: "CANYON-ALIEN-04-TORUS-EEL", progress: 0.321, size: 128, drift: 42, accent: "#8cecff", imageUrl: "assets/canyon-aliens/torus-coil-eel-24f.webp" },
+        { name: "Obsidian Vault Horror", id: "CANYON-ALIEN-05-VAULT-HORROR", progress: 0.411, size: 124, drift: 38, accent: "#ff4d67", imageUrl: "assets/canyon-aliens/obsidian-vault-horror-24f.webp" },
+        { name: "Truss Nest Ravager", id: "CANYON-ALIEN-06-TRUSS-RAVAGER", progress: 0.522, size: 134, drift: 48, accent: "#ffb84f", imageUrl: "assets/canyon-aliens/truss-nest-ravager-24f.webp" },
+        { name: "Aperture Stalker", id: "CANYON-ALIEN-07-APERTURE-STALKER", progress: 0.604, size: 126, drift: 52, accent: "#62cfff", imageUrl: "assets/canyon-aliens/aperture-stalker-24f.webp" },
+        { name: "Cosmonaut Shell Crawler", id: "CANYON-ALIEN-08-SHELL-CRAWLER", progress: 0.726, size: 132, drift: 40, accent: "#ff8a36", imageUrl: "assets/canyon-aliens/cosmonaut-shell-crawler-24f.webp" },
+        { name: "Cryostasis Mourner", id: "CANYON-ALIEN-09-CRYO-MOURNER", progress: 0.814, size: 130, drift: 58, accent: "#c09cff", imageUrl: "assets/canyon-aliens/cryostasis-mourner-24f.webp" },
+        { name: "Gate-Spine Leviathan", id: "CANYON-ALIEN-10-GATE-LEVIATHAN", progress: 0.899, size: 138, drift: 44, accent: "#b66cff", imageUrl: "assets/canyon-aliens/gate-spine-leviathan-24f.webp" },
+        { name: "Parallax Dish Oracle", id: "CANYON-ALIEN-11-DISH-ORACLE", progress: 0.970, size: 142, drift: 50, accent: "#f7fcff", imageUrl: "assets/canyon-aliens/parallax-dish-oracle-24f.webp" }
       ];
       canyonAlienSpecies.forEach((species) => {
         species.image = new Image();
@@ -2651,7 +2669,16 @@
         focalY: landmark.focalY
       }));
       const devObjectCatalog = [
-        ...bossCatalog.map((entry, index) => ({ ...entry, category: "boss", typeLabel: `Boss · Act ${index + 1}`, sprite: "bosses", frame: index, columns: 2, rows: 2 })),
+        ...bossCatalog.map((entry, index) => ({
+          ...entry,
+          category: "boss",
+          typeLabel: `Boss · Act ${index + 1} · 24 frames`,
+          sprite: "bossAnimation",
+          image: bossAnimationSprites[entry.kind],
+          frame: 0,
+          columns: 6,
+          rows: 4
+        })),
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
@@ -2666,11 +2693,11 @@
         ...canyonAlienSpecies.map((species, index) => ({
           ...species,
           category: "alien",
-          typeLabel: `Canyon alien · Sector ${index + 1}`,
+          typeLabel: `Canyon alien · Sector ${index + 1} · 24 frames`,
           sprite: "canyonAlien",
           frame: 0,
-          columns: 2,
-          rows: 2,
+          columns: 6,
+          rows: 4,
           eye: species.accent
         })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
@@ -3819,9 +3846,16 @@
         }
 
         if (item.sprite === "canyonAlien") {
-          const animatedItem = { ...item, frame: Math.floor(t * 5.5 + item.progress * 10) % 4 };
+          const animatedItem = { ...item, frame: Math.floor(t * 9 + item.progress * 24) % 24 };
           const previewSize = canvas === devDetailCanvas ? 220 : 142;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
+          return;
+        }
+
+        if (item.sprite === "bossAnimation") {
+          const animatedItem = { ...item, frame: Math.floor(t * 9) % 24 };
+          const previewSize = canvas === devDetailCanvas ? 270 : 158;
+          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
           return;
         }
 
@@ -5969,6 +6003,25 @@
         const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : 0.025);
         const drawX = boss.x + Math.sin(boss.phase * 0.88) * 3.2;
         const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5;
+        if (bossAnimationReady(boss.kind)) {
+          const animationFrame = Math.floor(boss.phase * 9) % 24;
+          drawSpriteFrame(
+            bossAnimationSprites[boss.kind],
+            animationFrame,
+            6,
+            4,
+            drawX,
+            drawY,
+            width * pulseX,
+            height * pulseY,
+            angle,
+            "transparent",
+            0,
+            1,
+            filter
+          );
+          return;
+        }
         if (boss.kind === "octopus" || boss.kind === "hunter") {
           drawBossStrands(drawX, drawY, angle, boss.kind, boss.phase);
         }
@@ -6133,11 +6186,11 @@
         if (state !== "canyon" || alien.dead || alien.y < -150 || alien.y > H + 150) return;
         const image = alien.species.image;
         if (!image.complete || !image.naturalWidth) return;
-        const frame = alien.dying > 0 ? 3 : Math.floor(t * (5.2 + alien.index * 0.08) + alien.index * 0.63) % 4;
-        const sourceWidth = image.naturalWidth / 2;
-        const sourceHeight = image.naturalHeight / 2;
-        const sourceX = (frame % 2) * sourceWidth;
-        const sourceY = Math.floor(frame / 2) * sourceHeight;
+        const frame = alien.dying > 0 ? 17 : Math.floor(t * (8.4 + alien.index * 0.07) + alien.index * 1.91) % 24;
+        const sourceWidth = image.naturalWidth / 6;
+        const sourceHeight = image.naturalHeight / 4;
+        const sourceX = (frame % 6) * sourceWidth;
+        const sourceY = Math.floor(frame / 6) * sourceHeight;
         const size = alien.species.size;
         const bob = Math.sin(t * 2.3 + alien.index * 0.9) * 7;
         const breathe = 1 + Math.sin(t * 3.1 + alien.index) * 0.035;
@@ -6243,7 +6296,7 @@
 
       function drawBoss() {
         if (!boss) return;
-        if (realisticSpritesReady) {
+        if (bossAnimationReady(boss.kind) || realisticSpritesReady) {
           drawRealisticBoss();
           const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 300 : boss.kind === "crystal" ? 292 : 280;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
