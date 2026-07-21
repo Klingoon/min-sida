@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.44 · Selene Canyon follows boss one · updated 2026-07-21 16:38 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.45 · eleven animated canyon aliens · updated 2026-07-21 17:36 CEST</div>
   </main>
 
   <script>
@@ -2322,8 +2322,10 @@
       realisticSprites.meteor.src = "varldsrymden-anfaller/assets/meteor-realistic.png";
       const keys = new Set();
       const bullets = [];
+      let shotSequence = 0;
       const enemyBullets = [];
       const enemies = [];
+      const canyonAliens = [];
       const particles = [];
       const debris = [];
       const shockwaves = [];
@@ -2529,6 +2531,24 @@
         { progress: 0.899, name: "Ancient Star Gate and Colony Spine", id: "RELIC-SELENE-ANCIENT-GATE", focalY: 0.135 },
         { progress: 0.970, name: "Deep Space Observatory Basin", id: "RELIC-SELENE-OBSERVATORY", focalY: 0.030 }
       ];
+      const canyonAlienSpecies = [
+        { name: "Apollo Ash Scarab", id: "CANYON-ALIEN-01-APOLLO-SCARAB", progress: 0.010, size: 116, drift: 34, accent: "#ffb35c", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/apollo-ash-scarab.webp" },
+        { name: "Red Dune Mantis", id: "CANYON-ALIEN-02-DUNE-MANTIS", progress: 0.110, size: 122, drift: 46, accent: "#a8ff68", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/red-dune-mantis.webp" },
+        { name: "Golden Signal Wraith", id: "CANYON-ALIEN-03-SIGNAL-WRAITH", progress: 0.215, size: 126, drift: 54, accent: "#5ed7ff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/golden-signal-wraith.webp" },
+        { name: "Torus Coil Eel", id: "CANYON-ALIEN-04-TORUS-EEL", progress: 0.321, size: 128, drift: 42, accent: "#8cecff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/torus-coil-eel.webp" },
+        { name: "Obsidian Vault Horror", id: "CANYON-ALIEN-05-VAULT-HORROR", progress: 0.411, size: 124, drift: 38, accent: "#ff4d67", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/obsidian-vault-horror.webp" },
+        { name: "Truss Nest Ravager", id: "CANYON-ALIEN-06-TRUSS-RAVAGER", progress: 0.522, size: 134, drift: 48, accent: "#ffb84f", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/truss-nest-ravager.webp" },
+        { name: "Aperture Stalker", id: "CANYON-ALIEN-07-APERTURE-STALKER", progress: 0.604, size: 126, drift: 52, accent: "#62cfff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/aperture-stalker.webp" },
+        { name: "Cosmonaut Shell Crawler", id: "CANYON-ALIEN-08-SHELL-CRAWLER", progress: 0.726, size: 132, drift: 40, accent: "#ff8a36", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/cosmonaut-shell-crawler.webp" },
+        { name: "Cryostasis Mourner", id: "CANYON-ALIEN-09-CRYO-MOURNER", progress: 0.814, size: 130, drift: 58, accent: "#c09cff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/cryostasis-mourner.webp" },
+        { name: "Gate-Spine Leviathan", id: "CANYON-ALIEN-10-GATE-LEVIATHAN", progress: 0.899, size: 138, drift: 44, accent: "#b66cff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/gate-spine-leviathan.webp" },
+        { name: "Parallax Dish Oracle", id: "CANYON-ALIEN-11-DISH-ORACLE", progress: 0.970, size: 142, drift: 50, accent: "#f7fcff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/parallax-dish-oracle.webp" }
+      ];
+      canyonAlienSpecies.forEach((species) => {
+        species.image = new Image();
+        species.image.decoding = "async";
+        species.image.src = species.imageUrl;
+      });
       let encouragementTimer = 6;
       const encouragements = [
         "Great job, Milton",
@@ -2643,6 +2663,16 @@
           filter: style.filter,
           eye: style.eye
         }))),
+        ...canyonAlienSpecies.map((species, index) => ({
+          ...species,
+          category: "alien",
+          typeLabel: `Canyon alien · Sector ${index + 1}`,
+          sprite: "canyonAlien",
+          frame: 0,
+          columns: 2,
+          rows: 2,
+          eye: species.accent
+        })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO", sprite: "ufo", frame: 0, columns: 1, rows: 1 },
@@ -2957,6 +2987,85 @@
       function activeCanyonLandmark() {
         const progress = canyonRun.scroll / canyonRun.maxScroll;
         return canyonLandmarks.find((landmark) => Math.abs(landmark.progress - progress) < 0.038) || null;
+      }
+
+      function resetCanyonAliens() {
+        canyonAliens.length = 0;
+        canyonAlienSpecies.forEach((species, index) => {
+          canyonAliens.push({
+            species,
+            index,
+            hp: 3,
+            maxHp: 3,
+            phase: index * 0.73,
+            worldY: canyonRun.maxScroll - species.progress * canyonRun.maxScroll + 220,
+            x: W / 2,
+            y: -200,
+            hurt: 0,
+            dying: 0,
+            dead: false,
+            lastShotId: -1
+          });
+        });
+      }
+
+      function activeCanyonAlien() {
+        return canyonAliens.find((alien) => !alien.dead && alien.y > -90 && alien.y < H + 80) || null;
+      }
+
+      function updateCanyonCombat(dt) {
+        const now = performance.now() / 1000;
+        canyonAliens.forEach((alien) => {
+          alien.phase += dt * (1.55 + alien.index * 0.035);
+          alien.hurt = Math.max(0, alien.hurt - dt);
+          alien.y = alien.worldY - canyonRun.maxScroll + canyonRun.scroll;
+          const bounds = canyonBounds(alien.worldY);
+          const center = (bounds.left + bounds.right) / 2;
+          const availableDrift = Math.max(12, (bounds.right - bounds.left) / 2 - alien.species.size * 0.34);
+          alien.x = center + Math.sin(now * 1.15 + alien.index * 1.27) * Math.min(alien.species.drift, availableDrift);
+          if (alien.dying > 0) {
+            alien.dying -= dt;
+            alien.y += (0.7 - alien.dying) * 32;
+            if (alien.dying <= 0) alien.dead = true;
+          }
+        });
+
+        bullets.forEach((bullet) => {
+          bullet.y += bullet.vy * dt;
+        });
+
+        for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+          const bullet = bullets[bulletIndex];
+          if (bullet.y < -36) {
+            bullets.splice(bulletIndex, 1);
+            continue;
+          }
+          const alien = canyonAliens.find((candidate) => {
+            if (candidate.dead || candidate.dying > 0 || candidate.y < -100 || candidate.y > H + 100) return false;
+            const hitRadius = candidate.species.size * 0.3;
+            return Math.hypot(bullet.x - candidate.x, bullet.y - candidate.y) < hitRadius;
+          });
+          if (!alien) continue;
+          bullets.splice(bulletIndex, 1);
+          if (alien.lastShotId === bullet.shotId) continue;
+          alien.lastShotId = bullet.shotId;
+          alien.hp -= 1;
+          alien.hurt = 0.2;
+          makeParticles(bullet.x, bullet.y, alien.species.accent, alien.hp > 0 ? 16 : 58);
+          play(alien.hp > 0 ? 176 : 92, alien.hp > 0 ? 0.11 : 0.34, "sawtooth", alien.hp > 0 ? 0.035 : 0.075);
+          if (alien.hp <= 0) {
+            alien.dying = 0.7;
+            score += 1800 + alien.index * 220;
+            shake = Math.max(shake, 24);
+            explosionSound(1.05);
+            shell.dataset.canyonAlienDefeated = alien.species.id;
+          }
+        }
+
+        const collisionAlien = activeCanyonAlien();
+        if (collisionAlien && collisionAlien.dying <= 0 && Math.hypot(player.x - collisionAlien.x, player.y - collisionAlien.y) < collisionAlien.species.size * 0.36 + 32) {
+          damagePlayer();
+        }
       }
 
       function drawSpaceBackdrop(nowSec) {
@@ -3563,7 +3672,7 @@
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         hudStageName.textContent = canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
         hudEncounterName.textContent = canyonStage
-          ? (activeCanyonLandmark()?.name || "The Wreck Corridor")
+          ? (activeCanyonAlien()?.species.name || activeCanyonLandmark()?.name || "The Wreck Corridor")
           : boss ? boss.name : alienStyle.displayName;
         shieldCountEl.textContent = "∞";
         renderLives();
@@ -3706,6 +3815,13 @@
 
         if (item.sprite === "backdrop") {
           drawDevBackdrop(ctx, item, t);
+          return;
+        }
+
+        if (item.sprite === "canyonAlien") {
+          const animatedItem = { ...item, frame: Math.floor(t * 5.5 + item.progress * 10) % 4 };
+          const previewSize = canvas === devDetailCanvas ? 220 : 142;
+          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
           return;
         }
 
@@ -4188,6 +4304,7 @@
         winSubtitle.textContent = "Farzan Tarzan is buying kebab!";
         bullets.length = 0;
         enemyBullets.length = 0;
+        canyonAliens.length = 0;
         particles.length = 0;
         debris.length = 0;
         shockwaves.length = 0;
@@ -4396,10 +4513,11 @@
         rifts.length = 0;
         bonusUfo = null;
         canyonRun.scroll = 0;
+        canyonAliens.length = 0;
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON ODYSSEY: Cross eleven wreck sectors and survive more than two minutes of tightening bends. Apollo, Mars and Voyager wrecks lead to the shattered International Space Station, Hubble, Soyuz and vast unknown relics. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
+        overlayText.textContent = "SELENE CANYON ODYSSEY: Cross eleven wreck sectors and survive more than two minutes of tightening bends. Every sector has a unique guardian alien; each one takes three hits to destroy. Apollo, Mars and Voyager wrecks lead to the shattered International Space Station, Hubble, Soyuz and vast unknown relics. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back, Space or W to fire, and X for the shield. On iPhone, drag the ship with your thumb, tap to fire and hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
         startBtn.textContent = "Enter canyon";
         overlay.classList.add("visible");
         updateHud();
@@ -4418,6 +4536,7 @@
         rifts.length = 0;
         bonusUfo = null;
         canyonRun.scroll = 0;
+        resetCanyonAliens();
         const entryBounds = canyonBounds(canyonRun.maxScroll + H - 140);
         player.x = (entryBounds.left + entryBounds.right) / 2;
         player.y = H - 140;
@@ -4738,11 +4857,12 @@
       }
 
       function shoot() {
-        if (player.cooldown > 0 || !isActiveRun()) return;
-        bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4 });
-        bullets.push({ x: player.x + 12, y: player.y - 24, vy: -720, r: 4 });
+        if (player.cooldown > 0 || (!isActiveRun() && state !== "canyon")) return;
+        const shotId = ++shotSequence;
+        bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4, shotId });
+        bullets.push({ x: player.x + 12, y: player.y - 24, vy: -720, r: 4, shotId });
         player.cooldown = 0.18;
-        if (state === "playing") laserSound();
+        if (state === "playing" || state === "canyon") laserSound();
       }
 
       function activateShield() {
@@ -5052,11 +5172,15 @@
 
         if (fullAutoPlaythrough) {
           const autoBounds = canyonBounds(canyonWorldY(player.y - 150));
-          const targetX = (autoBounds.left + autoBounds.right) / 2;
+          const targetAlien = activeCanyonAlien();
+          const targetX = targetAlien && targetAlien.y < player.y
+            ? targetAlien.x
+            : (autoBounds.left + autoBounds.right) / 2;
           const targetY = H - 170;
           playerInput = clamp((targetX - player.x) / 54, -1, 1);
           playerInputY = clamp((targetY - player.y) / 72, -0.7, 0.7);
           player.shieldTime = Math.max(player.shieldTime, 0.2);
+          if (targetAlien && targetAlien.y < player.y - 50 && player.cooldown <= 0) shoot();
         } else {
           const left = keys.has("ArrowLeft") || keys.has("KeyA");
           const right = keys.has("ArrowRight") || keys.has("KeyD");
@@ -5064,12 +5188,14 @@
           const backward = keys.has("ArrowDown");
           playerInput = (right ? 1 : 0) - (left ? 1 : 0);
           playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
+          if (keys.has("Space") || keys.has("KeyW")) shoot();
         }
         syncPhysics(dt);
 
         canyonRun.scroll = Math.min(canyonRun.maxScroll, canyonRun.scroll + canyonRun.speed * dt);
         canvas.style.backgroundPosition = `center ${canyonBackgroundOffset()}px`;
         shell.dataset.canyonProgress = Math.round(canyonRun.scroll / canyonRun.maxScroll * 100).toString();
+        updateCanyonCombat(dt);
 
         const bounds = canyonBounds(canyonWorldY(player.y));
         const shipRadius = 38;
@@ -6003,6 +6129,60 @@
         }
       }
 
+      function drawCanyonAlien(alien, t) {
+        if (state !== "canyon" || alien.dead || alien.y < -150 || alien.y > H + 150) return;
+        const image = alien.species.image;
+        if (!image.complete || !image.naturalWidth) return;
+        const frame = alien.dying > 0 ? 3 : Math.floor(t * (5.2 + alien.index * 0.08) + alien.index * 0.63) % 4;
+        const sourceWidth = image.naturalWidth / 2;
+        const sourceHeight = image.naturalHeight / 2;
+        const sourceX = (frame % 2) * sourceWidth;
+        const sourceY = Math.floor(frame / 2) * sourceHeight;
+        const size = alien.species.size;
+        const bob = Math.sin(t * 2.3 + alien.index * 0.9) * 7;
+        const breathe = 1 + Math.sin(t * 3.1 + alien.index) * 0.035;
+        const deathProgress = alien.dying > 0 ? 1 - alien.dying / 0.7 : 0;
+        const alpha = alien.dying > 0 ? clamp(alien.dying / 0.7, 0, 1) : 1;
+        const strips = 10;
+
+        spriteCtx.save();
+        spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
+        spriteCtx.rotate(Math.sin(t * 1.45 + alien.index) * 0.055 + deathProgress * 0.35);
+        spriteCtx.scale(breathe + deathProgress * 0.18, 1 / breathe - deathProgress * 0.08);
+        spriteCtx.globalAlpha = alpha;
+        spriteCtx.filter = alien.hurt > 0 ? "brightness(2.2) saturate(0.45)" : "contrast(1.05) saturate(1.08)";
+        for (let strip = 0; strip < strips; strip += 1) {
+          const stripSourceY = sourceY + strip * sourceHeight / strips;
+          const stripHeight = sourceHeight / strips + 1;
+          const stripDestY = -size / 2 + strip * size / strips;
+          const organicOffset = Math.sin(t * (2.1 + alien.index * 0.04) + strip * 0.72 + alien.index) * (2.2 + Math.abs(strip - 4.5) * 0.18);
+          const recoilOffset = deathProgress * Math.sin(strip * 1.9) * 12;
+          spriteCtx.drawImage(
+            image,
+            sourceX,
+            stripSourceY,
+            sourceWidth,
+            stripHeight,
+            -size / 2 + organicOffset + recoilOffset,
+            stripDestY,
+            size,
+            size / strips + 1
+          );
+        }
+        spriteCtx.restore();
+
+        if (alien.dying <= 0) {
+          spriteCtx.save();
+          spriteCtx.translate(alien.x + renderShake.x, alien.y - size * 0.49 + bob + renderShake.y);
+          for (let hit = 0; hit < alien.maxHp; hit += 1) {
+            spriteCtx.fillStyle = hit < alien.hp ? alien.species.accent : "rgba(20,24,30,0.72)";
+            spriteCtx.globalAlpha = hit < alien.hp ? 0.92 : 0.5;
+            spriteCtx.fillRect((hit - 1) * 13 - 4, -8, 8, 3);
+          }
+          spriteCtx.restore();
+        }
+      }
+
       function drawBonusUfo() {
         if (!bonusUfo) return;
         const t = performance.now() / 1000 + bonusUfo.phase;
@@ -6370,6 +6550,7 @@
         comets.forEach(drawComet);
         rifts.forEach(drawRift);
         enemies.forEach(drawEnemy);
+        canyonAliens.forEach((alien) => drawCanyonAlien(alien, nowSec));
         drawPlayer();
         debris.forEach((fragment) => {
           const a = clamp(fragment.life / fragment.max, 0, 1);
@@ -6550,6 +6731,7 @@
         if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Space", "KeyA", "KeyD", "KeyW"].includes(event.code)) {
           event.preventDefault();
           keys.add(event.code);
+          if (!event.repeat && (event.code === "Space" || event.code === "KeyW")) shoot();
         }
         if (event.code === "Enter" && state !== "playing") startGame();
         if (event.code === "KeyM") {
