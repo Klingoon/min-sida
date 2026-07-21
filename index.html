@@ -625,6 +625,8 @@
 
     body .overlay:not(.demo-mode) .panel {
       opacity: 0.4;
+      transform: scale(0.8);
+      transform-origin: center;
     }
 
     /* Attract mode reuses the original console artwork as a transparent overlay. */
@@ -635,8 +637,27 @@
     }
 
     body .overlay.demo-mode .panel {
-      opacity: 0.25;
+      opacity: 0.3;
       backdrop-filter: none;
+      transform: scale(0.8);
+      transform-origin: center;
+    }
+
+    #voiceShieldBtn {
+      display: none;
+    }
+
+    #voiceShieldBtn.listening {
+      color: #c8fff0;
+      filter: brightness(1.18) drop-shadow(0 0 9px rgba(78, 230, 166, 0.72));
+    }
+
+    #voiceShieldBtn.voice-pulse {
+      animation: voice-shield-pulse 420ms ease-out;
+    }
+
+    @keyframes voice-shield-pulse {
+      50% { transform: scale(1.06); filter: brightness(1.45) drop-shadow(0 0 15px rgba(94, 215, 255, 0.9)); }
     }
 
     .encouragement {
@@ -1620,6 +1641,16 @@
       .touch {
         display: grid;
       }
+
+      #voiceShieldBtn {
+        display: block;
+      }
+
+      .panel .actions:has(#voiceShieldBtn) button {
+        width: 32%;
+        padding-inline: 10px;
+        font-size: clamp(9px, 2.7vw, 13px);
+      }
     }
 
     @media (max-width: 460px) {
@@ -1895,11 +1926,12 @@
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
-        <p class="panel-copy" id="overlayText">Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
+        <p class="panel-copy" id="overlayText">Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. You can also enable Voice Shield and speak, for example “la la la”, to raise the shield. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
         <div class="actions">
           <button id="startBtn" type="button">Start</button>
           <button class="secondary" id="muteBtn" type="button">Sound on</button>
+          <button class="secondary" id="voiceShieldBtn" type="button" aria-live="polite" title="Use microphone speech detection to activate the shield">Voice shield</button>
         </div>
       </div>
     </section>
@@ -1934,6 +1966,7 @@
           <button class="dev-filter" type="button" data-dev-filter="boss">Bosses</button>
           <button class="dev-filter" type="button" data-dev-filter="alien">Aliens</button>
           <button class="dev-filter" type="button" data-dev-filter="object">Objects</button>
+          <button class="dev-filter" type="button" data-dev-filter="backdrop">Backdrops</button>
         </nav>
         <div class="dev-grid" id="devGrid"></div>
         <footer class="dev-footer">Double-click an object · Control + Y toggles registry</footer>
@@ -1951,7 +1984,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.34 · balanced console opacity · uploaded 2026-07-21 11:49 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.35 · voice shield and backdrop registry · uploaded 2026-07-21 12:00 CEST</div>
   </main>
 
   <script>
@@ -1986,6 +2019,7 @@
       const actName = document.querySelector("#actName");
       const startBtn = document.querySelector("#startBtn");
       const muteBtn = document.querySelector("#muteBtn");
+      const voiceShieldBtn = document.querySelector("#voiceShieldBtn");
       const winScene = document.querySelector("#winScene");
       const winTitle = document.querySelector(".win-title");
       const winSubtitle = document.querySelector(".win-subtitle");
@@ -2096,6 +2130,17 @@
       let act = 1;
       let muted = false;
       let audioCtx = null;
+      let voiceShieldStream = null;
+      let voiceShieldContext = null;
+      let voiceShieldAnalyser = null;
+      let voiceShieldTimeData = null;
+      let voiceShieldFrequencyData = null;
+      let voiceShieldFrame = 0;
+      let voiceShieldLastAnalysis = 0;
+      let voiceShieldWarmupUntil = 0;
+      let voiceShieldNoiseFloor = 0.012;
+      let voiceShieldCandidateFrames = 0;
+      let voiceShieldLastTrigger = 0;
       let shake = 0;
       let melodyTimer = null;
       let melodyStep = 0;
@@ -2205,6 +2250,32 @@
         { kind: "dreadnought", name: "Mordrath, the Iron Maw", id: "BOSS-A04-MORDRATH" }
       ];
       const bossKinds = bossCatalog.map((entry) => entry.kind);
+      const backdropObjectCatalog = [
+        ...stageBackdropUrls.map((imageUrl, index) => {
+          const actIndex = Math.floor(index / 4);
+          const stageIndex = index % 4;
+          const isBossStage = stageIndex === 3;
+          return {
+            name: isBossStage
+              ? `${actNames[actIndex]} · ${bossCatalog[actIndex].name}`
+              : `${actNames[actIndex]} · Assault ${stageIndex + 1}`,
+            id: `BACKDROP-A${String(actIndex + 1).padStart(2, "0")}-${isBossStage ? "BOSS" : `WAVE-${String(stageIndex + 1).padStart(2, "0")}`}`,
+            category: "backdrop",
+            typeLabel: isBossStage ? `Boss arena · Act ${actIndex + 1}` : `Wave backdrop · Act ${actIndex + 1}`,
+            sprite: "backdrop",
+            imageUrl
+          };
+        }),
+        {
+          name: "Selene Canyon Run",
+          id: "BACKDROP-SPECIAL-SELENE-CANYON",
+          category: "backdrop",
+          typeLabel: "Special ravine stage",
+          sprite: "backdrop",
+          imageUrl: canyonRun.imageUrl,
+          canyon: true
+        }
+      ];
       const devObjectCatalog = [
         ...bossCatalog.map((entry, index) => ({ ...entry, category: "boss", typeLabel: `Boss · Act ${index + 1}`, sprite: "bosses", frame: index, columns: 2, rows: 2 })),
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
@@ -2222,7 +2293,8 @@
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO", sprite: "ufo", frame: 0, columns: 1, rows: 1 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard", sprite: "meteor", frame: 0, columns: 1, rows: 1 },
-        { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" }
+        { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
+        ...backdropObjectCatalog
       ];
       const scoreNames = ["MIL", "MAX", "FTZ", "RAM", "KID", "ACE"];
       const scoreKey = "varldsrymdenAnfallerRambodal.leaderboard";
@@ -3127,6 +3199,11 @@
       function buildDevRegistry() {
         if (devPreviewEntries.length) return;
         devObjectCatalog.forEach((item) => {
+          if (item.sprite === "backdrop" && !item.image) {
+            item.image = new Image();
+            item.image.decoding = "async";
+            item.image.src = item.imageUrl;
+          }
           const card = document.createElement("article");
           card.className = "dev-object-card";
           card.dataset.category = item.category;
@@ -3201,6 +3278,37 @@
         ctx.restore();
       }
 
+      function drawDevBackdrop(ctx, item, t) {
+        const image = item.image;
+        if (!image || !image.complete || !image.naturalWidth) return;
+        const targetWidth = 300;
+        const targetHeight = 180;
+        const targetAspect = targetWidth / targetHeight;
+        const sourceAspect = image.naturalWidth / image.naturalHeight;
+        let sourceX = 0;
+        let sourceY = 0;
+        let sourceWidth = image.naturalWidth;
+        let sourceHeight = image.naturalHeight;
+
+        if (sourceAspect > targetAspect) {
+          sourceWidth = image.naturalHeight * targetAspect;
+          sourceX = (image.naturalWidth - sourceWidth) * (0.5 + Math.sin(t * 0.08) * 0.12);
+        } else {
+          sourceHeight = image.naturalWidth / targetAspect;
+          const travel = Math.max(0, image.naturalHeight - sourceHeight);
+          sourceY = item.canyon
+            ? travel * (0.5 + Math.sin(t * 0.1) * 0.5)
+            : travel * (0.5 + Math.sin(t * 0.06) * 0.08);
+        }
+
+        ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+        const shade = ctx.createLinearGradient(0, 0, 0, targetHeight);
+        shade.addColorStop(0, "rgba(3,6,10,0.05)");
+        shade.addColorStop(1, "rgba(2,4,8,0.34)");
+        ctx.fillStyle = shade;
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+      }
+
       function drawDevPreview(entry, time) {
         const { ctx, item, canvas } = entry;
         const t = time / 1000;
@@ -3213,6 +3321,11 @@
         backdrop.addColorStop(1, "rgba(2,4,8,0)");
         ctx.fillStyle = backdrop;
         ctx.fillRect(0, 0, 300, 180);
+
+        if (item.sprite === "backdrop") {
+          drawDevBackdrop(ctx, item, t);
+          return;
+        }
 
         if (item.sprite === "shield" || item.sprite === "rift") {
           ctx.save();
@@ -3279,7 +3392,12 @@
       function animateDevRegistry(time) {
         if (!devScreenOpen) return;
         if (time - devLastDraw >= 32) {
-          devPreviewEntries.forEach((entry) => drawDevPreview(entry, time));
+          devPreviewEntries.forEach((entry) => {
+            if (entry.card.classList.contains("hidden")) return;
+            if (entry.item.sprite === "backdrop" && time - (entry.lastDraw || 0) < 100) return;
+            drawDevPreview(entry, time);
+            entry.lastDraw = time;
+          });
           if (devDetailEntry) drawDevPreview(devDetailEntry, time);
           devLastDraw = time;
         }
@@ -3704,7 +3822,7 @@
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, drag the ship with your thumb, tap the playfield with your index finger to fire, and hold the lower-left corner for the shield. The bonus UFO clears the wave, but do not shoot the comet.";
+        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, drag the ship with your thumb, tap to fire, hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it. The bonus UFO clears the wave, but do not shoot the comet.";
         updateHud();
       }
 
@@ -3810,7 +3928,7 @@
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON RUN: Steer the Millenium Owl through the lunar ravine. Do not touch either canyon wall. Use the arrow keys or A/D on desktop, or drag the ship with your thumb on iPhone. Hold X or the lower-left corner for the shield.";
+        overlayText.textContent = "SELENE CANYON RUN: Steer the Millenium Owl through the lunar ravine. Do not touch either canyon wall. Use the arrow keys or A/D on desktop, or drag the ship with your thumb on iPhone. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
         startBtn.textContent = "Enter canyon";
         overlay.classList.add("visible");
         updateHud();
@@ -4146,6 +4264,160 @@
         play(880, 0.14, "triangle", 0.04);
         setTimeout(() => play(1320, 0.12, "square", 0.022), 80);
         makeParticles(player.x, player.y, "#5ed7ff", 18);
+      }
+
+      function updateVoiceShieldButton(label, listening = Boolean(voiceShieldStream)) {
+        voiceShieldBtn.textContent = label;
+        voiceShieldBtn.classList.toggle("listening", listening);
+        voiceShieldBtn.setAttribute("aria-pressed", listening ? "true" : "false");
+      }
+
+      function stopVoiceShield() {
+        cancelAnimationFrame(voiceShieldFrame);
+        voiceShieldFrame = 0;
+        voiceShieldAnalyser = null;
+        voiceShieldTimeData = null;
+        voiceShieldFrequencyData = null;
+        voiceShieldCandidateFrames = 0;
+        voiceShieldStream?.getTracks().forEach((track) => track.stop());
+        voiceShieldStream = null;
+        if (voiceShieldContext && voiceShieldContext.state !== "closed") {
+          voiceShieldContext.close().catch(() => {});
+        }
+        voiceShieldContext = null;
+        delete shell.dataset.voiceShield;
+        updateVoiceShieldButton("Voice shield", false);
+      }
+
+      function analyseVoiceShield(time) {
+        if (!voiceShieldAnalyser || !voiceShieldStream) return;
+        voiceShieldFrame = requestAnimationFrame(analyseVoiceShield);
+        if (time - voiceShieldLastAnalysis < 34) return;
+        voiceShieldLastAnalysis = time;
+
+        const timeData = voiceShieldTimeData;
+        const frequencyData = voiceShieldFrequencyData;
+        voiceShieldAnalyser.getByteTimeDomainData(timeData);
+        voiceShieldAnalyser.getByteFrequencyData(frequencyData);
+
+        let squareSum = 0;
+        let crossings = 0;
+        let previous = (timeData[0] - 128) / 128;
+        for (let index = 0; index < timeData.length; index += 1) {
+          const value = (timeData[index] - 128) / 128;
+          squareSum += value * value;
+          if ((value >= 0) !== (previous >= 0)) crossings += 1;
+          previous = value;
+        }
+        const rms = Math.sqrt(squareSum / timeData.length);
+        const zeroCrossingRate = crossings / timeData.length;
+        const binHz = voiceShieldContext.sampleRate / voiceShieldAnalyser.fftSize;
+        let totalEnergy = 0;
+        let voiceEnergy = 0;
+        let coreEnergy = 0;
+        let highEnergy = 0;
+        let weightedVoiceFrequency = 0;
+
+        for (let index = 1; index < frequencyData.length; index += 1) {
+          const frequency = index * binHz;
+          if (frequency > 8000) break;
+          const magnitude = frequencyData[index] / 255;
+          const energy = magnitude * magnitude;
+          if (frequency >= 70) totalEnergy += energy;
+          if (frequency >= 160 && frequency <= 3400) {
+            voiceEnergy += energy;
+            weightedVoiceFrequency += energy * frequency;
+          }
+          if (frequency >= 250 && frequency <= 1400) coreEnergy += energy;
+          if (frequency >= 4000) highEnergy += energy;
+        }
+
+        if (time < voiceShieldWarmupUntil) {
+          voiceShieldNoiseFloor = voiceShieldNoiseFloor * 0.86 + rms * 0.14;
+          return;
+        }
+
+        const voiceRatio = voiceEnergy / Math.max(0.0001, totalEnergy);
+        const coreRatio = coreEnergy / Math.max(0.0001, voiceEnergy);
+        const highRatio = highEnergy / Math.max(0.0001, totalEnergy);
+        const spectralCenter = weightedVoiceFrequency / Math.max(0.0001, voiceEnergy);
+        const threshold = Math.max(0.018, voiceShieldNoiseFloor * 2.15);
+        const humanVoiceLikely = rms > threshold
+          && voiceRatio > 0.56
+          && coreRatio > 0.18
+          && highRatio < 0.27
+          && spectralCenter >= 180
+          && spectralCenter <= 2200
+          && zeroCrossingRate >= 0.008
+          && zeroCrossingRate <= 0.3;
+
+        if (humanVoiceLikely) {
+          voiceShieldCandidateFrames += 1;
+        } else {
+          voiceShieldCandidateFrames = Math.max(0, voiceShieldCandidateFrames - 2);
+          voiceShieldNoiseFloor = voiceShieldNoiseFloor * 0.97 + rms * 0.03;
+        }
+
+        if (voiceShieldCandidateFrames >= 6 && time - voiceShieldLastTrigger > 1900) {
+          voiceShieldCandidateFrames = 0;
+          voiceShieldLastTrigger = time;
+          activateShield();
+          shell.dataset.voiceShield = "triggered";
+          updateVoiceShieldButton("Shield raised", true);
+          voiceShieldBtn.classList.remove("voice-pulse");
+          void voiceShieldBtn.offsetWidth;
+          voiceShieldBtn.classList.add("voice-pulse");
+          setTimeout(() => {
+            if (voiceShieldStream) {
+              shell.dataset.voiceShield = "listening";
+              updateVoiceShieldButton("Voice on", true);
+            }
+          }, 700);
+        }
+      }
+
+      async function startVoiceShield() {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          updateVoiceShieldButton("Mic unavailable", false);
+          return;
+        }
+        updateVoiceShieldButton("Allow mic…", false);
+        try {
+          voiceShieldStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: { ideal: true },
+              noiseSuppression: { ideal: true },
+              autoGainControl: { ideal: true },
+              channelCount: { ideal: 1 },
+              sampleRate: { ideal: 44100 }
+            },
+            video: false
+          });
+          const VoiceAudioContext = window.AudioContext || window.webkitAudioContext;
+          voiceShieldContext = new VoiceAudioContext({ latencyHint: "interactive" });
+          await voiceShieldContext.resume();
+          const source = voiceShieldContext.createMediaStreamSource(voiceShieldStream);
+          voiceShieldAnalyser = voiceShieldContext.createAnalyser();
+          voiceShieldAnalyser.fftSize = 1024;
+          voiceShieldAnalyser.smoothingTimeConstant = 0.38;
+          voiceShieldTimeData = new Uint8Array(voiceShieldAnalyser.fftSize);
+          voiceShieldFrequencyData = new Uint8Array(voiceShieldAnalyser.frequencyBinCount);
+          source.connect(voiceShieldAnalyser);
+          voiceShieldNoiseFloor = 0.012;
+          voiceShieldCandidateFrames = 0;
+          voiceShieldWarmupUntil = performance.now() + 900;
+          shell.dataset.voiceShield = "listening";
+          updateVoiceShieldButton("Voice on", true);
+          voiceShieldFrame = requestAnimationFrame(analyseVoiceShield);
+        } catch (error) {
+          stopVoiceShield();
+          updateVoiceShieldButton(error?.name === "NotAllowedError" ? "Mic denied" : "Mic error", false);
+        }
+      }
+
+      function toggleVoiceShield() {
+        if (voiceShieldStream) stopVoiceShield();
+        else startVoiceShield();
       }
 
       function enemyShoot(enemy) {
@@ -5804,6 +6076,11 @@
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
+      voiceShieldBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleVoiceShield();
+      });
       devCloseBtn.addEventListener("click", closeDevScreen);
       devDetailCloseBtn.addEventListener("click", closeDevDetail);
       devDetail.addEventListener("click", (event) => {
@@ -5829,6 +6106,7 @@
           play(523, 0.08, "triangle", 0.03);
         }
       });
+      window.addEventListener("pagehide", stopVoiceShield);
 
       renderLeaderboard();
       renderLives();
