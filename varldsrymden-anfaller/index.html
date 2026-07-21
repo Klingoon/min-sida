@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.42 · Selene Canyon Odyssey · updated 2026-07-21 14:47 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.43 · extended Selene Canyon Odyssey · updated 2026-07-21 16:22 CEST</div>
   </main>
 
   <script>
@@ -2459,40 +2459,75 @@
       }
       const canyonRun = {
         scroll: 0,
-        imageHeight: 5220,
-        maxScroll: 5220 - H,
-        speed: 70,
+        imageHeight: 11340,
+        maxScroll: 11340 - H,
+        speed: 74,
         imageUrl: "assets/backdrops/selene-canyon-odyssey.jpg"
       };
       const canyonRoute = [
         { progress: 0.00, center: 398, halfWidth: 170 },
-        { progress: 0.05, center: 430, halfWidth: 158 },
-        { progress: 0.10, center: 446, halfWidth: 148 },
-        { progress: 0.15, center: 395, halfWidth: 142 },
-        { progress: 0.20, center: 326, halfWidth: 136 },
-        { progress: 0.25, center: 284, halfWidth: 128 },
-        { progress: 0.30, center: 248, halfWidth: 120 },
-        { progress: 0.35, center: 324, halfWidth: 132 },
-        { progress: 0.40, center: 421, halfWidth: 124 },
-        { progress: 0.45, center: 492, halfWidth: 116 },
-        { progress: 0.50, center: 514, halfWidth: 112 },
-        { progress: 0.55, center: 442, halfWidth: 124 },
-        { progress: 0.60, center: 358, halfWidth: 118 },
-        { progress: 0.65, center: 414, halfWidth: 128 },
-        { progress: 0.70, center: 482, halfWidth: 116 },
-        { progress: 0.75, center: 432, halfWidth: 122 },
-        { progress: 0.80, center: 350, halfWidth: 114 },
-        { progress: 0.85, center: 310, halfWidth: 120 },
-        { progress: 0.90, center: 342, halfWidth: 112 },
-        { progress: 0.95, center: 374, halfWidth: 126 },
-        { progress: 1.00, center: 390, halfWidth: 148 }
+        { progress: 0.023, center: 430, halfWidth: 158 },
+        { progress: 0.046, center: 446, halfWidth: 148 },
+        { progress: 0.069, center: 395, halfWidth: 142 },
+        { progress: 0.092, center: 326, halfWidth: 136 },
+        { progress: 0.115, center: 284, halfWidth: 128 },
+        { progress: 0.138, center: 248, halfWidth: 120 },
+        { progress: 0.161, center: 324, halfWidth: 132 },
+        { progress: 0.184, center: 421, halfWidth: 124 },
+        { progress: 0.207, center: 492, halfWidth: 116 },
+        { progress: 0.230, center: 514, halfWidth: 112 },
+        { progress: 0.253, center: 442, halfWidth: 124 },
+        { progress: 0.276, center: 358, halfWidth: 118 },
+        { progress: 0.299, center: 414, halfWidth: 128 },
+        { progress: 0.322, center: 482, halfWidth: 116 },
+        { progress: 0.345, center: 432, halfWidth: 122 },
+        { progress: 0.368, center: 350, halfWidth: 114 },
+        { progress: 0.391, center: 310, halfWidth: 120 },
+        { progress: 0.414, center: 342, halfWidth: 112 },
+        { progress: 0.437, center: 374, halfWidth: 126 },
+        { progress: 0.460, center: 390, halfWidth: 148 },
+        { progress: 0.480, center: 476, halfWidth: 132 },
+        { progress: 0.500, center: 502, halfWidth: 118 },
+        { progress: 0.520, center: 444, halfWidth: 112 },
+        { progress: 0.540, center: 456, halfWidth: 124 },
+        { progress: 0.555, center: 430, halfWidth: 130 },
+        { progress: 0.575, center: 360, halfWidth: 118 },
+        { progress: 0.595, center: 292, halfWidth: 112 },
+        { progress: 0.615, center: 318, halfWidth: 116 },
+        { progress: 0.635, center: 382, halfWidth: 128 },
+        { progress: 0.648, center: 238, halfWidth: 126 },
+        { progress: 0.668, center: 302, halfWidth: 114 },
+        { progress: 0.688, center: 566, halfWidth: 108 },
+        { progress: 0.708, center: 642, halfWidth: 106 },
+        { progress: 0.725, center: 504, halfWidth: 112 },
+        { progress: 0.740, center: 382, halfWidth: 126 },
+        { progress: 0.760, center: 426, halfWidth: 116 },
+        { progress: 0.780, center: 508, halfWidth: 108 },
+        { progress: 0.800, center: 332, halfWidth: 106 },
+        { progress: 0.820, center: 476, halfWidth: 114 },
+        { progress: 0.835, center: 426, halfWidth: 120 },
+        { progress: 0.855, center: 386, halfWidth: 110 },
+        { progress: 0.875, center: 354, halfWidth: 104 },
+        { progress: 0.895, center: 404, halfWidth: 108 },
+        { progress: 0.915, center: 438, halfWidth: 116 },
+        { progress: 0.932, center: 382, halfWidth: 116 },
+        { progress: 0.950, center: 424, halfWidth: 106 },
+        { progress: 0.968, center: 348, halfWidth: 102 },
+        { progress: 0.985, center: 392, halfWidth: 108 },
+        { progress: 1.000, center: 382, halfWidth: 132 }
       ];
       const canyonLandmarks = [
-        { progress: 0.03, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.90 },
-        { progress: 0.27, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.69 },
-        { progress: 0.52, name: "Voyager Deep-Space Probe", id: "RELIC-SELENE-VOYAGER-PROBE", focalY: 0.48 },
-        { progress: 0.78, name: "Broken Torus Observatory", id: "RELIC-SELENE-TORUS-ARRAY", focalY: 0.27 },
-        { progress: 0.96, name: "Obsidian Relic Graveyard", id: "RELIC-SELENE-OBSIDIAN-VAULT", focalY: 0.09 }
+        { progress: 0.01, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.954 },
+        { progress: 0.11, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.857 },
+        { progress: 0.215, name: "Voyager Deep-Space Probe", id: "RELIC-SELENE-VOYAGER-PROBE", focalY: 0.761 },
+        { progress: 0.321, name: "Broken Torus Observatory", id: "RELIC-SELENE-TORUS-ARRAY", focalY: 0.664 },
+        { progress: 0.411, name: "Obsidian Relic Graveyard", id: "RELIC-SELENE-OBSIDIAN-VAULT", focalY: 0.581 },
+        { progress: 0.522, name: "International Space Station Wreck", id: "RELIC-SELENE-ISS-WRECK", focalY: 0.480 },
+        { progress: 0.604, name: "Hubble Telescope and Orbiter", id: "RELIC-SELENE-HUBBLE-ORBITER", focalY: 0.405 },
+        { progress: 0.726, name: "Soyuz and Lunokhod Grave", id: "RELIC-SELENE-SOYUZ-LUNOKHOD", focalY: 0.293 },
+        { progress: 0.814, name: "Survey Disc and Cryostasis Pods", id: "RELIC-SELENE-SURVEY-DISC", focalY: 0.213 },
+        { progress: 0.899, name: "Ancient Star Gate and Colony Spine", id: "RELIC-SELENE-ANCIENT-GATE", focalY: 0.135 },
+        { progress: 0.970, name: "Deep Space Observatory Basin", id: "RELIC-SELENE-OBSERVATORY", focalY: 0.030 }
       ];
       let encouragementTimer = 6;
       const encouragements = [
@@ -2918,7 +2953,7 @@
 
       function activeCanyonLandmark() {
         const progress = canyonRun.scroll / canyonRun.maxScroll;
-        return canyonLandmarks.find((landmark) => Math.abs(landmark.progress - progress) < 0.055) || null;
+        return canyonLandmarks.find((landmark) => Math.abs(landmark.progress - progress) < 0.038) || null;
       }
 
       function drawSpaceBackdrop(nowSec) {
@@ -4361,7 +4396,7 @@
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON ODYSSEY: Fly the long wreck corridor and survive its tightening S-bends. The Apollo capsule, Mars rover, Voyager probe and stranger relics mark your progress. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
+        overlayText.textContent = "SELENE CANYON ODYSSEY: Cross eleven wreck sectors and survive more than two minutes of tightening bends. Apollo, Mars and Voyager wrecks lead to the shattered International Space Station, Hubble, Soyuz and vast unknown relics. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
         startBtn.textContent = "Enter canyon";
         overlay.classList.add("visible");
         updateHud();
@@ -4400,7 +4435,7 @@
       function finishCanyonRun() {
         if (state !== "canyon") return;
         state = "transition";
-        score += 7500;
+        score += 18000;
         player.invuln = 2.2;
         makeParticles(player.x, player.y, "#ffd86b", 72);
         play(784, 0.18, "triangle", 0.05);
