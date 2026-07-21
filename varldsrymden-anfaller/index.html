@@ -503,6 +503,16 @@
       background: linear-gradient(155deg, rgba(31, 36, 37, 0.88), rgba(7, 9, 13, 0.94));
       clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 10px);
       overflow: hidden;
+      cursor: zoom-in;
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+
+    .dev-object-card:hover,
+    .dev-object-card:focus-visible {
+      border-color: rgba(226, 96, 43, 0.64);
+      background: linear-gradient(155deg, rgba(48, 45, 43, 0.92), rgba(12, 10, 17, 0.96));
+      outline: none;
+      transform: translateY(-2px);
     }
 
     .dev-object-card.hidden {
@@ -547,6 +557,152 @@
       padding: 9px 22px 13px;
       border-top: 1px solid rgba(176, 187, 179, 0.16);
       text-align: right;
+    }
+
+    .dev-detail {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: none;
+      place-items: center;
+      padding: clamp(12px, 4vw, 46px);
+      background: rgba(1, 3, 7, 0.82);
+      backdrop-filter: blur(13px);
+    }
+
+    .dev-detail.visible {
+      display: grid;
+    }
+
+    .dev-detail-panel {
+      position: relative;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      width: min(680px, calc(100% - 24px));
+      max-height: calc(100% - 24px);
+      border: 1px solid rgba(190, 202, 194, 0.42);
+      border-left-color: rgba(226, 96, 43, 0.7);
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 6px),
+        linear-gradient(145deg, rgba(29, 34, 35, 0.98), rgba(5, 7, 11, 0.99));
+      clip-path: polygon(18px 0, calc(100% - 42px) 0, 100% 42px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 36px 100%, 0 calc(100% - 36px), 0 18px);
+      box-shadow: 0 28px 90px rgba(0,0,0,0.78), inset 0 0 38px rgba(104, 53, 125, 0.1);
+      overflow: hidden;
+    }
+
+    .dev-detail canvas {
+      display: block;
+      width: 100%;
+      min-height: 0;
+      aspect-ratio: 5 / 3;
+      background: radial-gradient(ellipse at center, rgba(72, 93, 97, 0.18), transparent 68%);
+    }
+
+    .dev-detail-info {
+      padding: 15px clamp(18px, 4vw, 32px) 20px;
+      border-top: 1px solid rgba(176, 187, 179, 0.18);
+    }
+
+    .dev-detail-info h3 {
+      margin: 6px 54px 8px 0;
+      color: #eee7d8;
+      font: 500 clamp(20px, 4vw, 34px)/1.05 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .dev-detail-info code {
+      color: rgba(170, 222, 229, 0.74);
+      font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .dev-detail-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+    }
+
+    /* Attract mode stays readable without covering the automated playfield. */
+    body .overlay.demo-mode {
+      place-items: end start;
+      padding: 10px;
+      background: transparent;
+    }
+
+    body .overlay.demo-mode .panel {
+      width: min(310px, 44vw);
+      height: auto;
+      min-height: 0;
+      padding: 14px 16px 13px;
+      border: 1px solid rgba(185, 198, 191, 0.24);
+      border-left-color: rgba(226, 96, 43, 0.46);
+      background: rgba(4, 7, 11, 0.42);
+      clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 9px);
+      opacity: 0.64;
+      filter: none;
+      backdrop-filter: blur(3px);
+    }
+
+    body .overlay.demo-mode .panel::before {
+      display: none;
+    }
+
+    body .overlay.demo-mode .space-logo {
+      margin-bottom: 4px;
+      font-size: 16px;
+      line-height: 1;
+      text-align: left;
+    }
+
+    body .overlay.demo-mode .panel-copy {
+      max-height: 34px;
+      padding: 3px 0;
+      overflow: hidden;
+      font-size: 7px;
+      line-height: 1.2;
+      mask-image: linear-gradient(180deg, #000 58%, transparent);
+    }
+
+    body .overlay.demo-mode .panel .leaderboard {
+      margin-top: 2px;
+      padding: 3px 0;
+      background: transparent;
+    }
+
+    body .overlay.demo-mode .panel .leaderboard-title {
+      font-size: 9px;
+      text-align: left;
+    }
+
+    body .overlay.demo-mode .panel .leaderboard ol {
+      gap: 0;
+      margin-top: 1px;
+    }
+
+    body .overlay.demo-mode .panel .leaderboard li {
+      font-size: 8px;
+    }
+
+    body .overlay.demo-mode .panel .leaderboard li:nth-child(n + 4) {
+      display: none;
+    }
+
+    body .overlay.demo-mode .panel .actions {
+      justify-content: flex-start;
+      margin-top: 3px;
+    }
+
+    body .overlay.demo-mode .panel button,
+    body .overlay.demo-mode .panel button.secondary {
+      width: auto;
+      min-height: 28px;
+      padding: 0 12px;
+      border: 1px solid rgba(185, 198, 191, 0.28);
+      background: rgba(8, 12, 16, 0.58);
+      color: rgba(229, 232, 225, 0.82);
+      font-size: 8px;
+      filter: none;
     }
 
     .encouragement {
@@ -1628,6 +1784,28 @@
         font-size: 7px;
       }
 
+      .dev-detail {
+        padding: 7px;
+      }
+
+      .dev-detail-panel {
+        width: 100%;
+        max-height: 96%;
+      }
+
+      .dev-detail-info {
+        padding: 11px 15px 15px;
+      }
+
+      .dev-detail-info h3 {
+        margin-top: 4px;
+        font-size: 18px;
+      }
+
+      .dev-detail-info code {
+        font-size: 8px;
+      }
+
       .build-mark {
         bottom: 4px;
         font-size: 8px;
@@ -1824,11 +2002,22 @@
           <button class="dev-filter" type="button" data-dev-filter="object">Objects</button>
         </nav>
         <div class="dev-grid" id="devGrid"></div>
-        <footer class="dev-footer">Control + Y · Toggle registry</footer>
+        <footer class="dev-footer">Double-click an object · Control + Y toggles registry</footer>
+      </div>
+      <div class="dev-detail" id="devDetail" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="devDetailName">
+        <div class="dev-detail-panel">
+          <button class="dev-close dev-detail-close" id="devDetailCloseBtn" type="button" aria-label="Close object detail" title="Close">×</button>
+          <canvas id="devDetailCanvas" width="720" height="432" aria-label="Large animated object preview"></canvas>
+          <div class="dev-detail-info">
+            <span class="dev-object-type" id="devDetailType">Object</span>
+            <h3 id="devDetailName">Object name</h3>
+            <code id="devDetailId">OBJECT-ID</code>
+          </div>
+        </div>
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.30 · object hangar · uploaded 2026-07-21 10:05 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.31 · detail hangar · uploaded 2026-07-21 10:21 CEST</div>
   </main>
 
   <script>
@@ -1883,6 +2072,12 @@
       const devGrid = document.querySelector("#devGrid");
       const devCloseBtn = document.querySelector("#devCloseBtn");
       const devFilterButtons = Array.from(document.querySelectorAll("[data-dev-filter]"));
+      const devDetail = document.querySelector("#devDetail");
+      const devDetailCanvas = document.querySelector("#devDetailCanvas");
+      const devDetailCloseBtn = document.querySelector("#devDetailCloseBtn");
+      const devDetailType = document.querySelector("#devDetailType");
+      const devDetailName = document.querySelector("#devDetailName");
+      const devDetailId = document.querySelector("#devDetailId");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -1957,6 +2152,8 @@
       let devScreenOpen = false;
       let devAnimationFrame = 0;
       let devLastDraw = 0;
+      let devDetailEntry = null;
+      let devDetailReturnFocus = null;
       const devPreviewEntries = [];
       let last = 0;
       let score = 0;
@@ -3000,6 +3197,9 @@
           card.className = "dev-object-card";
           card.dataset.category = item.category;
           card.dataset.objectId = item.id;
+          card.tabIndex = 0;
+          card.setAttribute("role", "button");
+          card.setAttribute("aria-label", `Open details for ${item.name}`);
 
           const preview = document.createElement("canvas");
           preview.width = 300;
@@ -3020,6 +3220,21 @@
           card.append(preview, info);
           devGrid.append(card);
           devPreviewEntries.push({ item, card, canvas: preview, ctx: preview.getContext("2d") });
+
+          card.addEventListener("dblclick", () => openDevDetail(item, card));
+          card.addEventListener("keydown", (event) => {
+            if (event.code === "Enter" || event.code === "Space") {
+              event.preventDefault();
+              openDevDetail(item, card);
+            }
+          });
+          let lastTouchUp = 0;
+          card.addEventListener("pointerup", (event) => {
+            if (event.pointerType !== "touch") return;
+            const now = performance.now();
+            if (now - lastTouchUp < 360) openDevDetail(item, card);
+            lastTouchUp = now;
+          });
         });
       }
 
@@ -3053,8 +3268,10 @@
       }
 
       function drawDevPreview(entry, time) {
-        const { ctx, item } = entry;
+        const { ctx, item, canvas } = entry;
         const t = time / 1000;
+        const scale = canvas.width / 300;
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.clearRect(0, 0, 300, 180);
         const backdrop = ctx.createRadialGradient(150, 92, 8, 150, 92, 145);
         backdrop.addColorStop(0, "rgba(67,91,96,0.2)");
@@ -3129,6 +3346,7 @@
         if (!devScreenOpen) return;
         if (time - devLastDraw >= 32) {
           devPreviewEntries.forEach((entry) => drawDevPreview(entry, time));
+          if (devDetailEntry) drawDevPreview(devDetailEntry, time);
           devLastDraw = time;
         }
         devAnimationFrame = requestAnimationFrame(animateDevRegistry);
@@ -3146,7 +3364,33 @@
         devCloseBtn.focus({ preventScroll: true });
       }
 
+      function openDevDetail(item, sourceCard) {
+        devDetailReturnFocus = sourceCard || null;
+        devDetailType.textContent = item.typeLabel;
+        devDetailName.textContent = item.name;
+        devDetailId.textContent = item.id;
+        devDetailEntry = {
+          item,
+          canvas: devDetailCanvas,
+          ctx: devDetailCanvas.getContext("2d")
+        };
+        devDetail.classList.add("visible");
+        devDetail.setAttribute("aria-hidden", "false");
+        devDetailCloseBtn.focus({ preventScroll: true });
+      }
+
+      function closeDevDetail() {
+        if (!devDetailEntry) return;
+        devDetailEntry = null;
+        devDetail.classList.remove("visible");
+        devDetail.setAttribute("aria-hidden", "true");
+        const returnFocus = devDetailReturnFocus;
+        devDetailReturnFocus = null;
+        if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+      }
+
       function closeDevScreen() {
+        closeDevDetail();
         devScreenOpen = false;
         devScreen.classList.remove("visible");
         devScreen.setAttribute("aria-hidden", "true");
@@ -5563,7 +5807,10 @@
         }
         if (devScreenOpen) {
           event.preventDefault();
-          if (event.code === "Escape" && !event.repeat) closeDevScreen();
+          if (event.code === "Escape" && !event.repeat) {
+            if (devDetailEntry) closeDevDetail();
+            else closeDevScreen();
+          }
           return;
         }
         if (introActive) {
@@ -5624,6 +5871,10 @@
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
       devCloseBtn.addEventListener("click", closeDevScreen);
+      devDetailCloseBtn.addEventListener("click", closeDevDetail);
+      devDetail.addEventListener("click", (event) => {
+        if (event.target === devDetail) closeDevDetail();
+      });
       devFilterButtons.forEach((button) => {
         button.addEventListener("click", () => {
           const filter = button.dataset.devFilter;
