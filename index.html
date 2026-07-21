@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.52 · Nhar'Kaal rebuilt from scratch · updated 2026-07-22 00:24 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.53 · extended Selene Canyon wreck sector · updated 2026-07-22 00:50 CEST</div>
   </main>
 
   <script>
@@ -2491,14 +2491,20 @@
         if (stageNumber === 10) return "Ctrl+0";
         return `Ctrl+Shift+${stageNumber - 10}`;
       }
+      const canyonLegacyImageHeight = 11340;
+      const canyonExtensionHeight = 1624;
+      const canyonImageHeight = 12964;
+      const canyonLegacyProgressScale = (canyonLegacyImageHeight - H) / (canyonImageHeight - H);
+      const extendedCanyonFocalY = (legacyFocalY) =>
+        (canyonExtensionHeight + legacyFocalY * canyonLegacyImageHeight) / canyonImageHeight;
       const canyonRun = {
         scroll: 0,
-        imageHeight: 11340,
-        maxScroll: 11340 - H,
+        imageHeight: canyonImageHeight,
+        maxScroll: canyonImageHeight - H,
         speed: 74,
-        imageUrl: "varldsrymden-anfaller/assets/backdrops/selene-canyon-odyssey.jpg"
+        imageUrl: "varldsrymden-anfaller/assets/backdrops/selene-canyon-odyssey-v2.jpg"
       };
-      const canyonRoute = [
+      const legacyCanyonRoute = [
         { progress: 0.00, center: 398, halfWidth: 170 },
         { progress: 0.023, center: 430, halfWidth: 158 },
         { progress: 0.046, center: 446, halfWidth: 148 },
@@ -2550,7 +2556,20 @@
         { progress: 0.985, center: 392, halfWidth: 108 },
         { progress: 1.000, center: 382, halfWidth: 132 }
       ];
-      const canyonLandmarks = [
+      const canyonRoute = [
+        ...legacyCanyonRoute.map(({ progress, ...node }) => ({
+          ...node,
+          progress: progress * canyonLegacyProgressScale
+        })),
+        { progress: 0.880, center: 414, halfWidth: 116 },
+        { progress: 0.900, center: 438, halfWidth: 104 },
+        { progress: 0.920, center: 386, halfWidth: 98 },
+        { progress: 0.940, center: 342, halfWidth: 94 },
+        { progress: 0.960, center: 404, halfWidth: 100 },
+        { progress: 0.980, center: 426, halfWidth: 96 },
+        { progress: 1.000, center: 430, halfWidth: 112 }
+      ];
+      const legacyCanyonLandmarks = [
         { progress: 0.01, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.954 },
         { progress: 0.11, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.857 },
         { progress: 0.215, name: "Voyager Deep-Space Probe", id: "RELIC-SELENE-VOYAGER-PROBE", focalY: 0.761 },
@@ -2563,7 +2582,20 @@
         { progress: 0.899, name: "Ancient Star Gate and Colony Spine", id: "RELIC-SELENE-ANCIENT-GATE", focalY: 0.135 },
         { progress: 0.970, name: "Deep Space Observatory Basin", id: "RELIC-SELENE-OBSERVATORY", focalY: 0.030 }
       ];
-      const canyonAlienSpecies = [
+      const canyonLandmarks = [
+        ...legacyCanyonLandmarks.map((landmark) => ({
+          ...landmark,
+          progress: landmark.progress * canyonLegacyProgressScale,
+          focalY: extendedCanyonFocalY(landmark.focalY)
+        })),
+        {
+          progress: 0.948,
+          name: "SpaceX Launch Graveyard & Starlink Debris Field",
+          id: "RELIC-SELENE-SPACEX-STARLINK-FIELD",
+          focalY: 0.062
+        }
+      ];
+      const legacyCanyonAlienSpecies = [
         { name: "Apollo Ash Scarab", id: "CANYON-ALIEN-01-APOLLO-SCARAB", progress: 0.010, size: 116, drift: 34, accent: "#ffb35c", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/apollo-ash-scarab-24f.webp" },
         { name: "Red Dune Mantis", id: "CANYON-ALIEN-02-DUNE-MANTIS", progress: 0.110, size: 122, drift: 46, accent: "#a8ff68", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/red-dune-mantis-24f.webp" },
         { name: "Golden Signal Wraith", id: "CANYON-ALIEN-03-SIGNAL-WRAITH", progress: 0.215, size: 126, drift: 54, accent: "#5ed7ff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/golden-signal-wraith-24f.webp" },
@@ -2575,6 +2607,21 @@
         { name: "Cryostasis Mourner", id: "CANYON-ALIEN-09-CRYO-MOURNER", progress: 0.814, size: 130, drift: 58, accent: "#c09cff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/cryostasis-mourner-24f.webp" },
         { name: "Gate-Spine Leviathan", id: "CANYON-ALIEN-10-GATE-LEVIATHAN", progress: 0.899, size: 138, drift: 44, accent: "#b66cff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/gate-spine-leviathan-24f.webp" },
         { name: "Parallax Dish Oracle", id: "CANYON-ALIEN-11-DISH-ORACLE", progress: 0.970, size: 142, drift: 50, accent: "#f7fcff", imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/parallax-dish-oracle-24f.webp" }
+      ];
+      const canyonAlienSpecies = [
+        ...legacyCanyonAlienSpecies.map((species) => ({
+          ...species,
+          progress: species.progress * canyonLegacyProgressScale
+        })),
+        {
+          name: "Kessler Array Reaper",
+          id: "CANYON-ALIEN-12-KESSLER-REAPER",
+          progress: 0.952,
+          size: 132,
+          drift: 42,
+          accent: "#6ceaff",
+          imageUrl: "varldsrymden-anfaller/assets/canyon-aliens/kessler-array-reaper-24f.webp"
+        }
       ];
       canyonAlienSpecies.forEach((species) => {
         species.image = new Image();
