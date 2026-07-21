@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.43 · extended Selene Canyon Odyssey · updated 2026-07-21 16:22 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.44 · Selene Canyon follows boss one · updated 2026-07-21 16:38 CEST</div>
   </main>
 
   <script>
@@ -2447,8 +2447,8 @@
       ];
 
       function stageNumberForActStage(actIndex, stageIndex) {
-        return actIndex < 2
-          ? actIndex * 4 + stageIndex + 1
+        return actIndex === 0
+          ? stageIndex + 1
           : actIndex * 4 + stageIndex + 2;
       }
 
@@ -2579,36 +2579,39 @@
         { kind: "dreadnought", name: "Mordrath, the Iron Maw", id: "BOSS-A04-MORDRATH" }
       ];
       const bossKinds = bossCatalog.map((entry) => entry.kind);
-      const backdropObjectCatalog = [
-        ...stageBackdropUrls.map((imageUrl, index) => {
-          const actIndex = Math.floor(index / 4);
-          const stageIndex = index % 4;
-          const isBossStage = stageIndex === 3;
-          const stageNumber = stageNumberForActStage(actIndex, stageIndex);
-          return {
-            name: isBossStage
-              ? `${actNames[actIndex]} · ${bossCatalog[actIndex].name}`
-              : `${actNames[actIndex]} · Assault ${stageIndex + 1}`,
-            id: `BACKDROP-A${String(actIndex + 1).padStart(2, "0")}-${isBossStage ? "BOSS" : `WAVE-${String(stageIndex + 1).padStart(2, "0")}`}`,
-            category: "backdrop",
-            typeLabel: isBossStage ? `Boss arena · Act ${actIndex + 1}` : `Wave backdrop · Act ${actIndex + 1}`,
-            stageNumber,
-            shortcutLabel: stageShortcutLabel(stageNumber),
-            sprite: "backdrop",
-            imageUrl
-          };
-        }),
-        {
-          name: "Selene Canyon Odyssey",
-          id: "BACKDROP-SPECIAL-SELENE-CANYON",
+      const stageBackdropCatalog = stageBackdropUrls.map((imageUrl, index) => {
+        const actIndex = Math.floor(index / 4);
+        const stageIndex = index % 4;
+        const isBossStage = stageIndex === 3;
+        const stageNumber = stageNumberForActStage(actIndex, stageIndex);
+        return {
+          name: isBossStage
+            ? `${actNames[actIndex]} · ${bossCatalog[actIndex].name}`
+            : `${actNames[actIndex]} · Assault ${stageIndex + 1}`,
+          id: `BACKDROP-A${String(actIndex + 1).padStart(2, "0")}-${isBossStage ? "BOSS" : `WAVE-${String(stageIndex + 1).padStart(2, "0")}`}`,
           category: "backdrop",
-          typeLabel: "Special ravine stage",
-          stageNumber: 9,
-          shortcutLabel: stageShortcutLabel(9),
+          typeLabel: isBossStage ? `Boss arena · Act ${actIndex + 1}` : `Wave backdrop · Act ${actIndex + 1}`,
+          stageNumber,
+          shortcutLabel: stageShortcutLabel(stageNumber),
           sprite: "backdrop",
-          imageUrl: canyonRun.imageUrl,
-          canyon: true
-        },
+          imageUrl
+        };
+      });
+      const canyonBackdropCatalogItem = {
+        name: "Selene Canyon Odyssey",
+        id: "BACKDROP-SPECIAL-SELENE-CANYON",
+        category: "backdrop",
+        typeLabel: "Special ravine stage",
+        stageNumber: 5,
+        shortcutLabel: stageShortcutLabel(5),
+        sprite: "backdrop",
+        imageUrl: canyonRun.imageUrl,
+        canyon: true
+      };
+      const backdropObjectCatalog = [
+        ...stageBackdropCatalog.slice(0, 4),
+        canyonBackdropCatalogItem,
+        ...stageBackdropCatalog.slice(4),
         {
           name: "Elysium Recovery Site",
           id: "BACKDROP-FINALE-FATHER-FOUND",
@@ -2622,7 +2625,7 @@
         ...landmark,
         category: "backdrop",
         typeLabel: "Canyon wreck landmark",
-        shortcutLabel: stageShortcutLabel(9),
+        shortcutLabel: stageShortcutLabel(5),
         sprite: "backdrop",
         imageUrl: canyonRun.imageUrl,
         focalY: landmark.focalY
@@ -4263,8 +4266,8 @@
       }
 
       function stageDescriptor(stageNumber) {
-        if (stageNumber === 9) return { stageNumber, type: "canyon", act: 2, stageIndex: 4 };
-        const timelineIndex = stageNumber <= 8 ? stageNumber - 1 : stageNumber - 2;
+        if (stageNumber === 5) return { stageNumber, type: "canyon", act: 1, stageIndex: 4 };
+        const timelineIndex = stageNumber <= 4 ? stageNumber - 1 : stageNumber - 2;
         const actIndex = Math.floor(timelineIndex / 4);
         const stageIndex = timelineIndex % 4;
         if (actIndex < 0 || actIndex >= totalActs) return null;
@@ -4297,8 +4300,8 @@
         shell.dataset.stageShortcut = stageShortcutLabel(stageNumber);
         shell.dataset.stageNumber = String(stageNumber);
         if (stage.type === "canyon") {
-          act = 2;
-          wave = 6;
+          act = 1;
+          wave = 4;
           beginCanyonRun();
           return;
         }
@@ -4483,8 +4486,10 @@
         winScene.classList.remove("finale");
         winScene.classList.add("intermission");
         winTitle.textContent = "Congratulations, you won";
-        winSubtitle.textContent = act < totalActs
-          ? `The game continues - act ${act + 1} awaits with a new boss!`
+        winSubtitle.textContent = act === 1
+          ? "Selene Canyon Odyssey awaits before act 2!"
+          : act < totalActs
+            ? `The game continues - act ${act + 1} awaits with a new boss!`
           : "The final boss has been defeated!";
         winScene.classList.add("visible");
         winSceneUnlockAt = performance.now() + winSceneMinimumMs;
@@ -4524,7 +4529,7 @@
           startDemoMode();
         } else if (finale) {
           winGame(true);
-        } else if (act === 2 && (!demoMode || fullAutoPlaythrough)) {
+        } else if (act === 1 && (!demoMode || fullAutoPlaythrough)) {
           if (fullAutoPlaythrough) beginCanyonRun();
           else startCanyonBriefing();
         } else {
