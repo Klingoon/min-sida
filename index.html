@@ -553,6 +553,18 @@
       white-space: nowrap;
     }
 
+    .dev-object-shortcut {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 7px;
+      border: 1px solid rgba(94, 215, 255, 0.38);
+      background: rgba(3, 9, 14, 0.72);
+      color: rgba(214, 244, 247, 0.9);
+      font: 700 8px/1 "Void Circuit", "Arial Narrow", sans-serif;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
     .dev-footer {
       padding: 9px 22px 13px;
       border-top: 1px solid rgba(176, 187, 179, 0.16);
@@ -2222,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.40 · four-axis flight controls · updated 2026-07-21 13:42 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.41 · full auto playthrough and stage shortcuts · updated 2026-07-21 14:03 CEST</div>
   </main>
 
   <script>
@@ -2402,6 +2414,7 @@
       soundtrack.addEventListener("error", () => document.documentElement.dataset.musicState = "error");
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
+      let fullAutoPlaythrough = false;
       let attractTimer = null;
       let attractDeadline = 0;
       let introActive = true;
@@ -2432,6 +2445,18 @@
         "Pulsar Andromeda",
         "Obsidian Event Horizon"
       ];
+
+      function stageNumberForActStage(actIndex, stageIndex) {
+        return actIndex < 2
+          ? actIndex * 4 + stageIndex + 1
+          : actIndex * 4 + stageIndex + 2;
+      }
+
+      function stageShortcutLabel(stageNumber) {
+        if (stageNumber <= 9) return `Ctrl+${stageNumber}`;
+        if (stageNumber === 10) return "Ctrl+0";
+        return `Ctrl+Shift+${stageNumber - 10}`;
+      }
       const canyonRun = {
         scroll: 0,
         maxScroll: 1920,
@@ -2493,6 +2518,7 @@
           const actIndex = Math.floor(index / 4);
           const stageIndex = index % 4;
           const isBossStage = stageIndex === 3;
+          const stageNumber = stageNumberForActStage(actIndex, stageIndex);
           return {
             name: isBossStage
               ? `${actNames[actIndex]} · ${bossCatalog[actIndex].name}`
@@ -2500,6 +2526,8 @@
             id: `BACKDROP-A${String(actIndex + 1).padStart(2, "0")}-${isBossStage ? "BOSS" : `WAVE-${String(stageIndex + 1).padStart(2, "0")}`}`,
             category: "backdrop",
             typeLabel: isBossStage ? `Boss arena · Act ${actIndex + 1}` : `Wave backdrop · Act ${actIndex + 1}`,
+            stageNumber,
+            shortcutLabel: stageShortcutLabel(stageNumber),
             sprite: "backdrop",
             imageUrl
           };
@@ -2509,6 +2537,8 @@
           id: "BACKDROP-SPECIAL-SELENE-CANYON",
           category: "backdrop",
           typeLabel: "Special ravine stage",
+          stageNumber: 9,
+          shortcutLabel: stageShortcutLabel(9),
           sprite: "backdrop",
           imageUrl: canyonRun.imageUrl,
           canyon: true
@@ -3479,6 +3509,13 @@
           id.textContent = item.id;
           id.title = item.id;
           info.append(type, name, id);
+          if (item.shortcutLabel) {
+            const shortcut = document.createElement("kbd");
+            shortcut.className = "dev-object-shortcut";
+            shortcut.textContent = `Play: ${item.shortcutLabel}`;
+            shortcut.setAttribute("aria-label", `Play this stage with ${item.shortcutLabel}`);
+            info.append(shortcut);
+          }
           card.append(preview, info);
           devGrid.append(card);
           devPreviewEntries.push({ item, card, canvas: preview, ctx: preview.getContext("2d") });
@@ -3669,7 +3706,9 @@
 
       function openDevDetail(item, sourceCard) {
         devDetailReturnFocus = sourceCard || null;
-        devDetailType.textContent = item.typeLabel;
+        devDetailType.textContent = item.shortcutLabel
+          ? `${item.typeLabel} · Play: ${item.shortcutLabel}`
+          : item.typeLabel;
         devDetailName.textContent = item.name;
         devDetailId.textContent = item.id;
         devDetailEntry = {
@@ -4026,7 +4065,7 @@
         updateHud();
       }
 
-      function resetGame() {
+      function resetGame(spawnInitialWave = true) {
         resetDirectTouchControls();
         score = 0;
         scoreSubmitted = false;
@@ -4058,12 +4097,16 @@
         particles.length = 0;
         debris.length = 0;
         shockwaves.length = 0;
-        spawnWave();
+        if (spawnInitialWave) spawnWave();
         updateHud();
       }
 
       function startDemoMode() {
         if (state === "playing" || state === "transition") return;
+        fullAutoPlaythrough = false;
+        delete shell.dataset.autoPlaythrough;
+        delete shell.dataset.stageShortcut;
+        delete shell.dataset.stageNumber;
         clearAttractTimer();
         state = "demo";
         resetGame();
@@ -4087,6 +4130,8 @@
         if (state === "transition") return;
         if (winScene.classList.contains("visible") && performance.now() < winSceneUnlockAt) return;
         clearAttractTimer();
+        fullAutoPlaythrough = false;
+        delete shell.dataset.autoPlaythrough;
         overlay.classList.remove("demo-mode");
         if (state === "demo") {
           enemies.length = 0;
@@ -4104,6 +4149,8 @@
       }
 
       function beginGame() {
+        delete shell.dataset.stageShortcut;
+        delete shell.dataset.stageNumber;
         resetGame();
         state = "playing";
         overlay.classList.remove("visible");
@@ -4113,6 +4160,85 @@
         play(587, 0.22, "sawtooth", 0.04);
         setTimeout(() => showActTitle(1), 180);
         setTimeout(() => showEncouragement(true), 900);
+      }
+
+      function stageNumberFromShortcut(event) {
+        if (!event.ctrlKey || event.altKey || event.metaKey) return null;
+        const match = /^Digit([0-9])$/.exec(event.code);
+        if (!match) return null;
+        const digit = Number(match[1]);
+        if (event.shiftKey) return digit >= 1 && digit <= 7 ? 10 + digit : null;
+        return digit === 0 ? 10 : digit;
+      }
+
+      function stageDescriptor(stageNumber) {
+        if (stageNumber === 9) return { stageNumber, type: "canyon", act: 2, stageIndex: 4 };
+        const timelineIndex = stageNumber <= 8 ? stageNumber - 1 : stageNumber - 2;
+        const actIndex = Math.floor(timelineIndex / 4);
+        const stageIndex = timelineIndex % 4;
+        if (actIndex < 0 || actIndex >= totalActs) return null;
+        return {
+          stageNumber,
+          type: stageIndex === 3 ? "boss" : "wave",
+          act: actIndex + 1,
+          stageIndex
+        };
+      }
+
+      function prepareDirectRun() {
+        if (introActive) finishIntro();
+        if (devScreenOpen) closeDevScreen();
+        clearAttractTimer();
+        clearBossTimers();
+        fullAutoPlaythrough = false;
+        delete shell.dataset.autoPlaythrough;
+        overlay.classList.remove("visible", "demo-mode");
+        winScene.classList.remove("visible", "finale", "intermission");
+        initAudio();
+        if (!muted) startMelody();
+      }
+
+      function startStageByNumber(stageNumber) {
+        const stage = stageDescriptor(stageNumber);
+        if (!stage) return;
+        prepareDirectRun();
+        resetGame(false);
+        shell.dataset.stageShortcut = stageShortcutLabel(stageNumber);
+        shell.dataset.stageNumber = String(stageNumber);
+        if (stage.type === "canyon") {
+          act = 2;
+          wave = 6;
+          beginCanyonRun();
+          return;
+        }
+        act = stage.act;
+        alienRoundsCleared = Math.min(stage.stageIndex, roundsBeforeBoss);
+        wave = (act - 1) * roundsBeforeBoss + Math.min(stage.stageIndex, roundsBeforeBoss - 1) + 1;
+        state = "playing";
+        if (stage.type === "boss") spawnBoss();
+        else spawnWave();
+        showActTitle(act);
+        updateHud();
+      }
+
+      function startFullAutoPlaythrough() {
+        if (introActive) finishIntro();
+        if (devScreenOpen) closeDevScreen();
+        clearAttractTimer();
+        clearBossTimers();
+        initAudio();
+        fullAutoPlaythrough = true;
+        shell.dataset.autoPlaythrough = "active";
+        delete shell.dataset.stageShortcut;
+        delete shell.dataset.stageNumber;
+        state = "demo";
+        resetGame();
+        demoTargetX = W / 2;
+        demoFireTimer = 0.15;
+        overlay.classList.remove("visible", "demo-mode");
+        winScene.classList.remove("visible", "finale", "intermission");
+        if (!muted) startMelody();
+        showActTitle(1);
       }
 
       function gameOver() {
@@ -4213,7 +4339,7 @@
         makeParticles(player.x, player.y, "#ffd86b", 72);
         play(784, 0.18, "triangle", 0.05);
         setTimeout(() => play(1175, 0.28, "triangle", 0.045), 120);
-        setTimeout(() => startNextAct(false), 1250);
+        setTimeout(() => startNextAct(fullAutoPlaythrough), 1250);
       }
 
       function winGame(finale = false) {
@@ -4288,13 +4414,18 @@
         if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
         bossTransitionTimer = null;
         if (state !== "transition") return;
-        if (finale && demoMode) {
+        if (finale && demoMode && fullAutoPlaythrough) {
+          fullAutoPlaythrough = false;
+          delete shell.dataset.autoPlaythrough;
+          winGame(true);
+        } else if (finale && demoMode) {
           state = "ready";
           startDemoMode();
         } else if (finale) {
           winGame(true);
-        } else if (!demoMode && act === 2) {
-          startCanyonBriefing();
+        } else if (act === 2 && (!demoMode || fullAutoPlaythrough)) {
+          if (fullAutoPlaythrough) beginCanyonRun();
+          else startCanyonBriefing();
         } else {
           startNextAct(demoMode);
         }
@@ -4813,12 +4944,21 @@
         player.shieldTime = Math.max(0, player.shieldTime - dt);
         if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
-        const left = keys.has("ArrowLeft") || keys.has("KeyA");
-        const right = keys.has("ArrowRight") || keys.has("KeyD");
-        const forward = keys.has("ArrowUp");
-        const backward = keys.has("ArrowDown");
-        playerInput = (right ? 1 : 0) - (left ? 1 : 0);
-        playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
+        if (fullAutoPlaythrough) {
+          const autoBounds = canyonBounds(canyonWorldY(player.y));
+          const targetX = (autoBounds.left + autoBounds.right) / 2;
+          const targetY = H - 170;
+          playerInput = clamp((targetX - player.x) / 54, -1, 1);
+          playerInputY = clamp((targetY - player.y) / 72, -0.7, 0.7);
+          player.shieldTime = Math.max(player.shieldTime, 0.2);
+        } else {
+          const left = keys.has("ArrowLeft") || keys.has("KeyA");
+          const right = keys.has("ArrowRight") || keys.has("KeyD");
+          const forward = keys.has("ArrowUp");
+          const backward = keys.has("ArrowDown");
+          playerInput = (right ? 1 : 0) - (left ? 1 : 0);
+          playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
+        }
         syncPhysics(dt);
 
         canyonRun.scroll = Math.min(canyonRun.maxScroll, canyonRun.scroll + canyonRun.speed * dt);
@@ -6264,6 +6404,17 @@
       shell.addEventListener("pointercancel", (event) => finishGamePointer(event, false), { capture: true });
 
       window.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.code === "KeyU") {
+          event.preventDefault();
+          if (!event.repeat) startFullAutoPlaythrough();
+          return;
+        }
+        const directStageNumber = stageNumberFromShortcut(event);
+        if (directStageNumber) {
+          event.preventDefault();
+          if (!event.repeat) startStageByNumber(directStageNumber);
+          return;
+        }
         if (event.ctrlKey && event.code === "KeyY") {
           event.preventDefault();
           if (!event.repeat) toggleDevScreen();
