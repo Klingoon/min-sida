@@ -1954,41 +1954,24 @@
       100% { opacity: 0; transform: translateY(170px) scaleY(.8); filter: blur(7px); }
     }
 
-    /* Keep the console silhouette visible without dimming its rectangular image bounds. */
+    /* Keep the start information lightweight and leave the playfield visible. */
     body .overlay:not(.demo-mode) .panel,
     body .overlay.demo-mode .panel {
+      width: min(500px, 90%);
+      height: auto;
+      min-height: 0;
+      padding: clamp(18px, 3.5vw, 28px);
       opacity: 1;
       background: none;
       box-shadow: none;
       filter: none;
-      isolation: isolate;
+      isolation: auto;
       overflow: visible;
     }
 
-    body .panel::before {
-      display: block;
-      inset: 0;
-      z-index: 0;
-      border: 0;
-      background: url("varldsrymden-anfaller/assets/ui/alien-console-frame.webp") center / 100% 100% no-repeat;
-      clip-path: none;
-      mix-blend-mode: screen;
-      opacity: 0.4;
-      filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.62));
-    }
-
+    body .panel::before,
     body .panel::after {
-      display: block;
-      inset: 17% 12% 15%;
-      z-index: 0;
-      width: auto;
-      border: 0;
-      border-radius: 46% 54% 43% 57% / 38% 42% 58% 62%;
-      background:
-        radial-gradient(ellipse at 50% 44%, rgba(4, 3, 8, 0.76) 0 52%, rgba(8, 4, 12, 0.46) 68%, transparent 82%);
-      box-shadow: none;
-      opacity: 0.4;
-      filter: blur(9px);
+      display: none;
     }
 
     body .panel .space-logo,
@@ -2234,7 +2217,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.54 · grouped alien ingress formations · updated 2026-07-22 00:57 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.55 · frameless start information · updated 2026-07-22 01:07 CEST</div>
   </main>
 
   <script>
