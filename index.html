@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.53 · extended Selene Canyon wreck sector · updated 2026-07-22 00:50 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.54 · grouped alien ingress formations · updated 2026-07-22 00:57 CEST</div>
   </main>
 
   <script>
@@ -2637,6 +2637,7 @@
         "Farzan Tarzan is thinking of you"
       ];
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
+      const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
       const alienActStyles = [
         {
           species: "glacial-wraith", displayName: "Glacial Wraiths", frames: [2, 0, 2], eye: "#bff7ff", accent: "rgba(170,235,255,0.82)", filter: "hue-rotate(145deg) saturate(0.72) brightness(1.16)",
@@ -4333,6 +4334,86 @@
         };
       }
 
+      function swarmGroupOffset(enemy, nowSec) {
+        const phase = nowSec * (0.62 + enemy.group % 3 * 0.08) + enemy.groupPhase;
+        return {
+          x: Math.sin(phase) * (20 + (enemy.group % 3) * 7),
+          y: Math.cos(phase * 1.36) * (9 + (enemy.group % 2) * 5)
+        };
+      }
+
+      function ingressTarget(enemy) {
+        const progress = clamp(enemy.entryTime / enemy.entryDuration, 0, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const remaining = 1 - eased;
+        const side = enemy.entrySide;
+        const slotPhase = enemy.groupSlot * 0.72 + enemy.group * 0.38;
+        const startX = side < 0 ? -90 : W + 90;
+        const topY = -105 - enemy.groupSlot * 15;
+        const targetX = enemy.homeX;
+        const targetY = enemy.homeY;
+
+        if (enemy.ingress === "sine-stream") {
+          return {
+            x: targetX + Math.sin(progress * Math.PI * 4.5 + slotPhase) * 176 * remaining,
+            y: topY + eased * (targetY - topY)
+          };
+        }
+        if (enemy.ingress === "split-swoop") {
+          return {
+            x: startX + eased * (targetX - startX) + side * Math.sin(progress * Math.PI) * 128,
+            y: 28 + eased * (targetY - 28) + Math.sin(progress * Math.PI) * 154
+          };
+        }
+        if (enemy.ingress === "spiral-drop") {
+          const angle = (1 - progress) * Math.PI * 3.8 + slotPhase;
+          const radius = (210 + enemy.groupSlot * 13) * remaining;
+          return {
+            x: W / 2 + Math.cos(angle) * radius + (targetX - W / 2) * eased,
+            y: topY + eased * (targetY - topY) + Math.sin(angle) * radius * 0.42
+          };
+        }
+        if (enemy.ingress === "cross-weave") {
+          return {
+            x: startX + eased * (targetX - startX) - side * Math.sin(progress * Math.PI) * 190,
+            y: topY + eased * (targetY - topY) + Math.sin(progress * Math.PI * 2 + slotPhase) * 72 * remaining
+          };
+        }
+        if (enemy.ingress === "comet-train") {
+          const diagonalX = side < 0 ? -120 - enemy.groupSlot * 22 : W + 120 + enemy.groupSlot * 22;
+          return {
+            x: diagonalX + eased * (targetX - diagonalX) + Math.sin(progress * Math.PI) * -side * 82,
+            y: -150 - enemy.groupSlot * 24 + eased * (targetY + 150 + enemy.groupSlot * 24)
+          };
+        }
+        if (enemy.ingress === "double-helix") {
+          return {
+            x: targetX + Math.sin(progress * Math.PI * 6 + slotPhase + (enemy.group % 2) * Math.PI) * 164 * remaining,
+            y: topY + eased * (targetY - topY)
+          };
+        }
+        if (enemy.ingress === "fan-dive") {
+          const fan = (enemy.groupSlot - (enemy.groupMembers - 1) / 2) * 46;
+          return {
+            x: W / 2 + eased * (targetX - W / 2) + Math.sin(progress * Math.PI) * fan * remaining,
+            y: topY + eased * (targetY - topY) + Math.sin(progress * Math.PI) * 116
+          };
+        }
+        if (enemy.ingress === "orbit-chain") {
+          const angle = slotPhase + progress * Math.PI * (2.5 + enemy.group % 2);
+          const orbitX = W / 2 + Math.cos(angle) * 278;
+          const orbitY = 245 + Math.sin(angle) * 172;
+          return {
+            x: orbitX * remaining + targetX * eased,
+            y: orbitY * remaining + targetY * eased
+          };
+        }
+        return {
+          x: startX + eased * (targetX - startX) + Math.sin(progress * Math.PI * 3 + slotPhase) * 104 * remaining,
+          y: topY + eased * (targetY - topY) + Math.sin(progress * Math.PI) * 92
+        };
+      }
+
       function spawnWave() {
         enemies.length = 0;
         enemyBullets.length = 0;
@@ -4347,44 +4428,66 @@
         const advancedAct = act >= 2;
         const cols = act >= 4 ? 11 : advancedAct ? 10 : 9;
         const rows = act >= 3 ? 5 : advancedAct ? 4 : Math.min(5, 3 + Math.floor(wave / 2));
-        const gapX = act >= 4 ? 54 : advancedAct ? 58 : 62;
-        const startX = W / 2 - ((cols - 1) * gapX) / 2;
         const startY = advancedAct ? 112 : 126;
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const wavePattern = wavePatterns[(attackWave + (act - 1) * roundsBeforeBoss) % wavePatterns.length];
+        const ingressPattern = ingressPatterns[(attackWave + (act - 1) * roundsBeforeBoss) % ingressPatterns.length];
         const alienStyle = alienActStyles[clamp(act - 1, 0, alienActStyles.length - 1)];
         shell.dataset.alienSpecies = alienStyle.species;
+        shell.dataset.alienIngress = ingressPattern;
         setBackdropForStage("wave");
 
-        for (let row = 0; row < rows; row += 1) {
-          for (let col = 0; col < cols; col += 1) {
-            const type = row === 0 && col % 2 === 0 ? "captain" : row < 2 ? "guard" : "scout";
-            const variantIndex = type === "captain" ? 2 : type === "guard" ? 1 : 0;
-            const alienSpec = alienStyle.variants[variantIndex];
-            const formation = wavePattern;
-            enemies.push({
-              homeX: startX + col * gapX,
-              homeY: startY + row * 54,
-              x: startX + col * gapX,
-              y: advancedAct ? -140 - row * 48 - col * (10 + act) : -80 - row * 28 - col * 7,
-              w: type === "captain" ? 40 : 34,
-              h: type === "captain" ? 36 : 32,
-              type,
-              name: alienSpec.name,
-              objectId: alienSpec.id,
-              actStyle: act - 1,
-              formation,
-              row,
-              col,
-              cols,
-              enterDelay: (col * 0.055 + row * 0.18) * (advancedAct ? Math.max(0.72, 1.25 - act * 0.1) : 0.7),
-              hp: type === "captain" ? 2 + Math.floor(wave / 4) + (advancedAct ? act - 1 : 0) : advancedAct && row <= Math.min(2, act - 1) ? 2 : 1,
-              phase: Math.random() * Math.PI * 2,
-              dive: null,
-              cooldown: 0.8 + Math.random() * 2.4,
-              value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (advancedAct ? 70 * act : 0)
-            });
-          }
+        const totalEnemies = rows * cols;
+        const groupSize = attackWave === 1 ? 5 : 6;
+        const groupColumns = 3;
+        for (let index = 0; index < totalEnemies; index += 1) {
+          const group = Math.floor(index / groupSize);
+          const groupSlot = index % groupSize;
+          const groupMembers = Math.min(groupSize, totalEnemies - group * groupSize);
+          const groupCol = group % groupColumns;
+          const groupRow = Math.floor(group / groupColumns);
+          const clusterX = W * (0.19 + groupCol * 0.31) + Math.sin(group * 1.7) * 18;
+          const clusterY = startY + groupRow * 84 + Math.cos(group * 1.3) * 10;
+          const clusterRadius = groupSlot === 0 ? 0 : 34 + (groupSlot % 2) * 12;
+          const clusterAngle = groupSlot === 0 ? 0 : (groupSlot - 1) / Math.max(1, groupMembers - 1) * Math.PI * 2 + (group % 2) * 0.42;
+          const homeX = clusterX + Math.cos(clusterAngle) * clusterRadius;
+          const homeY = clusterY + Math.sin(clusterAngle) * clusterRadius * 0.7;
+          const type = groupSlot === 0 ? "captain" : groupSlot <= 2 ? "guard" : "scout";
+          const variantIndex = type === "captain" ? 2 : type === "guard" ? 1 : 0;
+          const alienSpec = alienStyle.variants[variantIndex];
+          const entrySide = group % 2 === 0 ? -1 : 1;
+          const entryDelay = group * (advancedAct ? 0.42 : 0.5) + groupSlot * 0.075;
+          enemies.push({
+            homeX,
+            homeY,
+            x: entrySide < 0 ? -90 : W + 90,
+            y: -120 - groupSlot * 18,
+            w: type === "captain" ? 40 : 34,
+            h: type === "captain" ? 36 : 32,
+            type,
+            name: alienSpec.name,
+            objectId: alienSpec.id,
+            actStyle: act - 1,
+            formation: wavePattern,
+            ingress: ingressPattern,
+            row: groupRow,
+            col: groupSlot,
+            cols: groupMembers,
+            group,
+            groupSlot,
+            groupMembers,
+            groupPhase: group * 1.37 + attackWave * 0.73,
+            entrySide,
+            entryTime: -entryDelay,
+            entryDuration: Math.max(1.75, 2.55 - act * 0.12) + groupSlot * 0.035,
+            entered: false,
+            enterDelay: entryDelay,
+            hp: type === "captain" ? 2 + Math.floor(wave / 4) + (advancedAct ? act - 1 : 0) : advancedAct && groupRow <= Math.min(2, act - 1) ? 2 : 1,
+            phase: Math.random() * Math.PI * 2,
+            dive: null,
+            cooldown: 1.2 + entryDelay + Math.random() * 2.4,
+            value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (advancedAct ? 70 * act : 0)
+          });
         }
       }
 
@@ -5198,7 +5301,7 @@
 
       function chooseDiver() {
         if (!isActiveRun()) return;
-        const pool = enemies.filter((e) => !e.dive && e.y > 70);
+        const pool = enemies.filter((e) => e.entered && !e.dive && e.y > 70);
         if (!pool.length) return;
         const enemy = pool[Math.floor(Math.random() * pool.length)];
         enemy.dive = {
@@ -5544,7 +5647,17 @@
           enemy.phase += dt * 2.5;
           enemy.cooldown -= dt;
 
-          if (enemy.dive) {
+          if (!enemy.entered) {
+            enemy.entryTime += dt;
+            const target = ingressTarget(enemy);
+            enemy.x = target.x;
+            enemy.y = target.y;
+            if (enemy.entryTime >= enemy.entryDuration) {
+              enemy.entered = true;
+              enemy.x = enemy.homeX;
+              enemy.y = enemy.homeY;
+            }
+          } else if (enemy.dive) {
             enemy.dive.t += dt;
             const t = enemy.dive.t;
             enemy.x = enemy.dive.sx + Math.sin(t * enemy.dive.freq) * enemy.dive.amp * enemy.dive.side + (act >= 2 ? Math.sin(t * (11 + act)) * (12 + act * 4) : 0);
@@ -5556,11 +5669,14 @@
             }
           } else {
             const target = formationTarget(enemy, nowSec);
+            const groupOffset = swarmGroupOffset(enemy, nowSec);
+            target.x += groupOffset.x;
+            target.y += groupOffset.y;
             enemy.x += (target.x - enemy.x) * Math.min(1, dt * (3.25 + act * 0.25));
             enemy.y += (target.y - enemy.y) * Math.min(1, dt * (2.85 + act * 0.22));
           }
 
-          if (enemy.cooldown <= 0 && enemy.y > 90 && Math.random() < 0.27) {
+          if (enemy.entered && enemy.cooldown <= 0 && enemy.y > 90 && Math.random() < 0.27) {
             enemyShoot(enemy);
             enemy.cooldown = 2.35 + Math.random() * 2.5;
           }
