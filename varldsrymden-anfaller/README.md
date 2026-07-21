@@ -34,6 +34,7 @@ npm run serve
 
 ## Controls
 
+- Lives: unlimited
 - Move: `←` / `→` or `A` / `D`
 - Fire: `Space`, `W`, or `↑`
 - Shield: `X`, unlimited
