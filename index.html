@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.49 · animated aliens live · updated 2026-07-21 22:41 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.50 · 64-frame Helix Raider and Hydra Comet · updated 2026-07-21 23:09 CEST</div>
   </main>
 
   <script>
@@ -2320,6 +2320,20 @@
       realisticSprites.bosses.src = "varldsrymden-anfaller/assets/bosses-realistic.png";
       realisticSprites.ufo.src = "varldsrymden-anfaller/assets/ufo-realistic.png";
       realisticSprites.meteor.src = "varldsrymden-anfaller/assets/meteor-realistic.png";
+      const objectAnimationSprites = {
+        helixRaider: new Image(),
+        hydraComet: new Image()
+      };
+      Object.values(objectAnimationSprites).forEach((image) => {
+        image.decoding = "async";
+      });
+      objectAnimationSprites.helixRaider.src = "varldsrymden-anfaller/assets/objects/helix-raider-64f.webp";
+      objectAnimationSprites.hydraComet.src = "varldsrymden-anfaller/assets/objects/hydra-comet-64f.webp";
+
+      function objectAnimationReady(kind) {
+        const image = objectAnimationSprites[kind];
+        return Boolean(image && image.complete && image.naturalWidth);
+      }
       const bossAnimationSprites = {
         octopus: new Image(),
         hunter: new Image(),
@@ -2742,8 +2756,8 @@
         })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
-        { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO", sprite: "ufo", frame: 0, columns: 1, rows: 1 },
-        { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard", sprite: "meteor", frame: 0, columns: 1, rows: 1 },
+        { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 64 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 8, rows: 8, animationFps: 12 },
+        { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard · 64 frames", sprite: "objectAnimation", objectKind: "hydraComet", image: objectAnimationSprites.hydraComet, frame: 0, columns: 8, rows: 8, animationFps: 10 },
         { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
         ...backdropObjectCatalog,
         ...canyonRelicCatalog
@@ -3902,6 +3916,16 @@
         if (item.sprite === "bossAnimation") {
           const animatedItem = { ...item, frame: Math.floor(t * 9) % 24 };
           const previewSize = canvas === devDetailCanvas ? 270 : 158;
+          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
+          return;
+        }
+
+        if (item.sprite === "objectAnimation") {
+          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % 64 };
+          const detail = canvas === devDetailCanvas;
+          const previewSize = item.objectKind === "helixRaider"
+            ? (detail ? 260 : 156)
+            : (detail ? 238 : 142);
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
           return;
         }
@@ -6297,6 +6321,18 @@
         const t = performance.now() / 1000 + bonusUfo.phase;
         const bob = Math.sin(t * 6) * 2.5;
         const tilt = Math.sin(t * 3.2) * 0.08;
+        if (objectAnimationReady("helixRaider")) {
+          const frame = Math.floor(t * 12) % 64;
+          const filter = act === 2
+            ? "sepia(0.14) saturate(1.2) brightness(1.04)"
+            : act === 3
+              ? "hue-rotate(8deg) saturate(1.08) brightness(1.08)"
+              : act >= 4
+                ? "saturate(0.82) contrast(1.18) brightness(0.88)"
+                : "saturate(0.92) brightness(1.08)";
+          drawSpriteFrame(objectAnimationSprites.helixRaider, frame, 8, 8, bonusUfo.x, bonusUfo.y + bob, 138, 138, tilt, "transparent", 0, 1, filter);
+          return;
+        }
         if (realisticSpritesReady) {
           drawSpriteFrame(realisticSprites.ufo, 0, 1, 1, bonusUfo.x, bonusUfo.y + bob, 124, 112, tilt, "transparent", 0);
           return;
@@ -6316,6 +6352,20 @@
 
       function drawComet(comet) {
         const spriteAngle = Math.atan2(comet.vy, comet.vx) - Math.PI / 2;
+        if (objectAnimationReady("hydraComet")) {
+          const t = performance.now() / 1000;
+          const frame = Math.floor(t * 10 + comet.phase * 4.2 + comet.level * 13) % 64;
+          const size = comet.size * (2.72 - Math.min(comet.level, 4) * 0.08);
+          const filter = act === 1
+            ? "saturate(0.9) brightness(1.06)"
+            : act === 2
+              ? "saturate(1.25) contrast(1.08) brightness(1.05)"
+              : act === 3
+                ? "hue-rotate(-5deg) saturate(1.04) brightness(1.08)"
+                : "saturate(0.92) contrast(1.16) brightness(0.9)";
+          drawSpriteFrame(objectAnimationSprites.hydraComet, frame, 8, 8, comet.x, comet.y, size, size, spriteAngle + Math.sin(comet.phase * 0.7) * 0.04, "transparent", 0, 1, filter);
+          return;
+        }
         if (realisticSpritesReady) {
           const width = comet.size * 2.35;
           drawSpriteFrame(realisticSprites.meteor, 0, 1, 1, comet.x, comet.y, width, width * 1.54, spriteAngle + Math.sin(comet.phase * 0.7) * 0.04, "transparent", 0);
