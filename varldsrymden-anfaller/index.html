@@ -623,86 +623,16 @@
       z-index: 2;
     }
 
-    /* Attract mode stays readable without covering the automated playfield. */
+    /* Attract mode reuses the original console artwork as a transparent overlay. */
     body .overlay.demo-mode {
-      place-items: end start;
+      place-items: center;
       padding: 10px;
       background: transparent;
     }
 
     body .overlay.demo-mode .panel {
-      width: min(310px, 44vw);
-      height: auto;
-      min-height: 0;
-      padding: 14px 16px 13px;
-      border: 1px solid rgba(185, 198, 191, 0.24);
-      border-left-color: rgba(226, 96, 43, 0.46);
-      background: rgba(4, 7, 11, 0.42);
-      clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 9px);
-      opacity: 0.64;
-      filter: none;
-      backdrop-filter: blur(3px);
-    }
-
-    body .overlay.demo-mode .panel::before {
-      display: none;
-    }
-
-    body .overlay.demo-mode .space-logo {
-      margin-bottom: 4px;
-      font-size: 16px;
-      line-height: 1;
-      text-align: left;
-    }
-
-    body .overlay.demo-mode .panel-copy {
-      max-height: 34px;
-      padding: 3px 0;
-      overflow: hidden;
-      font-size: 7px;
-      line-height: 1.2;
-      mask-image: linear-gradient(180deg, #000 58%, transparent);
-    }
-
-    body .overlay.demo-mode .panel .leaderboard {
-      margin-top: 2px;
-      padding: 3px 0;
-      background: transparent;
-    }
-
-    body .overlay.demo-mode .panel .leaderboard-title {
-      font-size: 9px;
-      text-align: left;
-    }
-
-    body .overlay.demo-mode .panel .leaderboard ol {
-      gap: 0;
-      margin-top: 1px;
-    }
-
-    body .overlay.demo-mode .panel .leaderboard li {
-      font-size: 8px;
-    }
-
-    body .overlay.demo-mode .panel .leaderboard li:nth-child(n + 4) {
-      display: none;
-    }
-
-    body .overlay.demo-mode .panel .actions {
-      justify-content: flex-start;
-      margin-top: 3px;
-    }
-
-    body .overlay.demo-mode .panel button,
-    body .overlay.demo-mode .panel button.secondary {
-      width: auto;
-      min-height: 28px;
-      padding: 0 12px;
-      border: 1px solid rgba(185, 198, 191, 0.28);
-      background: rgba(8, 12, 16, 0.58);
-      color: rgba(229, 232, 225, 0.82);
-      font-size: 8px;
-      filter: none;
+      opacity: 0.2;
+      backdrop-filter: none;
     }
 
     .encouragement {
@@ -2017,7 +1947,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.31 · detail hangar · uploaded 2026-07-21 10:21 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.32 · transparent attract console · uploaded 2026-07-21 11:23 CEST</div>
   </main>
 
   <script>
