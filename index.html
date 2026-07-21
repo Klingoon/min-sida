@@ -361,6 +361,194 @@
       filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.72));
     }
 
+    .hud-location {
+      grid-column: 1 / -1;
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 25px;
+      max-width: calc(100vw - 30px);
+      padding: 4px 14px;
+      border: 1px solid rgba(190, 205, 205, 0.28);
+      background: linear-gradient(90deg, transparent, rgba(8, 11, 16, 0.88) 12%, rgba(20, 19, 25, 0.9) 88%, transparent);
+      clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%);
+      color: rgba(225, 231, 226, 0.82);
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hud-location small {
+      margin-right: 6px;
+      color: rgba(162, 174, 170, 0.62);
+      font-size: 8px;
+    }
+
+    .hud-location strong {
+      color: #f1d4ab;
+    }
+
+    .hud-location-divider {
+      width: 1px;
+      height: 12px;
+      background: rgba(226, 96, 43, 0.62);
+      box-shadow: 0 0 8px rgba(226, 96, 43, 0.42);
+    }
+
+    .dev-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      padding: clamp(10px, 2vw, 22px);
+      background:
+        radial-gradient(ellipse at 50% 18%, rgba(103, 49, 125, 0.2), transparent 42%),
+        rgba(2, 4, 8, 0.96);
+      backdrop-filter: blur(12px);
+    }
+
+    .dev-screen.visible {
+      display: block;
+    }
+
+    .dev-console {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(176, 187, 179, 0.34);
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 6px),
+        linear-gradient(145deg, rgba(24, 29, 32, 0.98), rgba(5, 7, 11, 0.98));
+      clip-path: polygon(18px 0, calc(100% - 42px) 0, 100% 42px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 42px 100%, 0 calc(100% - 42px), 0 18px);
+      box-shadow: inset 0 0 50px rgba(94, 215, 255, 0.045), 0 20px 70px rgba(0,0,0,0.7);
+      overflow: hidden;
+    }
+
+    .dev-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid rgba(176, 187, 179, 0.2);
+    }
+
+    .dev-kicker,
+    .dev-footer {
+      color: rgba(168, 180, 176, 0.64);
+      font: 650 9px/1.3 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+    }
+
+    .dev-header h2 {
+      margin: 4px 0 0;
+      color: #e7e2d6;
+      font: 420 clamp(21px, 4vw, 34px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+    }
+
+    .dev-close {
+      width: 42px;
+      min-width: 42px;
+      min-height: 42px;
+      padding: 0;
+      border-color: rgba(226, 96, 43, 0.55);
+      background: rgba(40, 18, 15, 0.76);
+      color: #f3d8b8;
+      font-size: 22px;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    }
+
+    .dev-filters {
+      display: flex;
+      gap: 7px;
+      padding: 10px 22px;
+      overflow-x: auto;
+    }
+
+    .dev-filter {
+      min-height: 32px;
+      padding: 0 13px;
+      border: 1px solid rgba(176, 187, 179, 0.3);
+      background: rgba(12, 16, 20, 0.8);
+      color: rgba(219, 225, 217, 0.7);
+      font: 650 10px/1 "Void Circuit", "Arial Narrow", sans-serif;
+      clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+      box-shadow: none;
+    }
+
+    .dev-filter.active {
+      border-color: rgba(226, 96, 43, 0.72);
+      background: linear-gradient(180deg, rgba(111, 48, 31, 0.9), rgba(36, 18, 18, 0.92));
+      color: #ffe2bd;
+    }
+
+    .dev-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 4px 22px 20px;
+      overflow-y: auto;
+      scrollbar-color: rgba(226, 96, 43, 0.52) rgba(0,0,0,0.2);
+    }
+
+    .dev-object-card {
+      display: grid;
+      grid-template-rows: 138px auto;
+      min-height: 240px;
+      min-width: 0;
+      border: 1px solid rgba(176, 187, 179, 0.24);
+      background: linear-gradient(155deg, rgba(31, 36, 37, 0.88), rgba(7, 9, 13, 0.94));
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 10px);
+      overflow: hidden;
+    }
+
+    .dev-object-card.hidden {
+      display: none;
+    }
+
+    .dev-object-card canvas {
+      width: 100%;
+      height: 138px;
+      background: radial-gradient(ellipse at center, rgba(72, 93, 97, 0.16), transparent 66%);
+    }
+
+    .dev-object-info {
+      min-width: 0;
+      padding: 10px 12px 13px;
+      border-top: 1px solid rgba(176, 187, 179, 0.14);
+    }
+
+    .dev-object-type {
+      color: rgba(226, 96, 43, 0.76);
+      font: 700 8px/1 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+    }
+
+    .dev-object-info h3 {
+      margin: 6px 0 7px;
+      color: #e6e3d9;
+      font: 520 15px/1.15 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+    }
+
+    .dev-object-info code {
+      display: block;
+      overflow: hidden;
+      color: rgba(170, 222, 229, 0.7);
+      font: 9px/1.25 ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dev-footer {
+      padding: 9px 22px 13px;
+      border-top: 1px solid rgba(176, 187, 179, 0.16);
+      text-align: right;
+    }
+
     .encouragement {
       position: absolute;
       z-index: 7;
@@ -1386,6 +1574,60 @@
         padding-inline: 7px;
       }
 
+      .hud-location {
+        gap: 7px;
+        width: 100%;
+        padding-inline: 9px;
+        font-size: 8px;
+      }
+
+      .hud-location small {
+        display: none;
+      }
+
+      .dev-screen {
+        padding: 5px;
+      }
+
+      .dev-header {
+        padding: 14px 16px 10px;
+      }
+
+      .dev-kicker {
+        font-size: 7px;
+      }
+
+      .dev-filters {
+        padding: 8px 14px;
+      }
+
+      .dev-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        padding: 3px 10px 14px;
+      }
+
+      .dev-object-card {
+        grid-template-rows: 112px auto;
+        min-height: 204px;
+      }
+
+      .dev-object-card canvas {
+        height: 112px;
+      }
+
+      .dev-object-info {
+        padding: 8px 9px 10px;
+      }
+
+      .dev-object-info h3 {
+        font-size: 11px;
+      }
+
+      .dev-object-info code {
+        font-size: 7px;
+      }
+
       .build-mark {
         bottom: 4px;
         font-size: 8px;
@@ -1524,6 +1766,11 @@
       <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
       <div class="hud-pill">Wave&nbsp;<strong id="wave">1</strong></div>
       <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">∞</strong></span></div>
+      <div class="hud-location">
+        <span><small>Stage</small><strong id="hudStageName">Iceworld Alpha Centauri</strong></span>
+        <span class="hud-location-divider" aria-hidden="true"></span>
+        <span><small>Encounter</small><strong id="hudEncounterName">Glacial Wraiths</strong></span>
+      </div>
     </div>
 
     <section class="act-intro" id="actIntro" aria-live="polite">
@@ -1561,8 +1808,27 @@
         </div>
       </div>
     </section>
+    <section class="dev-screen" id="devScreen" aria-hidden="true" aria-label="Development object hangar">
+      <div class="dev-console">
+        <header class="dev-header">
+          <div>
+            <span class="dev-kicker">Development · Live object registry</span>
+            <h2>Object Hangar</h2>
+          </div>
+          <button class="dev-close" id="devCloseBtn" type="button" aria-label="Close development screen" title="Close">×</button>
+        </header>
+        <nav class="dev-filters" aria-label="Object filters">
+          <button class="dev-filter active" type="button" data-dev-filter="all">All</button>
+          <button class="dev-filter" type="button" data-dev-filter="boss">Bosses</button>
+          <button class="dev-filter" type="button" data-dev-filter="alien">Aliens</button>
+          <button class="dev-filter" type="button" data-dev-filter="object">Objects</button>
+        </nav>
+        <div class="dev-grid" id="devGrid"></div>
+        <footer class="dev-footer">Control + Y · Toggle registry</footer>
+      </div>
+    </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.29 · generated alien console · uploaded 2026-07-21 09:42 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.30 · object hangar · uploaded 2026-07-21 10:05 CEST</div>
   </main>
 
   <script>
@@ -1588,6 +1854,8 @@
       const waveEl = document.querySelector("#wave");
       const livesEl = document.querySelector("#lives");
       const shieldCountEl = document.querySelector("#shieldCount");
+      const hudStageName = document.querySelector("#hudStageName");
+      const hudEncounterName = document.querySelector("#hudEncounterName");
       const overlay = document.querySelector("#overlay");
       const overlayText = document.querySelector("#overlayText");
       const actIntro = document.querySelector("#actIntro");
@@ -1611,6 +1879,10 @@
       const introMusicCredit = document.querySelector("#introMusicCredit");
       const introSequence = document.querySelector("#introSequence");
       const introPhrase = document.querySelector("#introPhrase");
+      const devScreen = document.querySelector("#devScreen");
+      const devGrid = document.querySelector("#devGrid");
+      const devCloseBtn = document.querySelector("#devCloseBtn");
+      const devFilterButtons = Array.from(document.querySelectorAll("[data-dev-filter]"));
 
       const W = canvas.width;
       const H = canvas.height;
@@ -1682,6 +1954,10 @@
       let activeBackdropIndex = 0;
 
       let state = "ready";
+      let devScreenOpen = false;
+      let devAnimationFrame = 0;
+      let devLastDraw = 0;
+      const devPreviewEntries = [];
       let last = 0;
       let score = 0;
       let scoreSubmitted = false;
@@ -1758,12 +2034,65 @@
       ];
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const alienActStyles = [
-        { species: "glacial-wraith", frames: [2, 0, 2], eye: "#bff7ff", accent: "rgba(170,235,255,0.82)", filter: "hue-rotate(145deg) saturate(0.72) brightness(1.16)" },
-        { species: "magma-brood", frames: [1, 2, 1], eye: "#ffb054", accent: "rgba(255,102,47,0.82)", filter: "saturate(1.28) contrast(1.08) sepia(0.12)" },
-        { species: "pulsar-phantom", frames: [0, 2, 0], eye: "#dc8cff", accent: "rgba(119,210,255,0.82)", filter: "hue-rotate(18deg) saturate(1.24) brightness(1.04)" },
-        { species: "void-carapace", frames: [2, 1, 0], eye: "#ff4d67", accent: "rgba(214,220,211,0.72)", filter: "saturate(0.42) contrast(1.28) brightness(0.82)" }
+        {
+          species: "glacial-wraith", displayName: "Glacial Wraiths", frames: [2, 0, 2], eye: "#bff7ff", accent: "rgba(170,235,255,0.82)", filter: "hue-rotate(145deg) saturate(0.72) brightness(1.16)",
+          variants: [
+            { name: "Shardling Scout", id: "ALIEN-A01-SCOUT-SHARDLING" },
+            { name: "Frostclaw Guard", id: "ALIEN-A01-GUARD-FROSTCLAW" },
+            { name: "Pale Crown Captain", id: "ALIEN-A01-CAPTAIN-PALECROWN" }
+          ]
+        },
+        {
+          species: "magma-brood", displayName: "Magma Brood", frames: [1, 2, 1], eye: "#ffb054", accent: "rgba(255,102,47,0.82)", filter: "saturate(1.28) contrast(1.08) sepia(0.12)",
+          variants: [
+            { name: "Cinder Skitter", id: "ALIEN-A02-SCOUT-CINDER" },
+            { name: "Furnace Guard", id: "ALIEN-A02-GUARD-FURNACE" },
+            { name: "Inferno Crown", id: "ALIEN-A02-CAPTAIN-INFERNO" }
+          ]
+        },
+        {
+          species: "pulsar-phantom", displayName: "Pulsar Phantoms", frames: [0, 2, 0], eye: "#dc8cff", accent: "rgba(119,210,255,0.82)", filter: "hue-rotate(18deg) saturate(1.24) brightness(1.04)",
+          variants: [
+            { name: "Phase Mite", id: "ALIEN-A03-SCOUT-PHASEMITE" },
+            { name: "Rift Sentinel", id: "ALIEN-A03-GUARD-RIFT" },
+            { name: "Nebula Seer", id: "ALIEN-A03-CAPTAIN-NEBULA" }
+          ]
+        },
+        {
+          species: "void-carapace", displayName: "Void Carapace", frames: [2, 1, 0], eye: "#ff4d67", accent: "rgba(214,220,211,0.72)", filter: "saturate(0.42) contrast(1.28) brightness(0.82)",
+          variants: [
+            { name: "Blackstar Drone", id: "ALIEN-A04-SCOUT-BLACKSTAR" },
+            { name: "Eventide Guard", id: "ALIEN-A04-GUARD-EVENTIDE" },
+            { name: "Null Crown", id: "ALIEN-A04-CAPTAIN-NULLCROWN" }
+          ]
+        }
       ];
-      const bossKinds = ["octopus", "hunter", "crystal", "dreadnought"];
+      const bossCatalog = [
+        { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL" },
+        { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN" },
+        { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX" },
+        { kind: "dreadnought", name: "Mordrath, the Iron Maw", id: "BOSS-A04-MORDRATH" }
+      ];
+      const bossKinds = bossCatalog.map((entry) => entry.kind);
+      const devObjectCatalog = [
+        ...bossCatalog.map((entry, index) => ({ ...entry, category: "boss", typeLabel: `Boss · Act ${index + 1}`, sprite: "bosses", frame: index, columns: 2, rows: 2 })),
+        ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
+          ...variant,
+          category: "alien",
+          typeLabel: `Alien · Act ${actIndex + 1}`,
+          sprite: "enemies",
+          frame: style.frames[variantIndex],
+          columns: 3,
+          rows: 1,
+          filter: style.filter,
+          eye: style.eye
+        }))),
+        { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
+        { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
+        { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO", sprite: "ufo", frame: 0, columns: 1, rows: 1 },
+        { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard", sprite: "meteor", frame: 0, columns: 1, rows: 1 },
+        { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" }
+      ];
       const scoreNames = ["MIL", "MAX", "FTZ", "RAM", "KID", "ACE"];
       const scoreKey = "varldsrymdenAnfallerRambodal.leaderboard";
       const defaultLeaderboard = [
@@ -2650,11 +2979,185 @@
       function updateHud() {
         scoreEl.textContent = score.toString();
         hiScoreEl.textContent = getHiScore().toString();
-        waveEl.textContent = state === "canyon" || state === "canyonBriefing"
+        const canyonStage = state === "canyon" || state === "canyonBriefing";
+        const actIndex = clamp(act - 1, 0, actNames.length - 1);
+        const alienStyle = alienActStyles[actIndex];
+        waveEl.textContent = canyonStage
           ? "CANYON RUN"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
+        hudStageName.textContent = canyonStage ? "Selene Canyon Run" : actNames[actIndex];
+        hudEncounterName.textContent = canyonStage
+          ? "Lunar Ravine"
+          : boss ? boss.name : alienStyle.displayName;
         shieldCountEl.textContent = "∞";
         renderLives();
+      }
+
+      function buildDevRegistry() {
+        if (devPreviewEntries.length) return;
+        devObjectCatalog.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "dev-object-card";
+          card.dataset.category = item.category;
+          card.dataset.objectId = item.id;
+
+          const preview = document.createElement("canvas");
+          preview.width = 300;
+          preview.height = 180;
+          preview.setAttribute("aria-label", `${item.name} animated preview`);
+
+          const info = document.createElement("div");
+          info.className = "dev-object-info";
+          const type = document.createElement("span");
+          type.className = "dev-object-type";
+          type.textContent = item.typeLabel;
+          const name = document.createElement("h3");
+          name.textContent = item.name;
+          const id = document.createElement("code");
+          id.textContent = item.id;
+          id.title = item.id;
+          info.append(type, name, id);
+          card.append(preview, info);
+          devGrid.append(card);
+          devPreviewEntries.push({ item, card, canvas: preview, ctx: preview.getContext("2d") });
+        });
+      }
+
+      function drawDevImage(ctx, image, item, t, width, height, bossPreview = false) {
+        if (!image || !image.complete || !image.naturalWidth) return;
+        const columns = item.columns || 1;
+        const rows = item.rows || 1;
+        const sourceW = image.naturalWidth / columns;
+        const sourceH = image.naturalHeight / rows;
+        const sourceX = (item.frame % columns) * sourceW;
+        const sourceY = Math.floor(item.frame / columns) * sourceH;
+        const bob = Math.sin(t * 1.8 + item.id.length) * 5;
+        const pulse = 1 + Math.sin(t * 2.4 + item.id.length) * (bossPreview ? 0.035 : 0.055);
+        ctx.save();
+        ctx.translate(150, 88 + bob);
+        ctx.rotate(Math.sin(t * 1.1 + item.id.length) * (bossPreview ? 0.025 : 0.055));
+        ctx.scale(pulse, 1 / pulse);
+        ctx.filter = item.filter || "none";
+        if (bossPreview) {
+          const strips = 9;
+          const stripH = sourceH / strips;
+          for (let strip = 0; strip < strips; strip += 1) {
+            const offset = Math.sin(t * 2.1 + strip * 0.72 + item.frame) * (strip > 4 ? 4.8 : 2.2);
+            const dy = -height / 2 + strip * (height / strips);
+            ctx.drawImage(image, sourceX, sourceY + strip * stripH, sourceW, stripH + 1, -width / 2 + offset, dy, width, height / strips + 1);
+          }
+        } else {
+          ctx.drawImage(image, sourceX, sourceY, sourceW, sourceH, -width / 2, -height / 2, width, height);
+        }
+        ctx.restore();
+      }
+
+      function drawDevPreview(entry, time) {
+        const { ctx, item } = entry;
+        const t = time / 1000;
+        ctx.clearRect(0, 0, 300, 180);
+        const backdrop = ctx.createRadialGradient(150, 92, 8, 150, 92, 145);
+        backdrop.addColorStop(0, "rgba(67,91,96,0.2)");
+        backdrop.addColorStop(0.55, "rgba(31,24,38,0.12)");
+        backdrop.addColorStop(1, "rgba(2,4,8,0)");
+        ctx.fillStyle = backdrop;
+        ctx.fillRect(0, 0, 300, 180);
+
+        if (item.sprite === "shield" || item.sprite === "rift") {
+          ctx.save();
+          ctx.translate(150, 90);
+          ctx.globalCompositeOperation = "lighter";
+          const loops = item.sprite === "shield" ? 4 : 6;
+          for (let index = 0; index < loops; index += 1) {
+            const phase = t * (item.sprite === "shield" ? 2.2 : 1.25) + index * 0.8;
+            ctx.beginPath();
+            ctx.strokeStyle = item.sprite === "shield"
+              ? `rgba(94,215,255,${0.22 + index * 0.08})`
+              : `rgba(${index % 2 ? "226,96,43" : "143,74,161"},${0.2 + index * 0.05})`;
+            ctx.lineWidth = 2;
+            ctx.ellipse(0, 0, 54 + index * 6, 42 + Math.sin(phase) * 7, phase, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.restore();
+          if (item.sprite === "shield") drawDevImage(ctx, realisticSprites.player, { ...item, frame: 0, columns: 1, rows: 1 }, t, 66, 66);
+          return;
+        }
+
+        if (item.sprite === "player") {
+          const flame = ctx.createLinearGradient(150, 108, 150, 174);
+          flame.addColorStop(0, "rgba(255,245,190,0.9)");
+          flame.addColorStop(0.35, "rgba(94,215,255,0.7)");
+          flame.addColorStop(1, "rgba(94,215,255,0)");
+          ctx.fillStyle = flame;
+          ctx.beginPath();
+          ctx.moveTo(135, 104);
+          ctx.lineTo(150, 169 + Math.sin(t * 9) * 8);
+          ctx.lineTo(165, 104);
+          ctx.fill();
+        }
+
+        if (item.sprite === "meteor") {
+          const tail = ctx.createLinearGradient(30, 50, 150, 94);
+          tail.addColorStop(0, "rgba(255,90,35,0)");
+          tail.addColorStop(1, "rgba(255,204,92,0.7)");
+          ctx.strokeStyle = tail;
+          ctx.lineWidth = 16 + Math.sin(t * 7) * 4;
+          ctx.beginPath();
+          ctx.moveTo(25, 42 + Math.sin(t * 2) * 8);
+          ctx.lineTo(147, 91);
+          ctx.stroke();
+        }
+
+        const image = realisticSprites[item.sprite];
+        const isBoss = item.category === "boss";
+        const width = isBoss ? 155 : item.sprite === "ufo" ? 130 : item.sprite === "meteor" ? 78 : item.sprite === "player" ? 108 : 104;
+        const height = isBoss ? 145 : item.sprite === "meteor" ? 116 : item.sprite === "ufo" ? 94 : width;
+        drawDevImage(ctx, image, item, t, width, height, isBoss);
+
+        if (item.category === "alien") {
+          const blink = Math.max(1.5, 4.5 * Math.abs(Math.sin(t * 2.8 + item.id.length)));
+          ctx.fillStyle = item.eye || "#f7ffff";
+          ctx.shadowColor = item.eye || "#f7ffff";
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.ellipse(150, 78 + Math.sin(t * 1.8 + item.id.length) * 5, 11, blink, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function animateDevRegistry(time) {
+        if (!devScreenOpen) return;
+        if (time - devLastDraw >= 32) {
+          devPreviewEntries.forEach((entry) => drawDevPreview(entry, time));
+          devLastDraw = time;
+        }
+        devAnimationFrame = requestAnimationFrame(animateDevRegistry);
+      }
+
+      function openDevScreen() {
+        buildDevRegistry();
+        devScreenOpen = true;
+        devScreen.classList.add("visible");
+        devScreen.setAttribute("aria-hidden", "false");
+        shell.dataset.devScreen = "open";
+        clearAttractTimer();
+        cancelAnimationFrame(devAnimationFrame);
+        devAnimationFrame = requestAnimationFrame(animateDevRegistry);
+        devCloseBtn.focus({ preventScroll: true });
+      }
+
+      function closeDevScreen() {
+        devScreenOpen = false;
+        devScreen.classList.remove("visible");
+        devScreen.setAttribute("aria-hidden", "true");
+        delete shell.dataset.devScreen;
+        cancelAnimationFrame(devAnimationFrame);
+        if (!introActive && !isActiveRun()) scheduleAttractMode(5000);
+      }
+
+      function toggleDevScreen() {
+        if (devScreenOpen) closeDevScreen();
+        else openDevScreen();
       }
 
       function showActTitle(actNumber, canyon = false) {
@@ -2887,6 +3390,7 @@
         comets.length = 0;
         rifts.length = 0;
         boss = null;
+        delete shell.dataset.bossObjectId;
         bonusUfo = null;
         scheduleBonusUfo();
         scheduleComet();
@@ -2906,6 +3410,8 @@
         for (let row = 0; row < rows; row += 1) {
           for (let col = 0; col < cols; col += 1) {
             const type = row === 0 && col % 2 === 0 ? "captain" : row < 2 ? "guard" : "scout";
+            const variantIndex = type === "captain" ? 2 : type === "guard" ? 1 : 0;
+            const alienSpec = alienStyle.variants[variantIndex];
             const formation = wavePattern;
             enemies.push({
               homeX: startX + col * gapX,
@@ -2915,6 +3421,8 @@
               w: type === "captain" ? 40 : 34,
               h: type === "captain" ? 36 : 32,
               type,
+              name: alienSpec.name,
+              objectId: alienSpec.id,
               actStyle: act - 1,
               formation,
               row,
@@ -2942,7 +3450,8 @@
         rifts.length = 0;
         riftTimer = 99;
         clearBossTimers();
-        const kind = bossKinds[clamp(act - 1, 0, bossKinds.length - 1)];
+        const bossSpec = bossCatalog[clamp(act - 1, 0, bossCatalog.length - 1)];
+        const kind = bossSpec.kind;
         const hunter = kind === "hunter";
         const crystal = kind === "crystal";
         const dreadnought = kind === "dreadnought";
@@ -2955,6 +3464,8 @@
           w: dreadnought ? 270 : hunter ? 230 : crystal ? 220 : 210,
           h: dreadnought ? 210 : hunter ? 220 : crystal ? 210 : 190,
           kind,
+          name: bossSpec.name,
+          objectId: bossSpec.id,
           hp,
           maxHp: hp,
           phase: 0,
@@ -2962,6 +3473,7 @@
           burst: 0,
           hurt: 0
         };
+        shell.dataset.bossObjectId = bossSpec.id;
         shake = dreadnought ? 38 : crystal ? 34 : hunter ? 30 : 22;
         play(dreadnought ? 58 : crystal ? 128 : hunter ? 92 : 74, dreadnought ? 0.82 : hunter ? 0.72 : 0.55, "sawtooth", dreadnought ? 0.11 : hunter ? 0.095 : 0.08);
         updateHud();
@@ -3641,6 +4153,7 @@
       }
 
       function step(dt) {
+        if (devScreenOpen) return;
         const activeRun = isActiveRun() || state === "canyon";
         if (!activeRun && attractDeadline && performance.now() >= attractDeadline) {
           startDemoMode();
@@ -4601,9 +5114,9 @@
           const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 300 : boss.kind === "crystal" ? 292 : 280;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
           const color = boss.kind === "dreadnought" ? colors.orange : boss.kind === "hunter" ? colors.red : boss.kind === "crystal" ? colors.cyan : colors.violet;
-          drawPoly(lineShape, W / 2, 68, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
-          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 68, (barW * hp) / 2, 4, 0, rgba(color, 0.95), gl.LINES);
-          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 64, (barW * hp) / 2, 1.3, 0, rgba(colors.white, 0.55), gl.LINES);
+          drawPoly(lineShape, W / 2, 96, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 96, (barW * hp) / 2, 4, 0, rgba(color, 0.95), gl.LINES);
+          drawPoly(lineShape, W / 2 - (barW * (1 - hp)) / 2, 92, (barW * hp) / 2, 1.3, 0, rgba(colors.white, 0.55), gl.LINES);
           return;
         }
         const t = boss.phase;
@@ -4955,6 +5468,7 @@
       }
 
       function handleGamePointerDown(event) {
+        if (devScreenOpen) return;
         if ((state !== "playing" && state !== "canyon") || introActive) return;
         const point = pointerToGame(event);
         const inShieldCorner = point.x <= W * 0.28 && point.y >= H * 0.72;
@@ -5007,6 +5521,7 @@
       }
 
       function finishGamePointer(event, allowTap) {
+        if (devScreenOpen) return;
         if (event.pointerId === directDragPointerId) {
           event.preventDefault();
           directDragPointerId = null;
@@ -5041,6 +5556,16 @@
       shell.addEventListener("pointercancel", (event) => finishGamePointer(event, false), { capture: true });
 
       window.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.code === "KeyY") {
+          event.preventDefault();
+          if (!event.repeat) toggleDevScreen();
+          return;
+        }
+        if (devScreenOpen) {
+          event.preventDefault();
+          if (event.code === "Escape" && !event.repeat) closeDevScreen();
+          return;
+        }
         if (introActive) {
           event.preventDefault();
           if (!event.repeat) {
@@ -5098,6 +5623,16 @@
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
+      devCloseBtn.addEventListener("click", closeDevScreen);
+      devFilterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const filter = button.dataset.devFilter;
+          devFilterButtons.forEach((candidate) => candidate.classList.toggle("active", candidate === button));
+          devPreviewEntries.forEach((entry) => {
+            entry.card.classList.toggle("hidden", filter !== "all" && entry.item.category !== filter);
+          });
+        });
+      });
       muteBtn.addEventListener("click", () => {
         muted = !muted;
         muteBtn.textContent = muted ? "Sound off" : "Sound on";
