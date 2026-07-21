@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.47 · 24-frame canyon creatures · updated 2026-07-21 19:31 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.48 · 16-frame stage aliens · updated 2026-07-21 21:58 CEST</div>
   </main>
 
   <script>
@@ -2610,6 +2610,47 @@
           ]
         }
       ];
+      const alienAnimationUrls = [
+        [
+          "assets/aliens/shardling-scout-16f.webp",
+          "assets/aliens/frostclaw-guard-16f.webp",
+          "assets/aliens/pale-crown-captain-16f.webp"
+        ],
+        [
+          "assets/aliens/cinder-skitter-16f.webp",
+          "assets/aliens/furnace-guard-16f.webp",
+          "assets/aliens/inferno-crown-16f.webp"
+        ],
+        [
+          "assets/aliens/phase-mite-16f.webp",
+          "assets/aliens/rift-sentinel-16f.webp",
+          "assets/aliens/nebula-seer-16f.webp"
+        ],
+        [
+          "assets/aliens/blackstar-drone-16f.webp",
+          "assets/aliens/eventide-guard-16f.webp",
+          "assets/aliens/null-crown-16f.webp"
+        ]
+      ];
+      const alienAnimationSizes = [
+        [66, 70, 68],
+        [64, 70, 68],
+        [66, 70, 68],
+        [64, 68, 66]
+      ];
+      alienActStyles.forEach((style, actIndex) => {
+        style.animationSizes = alienAnimationSizes[actIndex];
+        style.variants.forEach((variant, variantIndex) => {
+          variant.imageUrl = alienAnimationUrls[actIndex][variantIndex];
+          variant.image = new Image();
+          variant.image.decoding = "async";
+          variant.image.src = variant.imageUrl;
+        });
+      });
+
+      function alienAnimationReady(variant) {
+        return Boolean(variant?.image?.complete && variant.image.naturalWidth);
+      }
       const bossCatalog = [
         { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL" },
         { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN" },
@@ -2682,13 +2723,12 @@
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1}`,
-          sprite: "enemies",
-          frame: style.frames[variantIndex],
-          columns: 3,
-          rows: 1,
-          filter: style.filter,
-          eye: style.eye
+          typeLabel: `Alien · Act ${actIndex + 1} · 16 frames`,
+          sprite: "alienAnimation",
+          frame: 0,
+          columns: 4,
+          rows: 4,
+          variantIndex
         }))),
         ...canyonAlienSpecies.map((species, index) => ({
           ...species,
@@ -3849,6 +3889,13 @@
           const animatedItem = { ...item, frame: Math.floor(t * 9 + item.progress * 24) % 24 };
           const previewSize = canvas === devDetailCanvas ? 220 : 142;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
+          return;
+        }
+
+        if (item.sprite === "alienAnimation") {
+          const animatedItem = { ...item, frame: Math.floor(t * 9 + item.variantIndex * 1.7) % 16 };
+          const previewSize = canvas === devDetailCanvas ? 246 : item.variantIndex === 2 ? 150 : 142;
+          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
           return;
         }
 
@@ -5908,6 +5955,15 @@
       function drawRealisticEnemy(enemy, angle) {
         const baseFrame = enemy.type === "captain" ? 2 : enemy.type === "guard" ? 1 : 0;
         const style = alienActStyles[clamp(enemy.actStyle ?? act - 1, 0, alienActStyles.length - 1)];
+        const variant = style.variants[baseFrame];
+        if (alienAnimationReady(variant)) {
+          const animationFrame = Math.floor(enemy.phase * 3.6 + enemy.col * 0.43) % 16;
+          const size = style.animationSizes[baseFrame];
+          const pulse = 1 + Math.sin(enemy.phase * 2.2) * 0.018;
+          const bob = Math.sin(enemy.phase * 2.8 + enemy.col * 0.45) * 2.2;
+          drawSpriteFrame(variant.image, animationFrame, 4, 4, enemy.x, enemy.y + bob, size * pulse, size * pulse, angle, "transparent", 0);
+          return;
+        }
         const frame = style.frames[baseFrame];
         const size = frame === 2 ? 76 : frame === 1 ? 72 : 68;
         const pulse = 1 + Math.sin(enemy.phase * 2.2) * 0.022;
