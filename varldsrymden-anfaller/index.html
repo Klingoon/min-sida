@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.41 · full auto playthrough and stage shortcuts · updated 2026-07-21 14:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.42 · Selene Canyon Odyssey · updated 2026-07-21 14:47 CEST</div>
   </main>
 
   <script>
@@ -2459,10 +2459,41 @@
       }
       const canyonRun = {
         scroll: 0,
-        maxScroll: 1920,
-        speed: 88,
-        imageUrl: "assets/backdrops/selene-canyon-run.jpg"
+        imageHeight: 5220,
+        maxScroll: 5220 - H,
+        speed: 70,
+        imageUrl: "assets/backdrops/selene-canyon-odyssey.jpg"
       };
+      const canyonRoute = [
+        { progress: 0.00, center: 398, halfWidth: 170 },
+        { progress: 0.05, center: 430, halfWidth: 158 },
+        { progress: 0.10, center: 446, halfWidth: 148 },
+        { progress: 0.15, center: 395, halfWidth: 142 },
+        { progress: 0.20, center: 326, halfWidth: 136 },
+        { progress: 0.25, center: 284, halfWidth: 128 },
+        { progress: 0.30, center: 248, halfWidth: 120 },
+        { progress: 0.35, center: 324, halfWidth: 132 },
+        { progress: 0.40, center: 421, halfWidth: 124 },
+        { progress: 0.45, center: 492, halfWidth: 116 },
+        { progress: 0.50, center: 514, halfWidth: 112 },
+        { progress: 0.55, center: 442, halfWidth: 124 },
+        { progress: 0.60, center: 358, halfWidth: 118 },
+        { progress: 0.65, center: 414, halfWidth: 128 },
+        { progress: 0.70, center: 482, halfWidth: 116 },
+        { progress: 0.75, center: 432, halfWidth: 122 },
+        { progress: 0.80, center: 350, halfWidth: 114 },
+        { progress: 0.85, center: 310, halfWidth: 120 },
+        { progress: 0.90, center: 342, halfWidth: 112 },
+        { progress: 0.95, center: 374, halfWidth: 126 },
+        { progress: 1.00, center: 390, halfWidth: 148 }
+      ];
+      const canyonLandmarks = [
+        { progress: 0.03, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.90 },
+        { progress: 0.27, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.69 },
+        { progress: 0.52, name: "Voyager Deep-Space Probe", id: "RELIC-SELENE-VOYAGER-PROBE", focalY: 0.48 },
+        { progress: 0.78, name: "Broken Torus Observatory", id: "RELIC-SELENE-TORUS-ARRAY", focalY: 0.27 },
+        { progress: 0.96, name: "Obsidian Relic Graveyard", id: "RELIC-SELENE-OBSIDIAN-VAULT", focalY: 0.09 }
+      ];
       let encouragementTimer = 6;
       const encouragements = [
         "Great job, Milton",
@@ -2533,7 +2564,7 @@
           };
         }),
         {
-          name: "Selene Canyon Run",
+          name: "Selene Canyon Odyssey",
           id: "BACKDROP-SPECIAL-SELENE-CANYON",
           category: "backdrop",
           typeLabel: "Special ravine stage",
@@ -2552,6 +2583,15 @@
           imageUrl: "assets/finale/father-found-v3.jpg"
         }
       ];
+      const canyonRelicCatalog = canyonLandmarks.map((landmark) => ({
+        ...landmark,
+        category: "backdrop",
+        typeLabel: "Canyon wreck landmark",
+        shortcutLabel: stageShortcutLabel(9),
+        sprite: "backdrop",
+        imageUrl: canyonRun.imageUrl,
+        focalY: landmark.focalY
+      }));
       const devObjectCatalog = [
         ...bossCatalog.map((entry, index) => ({ ...entry, category: "boss", typeLabel: `Boss · Act ${index + 1}`, sprite: "bosses", frame: index, columns: 2, rows: 2 })),
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
@@ -2570,7 +2610,8 @@
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO", sprite: "ufo", frame: 0, columns: 1, rows: 1 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard", sprite: "meteor", frame: 0, columns: 1, rows: 1 },
         { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
-        ...backdropObjectCatalog
+        ...backdropObjectCatalog,
+        ...canyonRelicCatalog
       ];
       const scoreNames = ["MIL", "MAX", "FTZ", "RAM", "KID", "ACE"];
       const scoreKey = "varldsrymdenAnfallerRambodal.leaderboard";
@@ -2847,7 +2888,7 @@
 
       function setCanyonBackdrop() {
         canvas.style.backgroundImage = `linear-gradient(180deg, rgba(2, 4, 8, 0.05), rgba(2, 4, 8, 0.2)), url("${canyonRun.imageUrl}")`;
-        canvas.style.backgroundSize = `${W}px 2880px`;
+        canvas.style.backgroundSize = `${W}px ${canyonRun.imageHeight}px`;
         canvas.style.backgroundPosition = `center ${canyonBackgroundOffset()}px`;
         shell.dataset.stageBackdrop = "selene-canyon-run";
         selectSoundtrack(0);
@@ -2862,9 +2903,22 @@
       }
 
       function canyonBounds(worldY) {
-        const center = W / 2 + Math.sin(worldY * 0.0041) * 34 + Math.sin(worldY * 0.0107 + 0.8) * 16;
-        const halfWidth = 154 + Math.sin(worldY * 0.0062 + 1.2) * 16;
+        const progress = clamp(1 - worldY / canyonRun.imageHeight, 0, 1);
+        let index = canyonRoute.findIndex((node) => node.progress >= progress);
+        if (index <= 0) index = 1;
+        const from = canyonRoute[index - 1];
+        const to = canyonRoute[Math.min(index, canyonRoute.length - 1)];
+        const span = Math.max(0.0001, to.progress - from.progress);
+        const linear = clamp((progress - from.progress) / span, 0, 1);
+        const eased = linear * linear * (3 - 2 * linear);
+        const center = from.center + (to.center - from.center) * eased;
+        const halfWidth = from.halfWidth + (to.halfWidth - from.halfWidth) * eased;
         return { left: center - halfWidth, right: center + halfWidth };
+      }
+
+      function activeCanyonLandmark() {
+        const progress = canyonRun.scroll / canyonRun.maxScroll;
+        return canyonLandmarks.find((landmark) => Math.abs(landmark.progress - progress) < 0.055) || null;
       }
 
       function drawSpaceBackdrop(nowSec) {
@@ -3469,9 +3523,9 @@
         waveEl.textContent = canyonStage
           ? "CANYON RUN"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
-        hudStageName.textContent = canyonStage ? "Selene Canyon Run" : actNames[actIndex];
+        hudStageName.textContent = canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
         hudEncounterName.textContent = canyonStage
-          ? "Lunar Ravine"
+          ? (activeCanyonLandmark()?.name || "The Wreck Corridor")
           : boss ? boss.name : alienStyle.displayName;
         shieldCountEl.textContent = "∞";
         renderLives();
@@ -3584,9 +3638,11 @@
         } else {
           sourceHeight = image.naturalWidth / targetAspect;
           const travel = Math.max(0, image.naturalHeight - sourceHeight);
-          sourceY = item.canyon
-            ? travel * (0.5 + Math.sin(t * 0.1) * 0.5)
-            : travel * (0.5 + Math.sin(t * 0.06) * 0.08);
+          sourceY = typeof item.focalY === "number"
+            ? clamp(travel * (item.focalY + Math.sin(t * 0.12) * 0.015), 0, travel)
+            : item.canyon
+              ? travel * (0.5 + Math.sin(t * 0.1) * 0.5)
+              : travel * (0.5 + Math.sin(t * 0.06) * 0.08);
         }
 
         ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
@@ -3750,7 +3806,7 @@
         if (actIntroTimer) clearTimeout(actIntroTimer);
         actIntro.className = `act-intro ${canyon ? "theme-canyon" : `theme-${actNumber}`} visible`;
         actKicker.textContent = canyon ? "Special flight stage" : `Act ${actNumber}`;
-        actName.textContent = canyon ? "Selene Canyon Run" : actNames[actNumber - 1];
+        actName.textContent = canyon ? "Selene Canyon Odyssey" : actNames[actNumber - 1];
         shell.dataset.actTitle = actName.textContent;
         void actIntro.offsetWidth;
         actIntroTimer = setTimeout(() => {
@@ -4305,7 +4361,7 @@
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON RUN: Steer the Millenium Owl through the lunar ravine. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
+        overlayText.textContent = "SELENE CANYON ODYSSEY: Fly the long wreck corridor and survive its tightening S-bends. The Apollo capsule, Mars rover, Voyager probe and stranger relics mark your progress. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
         startBtn.textContent = "Enter canyon";
         overlay.classList.add("visible");
         updateHud();
@@ -4314,8 +4370,18 @@
       function beginCanyonRun() {
         clearAttractTimer();
         state = "canyon";
+        clearBossTimers();
+        boss = null;
+        bossDefeated = false;
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        comets.length = 0;
+        rifts.length = 0;
+        bonusUfo = null;
         canyonRun.scroll = 0;
-        player.x = W / 2;
+        const entryBounds = canyonBounds(canyonRun.maxScroll + H - 140);
+        player.x = (entryBounds.left + entryBounds.right) / 2;
         player.y = H - 140;
         player.lives = Infinity;
         player.invuln = 2.2;
@@ -4945,7 +5011,7 @@
         if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
         if (fullAutoPlaythrough) {
-          const autoBounds = canyonBounds(canyonWorldY(player.y));
+          const autoBounds = canyonBounds(canyonWorldY(player.y - 150));
           const targetX = (autoBounds.left + autoBounds.right) / 2;
           const targetY = H - 170;
           playerInput = clamp((targetX - player.x) / 54, -1, 1);
@@ -6173,16 +6239,16 @@
       function drawCanyonWalls() {
         if (state !== "canyon") return;
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-        for (let y = -24; y < H + 48; y += 48) {
+        for (let y = -24; y < H + 36; y += 32) {
           const first = canyonBounds(canyonWorldY(y));
-          const second = canyonBounds(canyonWorldY(y + 48));
+          const second = canyonBounds(canyonWorldY(y + 32));
           ["left", "right"].forEach((side) => {
             const x1 = first[side];
             const x2 = second[side];
             const midX = (x1 + x2) / 2;
-            const midY = y + 24;
-            const length = Math.hypot(x2 - x1, 48) / 2;
-            const angle = Math.atan2(48, x2 - x1);
+            const midY = y + 16;
+            const length = Math.hypot(x2 - x1, 32) / 2;
+            const angle = Math.atan2(32, x2 - x1);
             drawPoly(lineShape, midX, midY, length, 1.8, angle, rgba(colors.gold, 0.34), gl.LINES);
             drawPoly(lineShape, midX, midY, length, 0.7, angle, rgba(colors.white, 0.56), gl.LINES);
             const toothDirection = side === "left" ? -1 : 1;
