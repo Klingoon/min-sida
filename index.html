@@ -2164,7 +2164,7 @@
     <section class="overlay visible" id="overlay">
       <div class="panel">
         <h1 class="space-logo"><span>Libertarian</span><span>freedoom fighters</span></h1>
-        <p class="panel-copy" id="overlayText">Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. You can also enable Voice Shield and speak, for example “la la la”, to raise the shield. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
+        <p class="panel-copy" id="overlayText">Lives are unlimited. Desktop: shoot with Space or W; use ←/→ to move sideways, ↑ to fly forward, ↓ to move back, and X for the shield. A/D also move sideways. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. You can also enable Voice Shield and speak, for example “la la la”, to raise the shield. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
         <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
         <div class="actions">
           <button id="startBtn" type="button">Start</button>
@@ -2222,7 +2222,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.39 · contoured consoles · updated 2026-07-21 13:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.21.40 · four-axis flight controls · updated 2026-07-21 13:42 CEST</div>
   </main>
 
   <script>
@@ -2572,6 +2572,7 @@
       physicsEngine.gravity.scale = 0;
       const physicalItems = new Set();
       let playerInput = 0;
+      let playerInputY = 0;
       let directDragPointerId = null;
       let directDragTarget = null;
       let directDragOffset = { x: 0, y: 0 };
@@ -2636,9 +2637,12 @@
           });
           matter.Body.setVelocity(player.body, { x: 0, y: 0 });
         } else {
-          const desired = playerInput * player.speed / 60;
-          const smoothed = player.body.velocity.x + (desired - player.body.velocity.x) * Math.min(1, dt * 13);
-          matter.Body.setVelocity(player.body, { x: smoothed, y: 0 });
+          const desiredX = playerInput * player.speed / 60;
+          const desiredY = playerInputY * player.speed * 0.84 / 60;
+          const smoothing = Math.min(1, dt * 13);
+          const smoothedX = player.body.velocity.x + (desiredX - player.body.velocity.x) * smoothing;
+          const smoothedY = player.body.velocity.y + (desiredY - player.body.velocity.y) * smoothing;
+          matter.Body.setVelocity(player.body, { x: smoothedX, y: smoothedY });
         }
         comets.forEach((item) => {
           matter.Body.setVelocity(item.body, {
@@ -2663,6 +2667,7 @@
         }
         player.x = player.body.position.x;
         player.y = player.body.position.y;
+        shell.dataset.playerPosition = `${Math.round(player.x)},${Math.round(player.y)}`;
         [bullets, enemyBullets, comets, debris].forEach((list) => {
           list.forEach((item) => {
             item.x = item.body.position.x;
@@ -4068,7 +4073,7 @@
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Lives are unlimited. Desktop: shoot with Space, move with the arrow keys or A/D, and activate your shield with X. On iPhone, drag the ship with your thumb, tap to fire, hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it. The bonus UFO clears the wave, but do not shoot the comet.";
+        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Lives are unlimited. Desktop: shoot with Space or W; use ←/→ to move sideways, ↑ to fly forward, ↓ to move back, and X for the shield. A/D also move sideways. On iPhone, drag the ship with your thumb, tap to fire, hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it. The bonus UFO clears the wave, but do not shoot the comet.";
         updateHud();
       }
 
@@ -4174,7 +4179,7 @@
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON RUN: Steer the Millenium Owl through the lunar ravine. Do not touch either canyon wall. Use the arrow keys or A/D on desktop, or drag the ship with your thumb on iPhone. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
+        overlayText.textContent = "SELENE CANYON RUN: Steer the Millenium Owl through the lunar ravine. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back; A/D also move sideways. On iPhone, drag the ship with your thumb. Hold X or the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
         startBtn.textContent = "Enter canyon";
         overlay.classList.add("visible");
         updateHud();
@@ -4810,7 +4815,10 @@
 
         const left = keys.has("ArrowLeft") || keys.has("KeyA");
         const right = keys.has("ArrowRight") || keys.has("KeyD");
+        const forward = keys.has("ArrowUp");
+        const backward = keys.has("ArrowDown");
         playerInput = (right ? 1 : 0) - (left ? 1 : 0);
+        playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
         syncPhysics(dt);
 
         canyonRun.scroll = Math.min(canyonRun.maxScroll, canyonRun.scroll + canyonRun.speed * dt);
@@ -4926,13 +4934,17 @@
           player.shieldTime = Math.max(player.shieldTime, 0.18);
         }
         playerInput = 0;
+        playerInputY = 0;
         if (state === "demo") {
           runDemoPilot(dt);
         } else {
           const left = keys.has("ArrowLeft") || keys.has("KeyA");
           const right = keys.has("ArrowRight") || keys.has("KeyD");
+          const forward = keys.has("ArrowUp");
+          const backward = keys.has("ArrowDown");
           playerInput = (right ? 1 : 0) - (left ? 1 : 0);
-          if (keys.has("Space") || keys.has("KeyW") || keys.has("ArrowUp")) shoot();
+          playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
+          if (keys.has("Space") || keys.has("KeyW")) shoot();
         }
 
         syncPhysics(dt);
@@ -6278,7 +6290,7 @@
           if (!event.repeat) activateShield();
           return;
         }
-        if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space", "KeyA", "KeyD", "KeyW"].includes(event.code)) {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Space", "KeyA", "KeyD", "KeyW"].includes(event.code)) {
           event.preventDefault();
           keys.add(event.code);
         }
