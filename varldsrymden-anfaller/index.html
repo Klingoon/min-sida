@@ -2234,7 +2234,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.51 · four rebuilt 128-frame bosses · updated 2026-07-22 00:18 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.52 · Nhar'Kaal rebuilt from scratch · updated 2026-07-22 00:24 CEST</div>
   </main>
 
   <script>
@@ -2343,7 +2343,7 @@
       Object.values(bossAnimationSprites).forEach((image) => {
         image.decoding = "async";
       });
-      bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-128f-v2.webp";
+      bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-128f-v3.webp";
       bossAnimationSprites.hunter.src = "assets/bosses/varkuun-128f-v2.webp";
       bossAnimationSprites.crystal.src = "assets/bosses/astrax-128f-v2.webp";
       bossAnimationSprites.dreadnought.src = "assets/bosses/mordrath-128f-v2.webp";
@@ -2733,7 +2733,7 @@
           frame: 0,
           columns: 16,
           rows: 8,
-          animationFps: [14, 16, 12, 10][index]
+          animationFps: [20, 16, 12, 10][index]
         })),
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
           ...variant,
@@ -6076,7 +6076,7 @@
       function drawRealisticBoss() {
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
         const sizes = { octopus: [350, 350], hunter: [326, 326], crystal: [310, 310], dreadnought: [342, 342] };
-        const animationRates = { octopus: 14, hunter: 16, crystal: 12, dreadnought: 10 };
+        const animationRates = { octopus: 20, hunter: 16, crystal: 12, dreadnought: 10 };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
         const pulseX = 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
@@ -6084,11 +6084,12 @@
         const filter = boss.hurt > 0 ? "brightness(1.42) saturate(0.72)" : "none";
         const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : 0.025);
         const drawX = boss.x + Math.sin(boss.phase * 0.88) * 3.2;
-        const presentationOffsetY = boss.kind === "hunter" ? 38 : 0;
+        const presentationOffsetY = boss.kind === "octopus" ? 46 : boss.kind === "hunter" ? 38 : 0;
         const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5 + presentationOffsetY;
         if (bossAnimationReady(boss.kind)) {
           const animationFrame = Math.floor(boss.phase * animationRates[boss.kind]) % 128;
-          drawLivingBossFrame(
+          const drawBossFrame = boss.kind === "octopus" ? drawSpriteFrame : drawLivingBossFrame;
+          drawBossFrame(
             bossAnimationSprites[boss.kind],
             animationFrame,
             16,
@@ -6098,9 +6099,9 @@
             width * pulseX,
             height * pulseY,
             angle,
-            boss.kind,
-            boss.phase,
-            filter
+            ...(boss.kind === "octopus"
+              ? ["transparent", 0, 1, filter]
+              : [boss.kind, boss.phase, filter])
           );
           return;
         }
