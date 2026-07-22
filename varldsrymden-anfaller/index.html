@@ -2475,7 +2475,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.70 · Unique animated Act 4 alien families · updated 2026-07-22 13:30 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.71 · Astrax prism arsenal and mine formations · updated 2026-07-22 14:13 CEST</div>
   </main>
 
   <script>
@@ -2566,13 +2566,15 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       realisticSprites.meteor.src = "assets/meteor-realistic.png";
       const objectAnimationSprites = {
         helixRaider: new Image(),
-        hydraComet: new Image()
+        hydraComet: new Image(),
+        astraxPrismMine: new Image()
       };
       Object.values(objectAnimationSprites).forEach((image) => {
         image.decoding = "async";
       });
       objectAnimationSprites.helixRaider.src = "assets/objects/helix-raider-128f-v2.webp";
       objectAnimationSprites.hydraComet.src = "assets/objects/hydra-comet-64f-v2.webp";
+      objectAnimationSprites.astraxPrismMine.src = "assets/objects/astrax-prism-mine-64f-v1.webp";
 
       function objectAnimationReady(kind) {
         const image = objectAnimationSprites[kind];
@@ -2589,7 +2591,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       });
       bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-organic-288f-v5.webp";
       bossAnimationSprites.hunter.src = "assets/bosses/varkuun-240f-v3.webp";
-      bossAnimationSprites.crystal.src = "assets/bosses/astrax-128f-v2.webp";
+      bossAnimationSprites.crystal.src = "assets/bosses/astrax-192f-v3.webp";
       bossAnimationSprites.dreadnought.src = "assets/bosses/mordrath-128f-v2.webp";
 
       function bossAnimationReady(kind) {
@@ -2600,6 +2602,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const bullets = [];
       let shotSequence = 0;
       const enemyBullets = [];
+      const bossMines = [];
       const enemies = [];
       const canyonAliens = [];
       const particles = [];
@@ -3161,7 +3164,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const bossCatalog = [
         { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL", frames: 288, columns: 16, rows: 18, animationFps: 24 },
         { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN", frames: 240, columns: 16, rows: 15, animationFps: 24 },
-        { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 128, columns: 16, rows: 8, animationFps: 12 },
+        { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 192, columns: 16, rows: 12, animationFps: 24 },
         { kind: "dreadnought", name: "Mordrath, the Iron Maw", id: "BOSS-A04-MORDRATH", frames: 128, columns: 16, rows: 8, animationFps: 10 }
       ];
       const bossKinds = bossCatalog.map((entry) => entry.kind);
@@ -3253,6 +3256,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard · 64 frames", sprite: "objectAnimation", objectKind: "hydraComet", image: objectAnimationSprites.hydraComet, frame: 0, columns: 8, rows: 8, animationFps: 12 },
+        { name: "Astrax Prism Mine", id: "BOSS-A03-MINE-PRISM-01", category: "object", typeLabel: "Boss weapon · destructible mine · 64 frames", sprite: "objectAnimation", objectKind: "astraxPrismMine", image: objectAnimationSprites.astraxPrismMine, frame: 0, columns: 8, rows: 8, animationFps: 24 },
         { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
         ...backdropObjectCatalog,
         ...canyonRelicCatalog
@@ -4870,6 +4874,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function spawnWave() {
         enemies.length = 0;
         enemyBullets.length = 0;
+        bossMines.length = 0;
         comets.length = 0;
         rifts.length = 0;
         boss = null;
@@ -4950,6 +4955,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function spawnBoss() {
         enemies.length = 0;
         enemyBullets.length = 0;
+        bossMines.length = 0;
         bossDefeated = false;
         bonusUfo = null;
         bonusUfoTimer = 99;
@@ -4964,13 +4970,13 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         const crystal = kind === "crystal";
         const dreadnought = kind === "dreadnought";
         setBackdropForStage("boss");
-        const hp = dreadnought ? 260 + wave * 18 : crystal ? 220 + wave * 17 : hunter ? 190 + wave * 16 : 115 + wave * 18;
+        const hp = dreadnought ? 260 + wave * 18 : crystal ? 255 + wave * 18 : hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
           x: W / 2,
-          y: dreadnought ? -245 : hunter ? -250 : crystal ? -190 : -280,
-          targetY: dreadnought ? 190 : hunter ? 215 : crystal ? 210 : 310,
-          w: dreadnought ? 270 : hunter ? 390 : crystal ? 220 : 370,
-          h: dreadnought ? 210 : hunter ? 360 : crystal ? 210 : 430,
+          y: dreadnought ? -245 : hunter ? -250 : crystal ? -260 : -280,
+          targetY: dreadnought ? 190 : hunter ? 215 : crystal ? 225 : 310,
+          w: dreadnought ? 270 : hunter ? 390 : crystal ? 340 : 370,
+          h: dreadnought ? 210 : hunter ? 360 : crystal ? 310 : 430,
           kind,
           name: bossSpec.name,
           objectId: bossSpec.id,
@@ -4980,6 +4986,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           cooldown: dreadnought ? 0.72 : crystal ? 0.82 : hunter ? 0.95 : 1.2,
           burst: 0,
           attackPulse: 0,
+          mineCooldown: crystal ? 2.8 : 99,
+          mineSequence: 0,
           weaponMode: "approach",
           hurt: 0
         };
@@ -5004,6 +5012,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         player.invuln = 1.4;
         alienRoundsCleared = 0;
         boss = null;
+        bossMines.length = 0;
         bonusUfo = null;
         bonusUfoTimer = 8;
         comets.length = 0;
@@ -5875,6 +5884,83 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         return dx * dx + dy * dy < 1 + circle.r / Math.min(ellipse.rx, ellipse.ry);
       }
 
+      function spawnAstraxMineFormation() {
+        if (!boss || boss.kind !== "crystal" || bossMines.length >= 14) return;
+        const patterns = ["prism-chevron", "crystal-arc", "twin-helix"];
+        const pattern = patterns[boss.mineSequence % patterns.length];
+        const healthRatio = boss.hp / boss.maxHp;
+        const desiredCount = pattern === "twin-helix" ? 8 : healthRatio < 0.46 ? 7 : 5;
+        const count = Math.min(desiredCount, 14 - bossMines.length);
+        if (count < 3) return;
+        const originY = boss.y + 86;
+        boss.mineSequence += 1;
+        for (let slot = 0; slot < count; slot += 1) {
+          bossMines.push({
+            x: boss.x,
+            y: originY,
+            originX: boss.x,
+            originY,
+            slot,
+            count,
+            pattern,
+            t: -slot * 0.075,
+            phase: slot * 0.74 + boss.mineSequence * 0.43,
+            r: 21,
+            hp: healthRatio < 0.5 ? 2 : 1,
+            maxHp: healthRatio < 0.5 ? 2 : 1,
+            renderAngle: 0,
+            value: 450
+          });
+        }
+        shell.dataset.bossMinePattern = pattern;
+        boss.attackPulse = 1;
+        makeParticles(boss.x, originY, "#9b6dff", 18);
+        play(184, 0.34, "triangle", 0.065);
+        play(276, 0.24, "sine", 0.04);
+      }
+
+      function updateAstraxMines(dt) {
+        for (let index = bossMines.length - 1; index >= 0; index -= 1) {
+          const mine = bossMines[index];
+          mine.t += dt;
+          mine.phase += dt * 3.2;
+          if (mine.t < 0) continue;
+          const previousX = mine.x;
+          const previousY = mine.y;
+          const middle = (mine.count - 1) / 2;
+          if (mine.pattern === "prism-chevron") {
+            const spread = (mine.slot - middle) * 52;
+            mine.x = mine.originX + spread + Math.sin(mine.t * 2.6 + mine.slot * 0.72) * 12;
+            mine.y = mine.originY + mine.t * 88 + Math.abs(mine.slot - middle) * 27;
+          } else if (mine.pattern === "crystal-arc") {
+            const angle = Math.PI * 0.15 + mine.slot / Math.max(1, mine.count - 1) * Math.PI * 0.7;
+            mine.x = mine.originX + Math.cos(angle) * 154 + Math.sin(mine.t * 2.2 + mine.slot) * 10;
+            mine.y = mine.originY + mine.t * 84 + Math.sin(angle) * 68;
+          } else {
+            const lane = mine.slot % 2;
+            const rank = Math.floor(mine.slot / 2);
+            mine.x = mine.originX + Math.sin(mine.t * 3.0 + rank * 0.82 + lane * Math.PI) * 94;
+            mine.y = mine.originY + mine.t * 94 + rank * 48;
+          }
+          const motionX = mine.x - previousX;
+          const motionY = mine.y - previousY;
+          mine.renderAngle = Math.atan2(motionY, motionX) - Math.PI / 2;
+          if (mine.y > H + 90 || mine.x < -90 || mine.x > W + 90 || mine.t > 13) bossMines.splice(index, 1);
+        }
+        shell.dataset.astraxMines = String(bossMines.length);
+      }
+
+      function explodeAstraxMine(index, awardScore = false) {
+        const mine = bossMines[index];
+        if (!mine) return;
+        bossMines.splice(index, 1);
+        if (awardScore) score += mine.value;
+        makeParticles(mine.x, mine.y, mine.hp > 0 ? "#5ed7ff" : "#9b6dff", 34);
+        shake = Math.max(shake, 11);
+        explosionSound(0.82);
+        updateHud();
+      }
+
       function bossShoot() {
         if (!boss || enemyBullets.length >= 44) return;
         const octopus = boss.kind === "octopus";
@@ -5973,6 +6059,54 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           play(92 + (1 - healthRatio) * 34, 0.26, "sawtooth", 0.058);
           return;
         }
+        if (crystal) {
+          const healthRatio = boss.hp / boss.maxHp;
+          const aimedAngle = Math.atan2(player.y - boss.y, player.x - boss.x);
+          const pushPrismBullet = (x, y, angle, speed, radius = 6, turnRate = 0) => {
+            if (enemyBullets.length >= 44) return;
+            enemyBullets.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: radius, turnRate });
+          };
+          boss.attackPulse = 1;
+          if (healthRatio > 0.68) {
+            boss.weaponMode = "prism-lance-fan";
+            const emitterSide = boss.burst % 2 === 0 ? -1 : 1;
+            for (let i = 0; i < 6; i += 1) {
+              const spread = (i - 2.5) * 0.105;
+              const sourceX = boss.x + emitterSide * 126 + (i - 2.5) * 7;
+              pushPrismBullet(sourceX, boss.y + 34 + Math.abs(i - 2.5) * 5, aimedAngle + spread, 258 + wave * 7 + i * 6, 6);
+            }
+          } else if (healthRatio > 0.34) {
+            boss.weaponMode = "crossing-prism-corridor";
+            const count = 11;
+            const safeLane = 2 + (boss.burst % 6);
+            const sweep = Math.sin(boss.burst * 0.68) * 0.1;
+            for (let i = 0; i < count; i += 1) {
+              if (Math.abs(i - safeLane) <= 1) continue;
+              const angle = Math.PI * 0.2 + i * (Math.PI * 0.6 / (count - 1)) + sweep;
+              const sourceX = boss.x + (i < count / 2 ? -132 : 132);
+              pushPrismBullet(sourceX, boss.y + 48, angle, 222 + wave * 7 + (i % 3) * 11, 6, (i < count / 2 ? 1 : -1) * 0.055);
+            }
+          } else {
+            boss.weaponMode = "singularity-lattice";
+            const count = 12;
+            const gap = 2 + (boss.burst % 7);
+            const direction = boss.burst % 2 === 0 ? 1 : -1;
+            for (let i = 0; i < count; i += 1) {
+              if (i === gap || i === gap + 1 || i === gap + 2) continue;
+              const angle = Math.PI * 0.16 + i * (Math.PI * 0.68 / (count - 1));
+              const sourceX = boss.x + Math.sin(i * 1.37) * 118;
+              pushPrismBullet(sourceX, boss.y + 58, angle, 232 + wave * 7 + (i % 4) * 9, 6, direction * 0.14);
+            }
+            if (boss.burst % 2 === 0) {
+              pushPrismBullet(boss.x - 46, boss.y + 76, aimedAngle - 0.065, 206 + wave * 7, 8, -0.035);
+              pushPrismBullet(boss.x + 46, boss.y + 76, aimedAngle + 0.065, 206 + wave * 7, 8, 0.035);
+            }
+          }
+          shell.dataset.bossAttackPattern = boss.weaponMode;
+          play(410 + (1 - healthRatio) * 105, 0.24, "sawtooth", 0.052);
+          play(820, 0.1, "triangle", 0.025);
+          return;
+        }
         const count = dreadnought ? 7 : crystal ? 6 : hunter ? (boss.hp < boss.maxHp * 0.45 ? 7 : 5) : (boss.hp < boss.maxHp * 0.45 ? 6 : 5);
         for (let i = 0; i < count; i += 1) {
           const spread = (i - (count - 1) / 2) * (dreadnought ? 0.11 : crystal ? 0.24 : hunter ? 0.14 : 0.18);
@@ -6012,6 +6146,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         const kind = boss.kind;
         const finale = act >= totalActs;
         const demoMode = state === "demo";
+        bossMines.forEach((mine) => makeParticles(mine.x, mine.y, "#9b6dff", 24));
+        bossMines.length = 0;
+        shell.dataset.astraxMines = "0";
         boss = null;
         state = "transition";
         bullets.length = 0;
@@ -6274,11 +6411,20 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
             boss.x = W / 2 + Math.sin(boss.phase * 0.68) * 86 + Math.sin(boss.phase * 1.82) * 18;
             boss.targetY = 306 + Math.sin(boss.phase * 1.08) * 18;
           }
+          if (boss.kind === "crystal") {
+            boss.mineCooldown -= dt;
+            if (boss.mineCooldown <= 0 && Math.abs(boss.y - boss.targetY) < 45) {
+              spawnAstraxMineFormation();
+              const healthRatio = boss.hp / boss.maxHp;
+              boss.mineCooldown = healthRatio > 0.68 ? 5.6 : healthRatio > 0.34 ? 4.7 : 3.8;
+            }
+          }
           if (boss.cooldown <= 0) {
             bossShoot();
-            boss.cooldown = boss.kind === "dreadnought" ? (boss.hp < boss.maxHp * 0.45 ? 0.9 : 1.25) : boss.kind === "crystal" ? (boss.hp < boss.maxHp * 0.45 ? 0.95 : 1.35) : boss.kind === "hunter" ? (boss.hp / boss.maxHp > 0.67 ? 1.2 : boss.hp / boss.maxHp > 0.34 ? 1.05 : 0.88) : (boss.hp / boss.maxHp > 0.7 ? 1.25 : boss.hp / boss.maxHp > 0.36 ? 1.05 : 0.9);
+            boss.cooldown = boss.kind === "dreadnought" ? (boss.hp < boss.maxHp * 0.45 ? 0.9 : 1.25) : boss.kind === "crystal" ? (boss.hp < boss.maxHp * 0.34 ? 0.82 : boss.hp < boss.maxHp * 0.68 ? 1.02 : 1.24) : boss.kind === "hunter" ? (boss.hp / boss.maxHp > 0.67 ? 1.2 : boss.hp / boss.maxHp > 0.34 ? 1.05 : 0.88) : (boss.hp / boss.maxHp > 0.7 ? 1.25 : boss.hp / boss.maxHp > 0.36 ? 1.05 : 0.9);
           }
         }
+        updateAstraxMines(dt);
         enemies.forEach((enemy) => {
           enemy.phase += dt * 2.5;
           enemy.cooldown -= dt;
@@ -6329,7 +6475,17 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           const b = bullets[i];
           if (!b) continue;
           let consumed = b.y < -20;
-          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "dreadnought" ? 142 : boss.kind === "hunter" ? 184 : boss.kind === "crystal" ? 112 : 170, ry: boss.kind === "dreadnought" ? 96 : boss.kind === "hunter" ? 158 : boss.kind === "crystal" ? 104 : 205 })) {
+          for (let mineIndex = bossMines.length - 1; mineIndex >= 0 && !consumed; mineIndex -= 1) {
+            const mine = bossMines[mineIndex];
+            if (mine.t >= 0 && Math.hypot(b.x - mine.x, b.y - mine.y) < b.r + mine.r) {
+              consumed = true;
+              mine.hp -= 1;
+              makeParticles(b.x, b.y, "#5ed7ff", 8);
+              if (mine.hp <= 0) explodeAstraxMine(mineIndex, true);
+              else play(590, 0.06, "triangle", 0.025);
+            }
+          }
+          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "dreadnought" ? 142 : boss.kind === "hunter" ? 184 : boss.kind === "crystal" ? 158 : 170, ry: boss.kind === "dreadnought" ? 96 : boss.kind === "hunter" ? 158 : boss.kind === "crystal" ? 142 : 205 })) {
             consumed = true;
             boss.hp -= 1;
             boss.hurt = 0.12;
@@ -6406,6 +6562,13 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
             damagePlayer();
           }
         }
+        for (let i = bossMines.length - 1; i >= 0; i -= 1) {
+          const mine = bossMines[i];
+          if (mine.t >= 0 && Math.hypot(player.x - mine.x, player.y - mine.y) < mine.r + 21) {
+            explodeAstraxMine(i, false);
+            damagePlayer();
+          }
+        }
 
         enemies.forEach((enemy) => {
           if (Math.abs(enemy.x - player.x) < (enemy.w + player.w) / 2 - 4 &&
@@ -6423,7 +6586,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           const bodyHit = boss.kind === "dreadnought"
             ? Math.abs(player.x - boss.x) < 128 && Math.abs(player.y - boss.y) < 78
             : boss.kind === "crystal"
-              ? Math.abs(player.x - boss.x) < 96 && Math.abs(player.y - boss.y) < 86
+              ? Math.abs(player.x - boss.x) < 148 && Math.abs(player.y - boss.y) < 126
               : boss.kind === "hunter"
                 ? Math.abs(player.x - boss.x) < 172 && Math.abs(player.y - boss.y) < 125
                 : Math.abs(player.x - boss.x) < 156 && Math.abs(player.y - boss.y) < 170;
@@ -6882,17 +7045,17 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
 
       function drawRealisticBoss() {
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
-        const sizes = { octopus: [500, 540], hunter: [490, 450], crystal: [310, 310], dreadnought: [342, 342] };
-        const animationRates = { octopus: 24, hunter: 24, crystal: 12, dreadnought: 10 };
-        const animationFrames = { octopus: 288, hunter: 240, crystal: 128, dreadnought: 128 };
-        const animationRows = { octopus: 18, hunter: 15, crystal: 8, dreadnought: 8 };
+        const sizes = { octopus: [500, 540], hunter: [490, 450], crystal: [430, 430], dreadnought: [342, 342] };
+        const animationRates = { octopus: 24, hunter: 24, crystal: 24, dreadnought: 10 };
+        const animationFrames = { octopus: 288, hunter: 240, crystal: 192, dreadnought: 128 };
+        const animationRows = { octopus: 18, hunter: 15, crystal: 12, dreadnought: 8 };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
         const pulseX = 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
         const pulseY = 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
         const filter = boss.hurt > 0
           ? "brightness(1.42) saturate(0.72)"
-          : (boss.kind === "hunter" || boss.kind === "octopus") && boss.attackPulse > 0
+          : (boss.kind === "hunter" || boss.kind === "octopus" || boss.kind === "crystal") && boss.attackPulse > 0
             ? `brightness(${1 + boss.attackPulse * 0.2}) saturate(${1 + boss.attackPulse * 0.16})`
             : "none";
         const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : boss.kind === "hunter" ? 0.015 : boss.kind === "octopus" ? 0.018 : 0.025);
@@ -6901,7 +7064,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5 + presentationOffsetY;
         if (bossAnimationReady(boss.kind)) {
           const animationFrame = Math.floor(boss.phase * animationRates[boss.kind]) % animationFrames[boss.kind];
-          const preanimatedBoss = boss.kind === "octopus" || boss.kind === "hunter";
+          const preanimatedBoss = boss.kind === "octopus" || boss.kind === "hunter" || boss.kind === "crystal";
           const drawBossFrame = preanimatedBoss ? drawSpriteFrame : drawLivingBossFrame;
           drawBossFrame(
             bossAnimationSprites[boss.kind],
@@ -7217,11 +7380,40 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         }
       }
 
+      function drawAstraxMine(mine) {
+        if (mine.t < 0) return;
+        const warning = 0.5 + Math.sin(mine.phase * 3.4) * 0.5;
+        const damaged = mine.hp < mine.maxHp;
+        const size = 68 + warning * 3;
+        drawPoly(ringShape, mine.x, mine.y, 29 + warning * 4, 29 + warning * 4, -mine.phase * 0.28, rgba(damaged ? colors.orange : colors.violet, 0.18 + warning * 0.24), gl.LINE_LOOP);
+        drawPoly(ringShape, mine.x, mine.y, 23, 23, mine.phase * 0.4, rgba(colors.cyan, 0.22 + warning * 0.28), gl.LINE_LOOP);
+        if (objectAnimationReady("astraxPrismMine")) {
+          const frame = Math.floor(mine.phase * 24) % 64;
+          drawSpriteFrame(objectAnimationSprites.astraxPrismMine, frame, 8, 8, mine.x, mine.y, size, size, mine.renderAngle, "transparent", 0, 1, damaged ? "brightness(1.22) saturate(0.76)" : "none");
+        } else {
+          drawPoly(bossEyeShape, mine.x, mine.y, 21, 21, mine.phase, rgba(colors.violet, 0.9));
+          drawPoly(hunterBladeShape, mine.x, mine.y, 9, 29, -mine.phase * 0.7, rgba(colors.cyan, 0.76));
+        }
+      }
+
+      function drawAstraxWeaponEffects() {
+        if (!boss || boss.kind !== "crystal") return;
+        const pulse = clamp(boss.attackPulse || 0, 0, 1);
+        const corePulse = 1 + Math.sin(boss.phase * 4.2) * 0.06;
+        drawPoly(ringShape, boss.x, boss.y + 14, 50 * corePulse, 38 * corePulse, boss.phase * 0.35, rgba(colors.violet, 0.14 + pulse * 0.28), gl.LINE_LOOP);
+        drawPoly(ringShape, boss.x, boss.y + 14, 34 * corePulse, 25 * corePulse, -boss.phase * 0.48, rgba(colors.cyan, 0.16 + pulse * 0.34), gl.LINE_LOOP);
+        [-128, 128].forEach((offset, index) => {
+          const emitterPulse = 4 + pulse * 8 + Math.sin(boss.phase * 5 + index * Math.PI) * 2;
+          drawPoly(bossEyeShape, boss.x + offset, boss.y + 42, emitterPulse, emitterPulse * 0.72, 0, rgba(index ? colors.violet : colors.cyan, 0.34 + pulse * 0.5));
+        });
+      }
+
       function drawBoss() {
         if (!boss) return;
         if (bossAnimationReady(boss.kind) || realisticSpritesReady) {
+          if (boss.kind === "crystal") drawAstraxWeaponEffects();
           drawRealisticBoss();
-          const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 380 : boss.kind === "crystal" ? 292 : 380;
+          const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 380 : boss.kind === "crystal" ? 360 : 380;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
           const color = boss.kind === "dreadnought" ? colors.orange : boss.kind === "hunter" ? colors.red : boss.kind === "crystal" ? colors.cyan : colors.violet;
           drawPoly(lineShape, W / 2, 96, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
@@ -7481,6 +7673,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         pushPoint(glowPoints, player.x, player.y + 5, 124, colors.cyan, 0.42);
         bullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, 52, colors.gold, 0.55));
         enemyBullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, 44, colors.pink, 0.5));
+        bossMines.forEach((mine) => {
+          if (mine.t >= 0) pushPoint(glowPoints, mine.x, mine.y, 62, mine.hp < mine.maxHp ? colors.orange : colors.violet, 0.38);
+        });
         particles.forEach((p) => pushPoint(glowPoints, p.x, p.y, p.r * 6.5, p.rgb, clamp(p.life / p.max, 0, 1) * 0.65));
         debris.forEach((fragment) => pushPoint(glowPoints, fragment.x, fragment.y, fragment.size * 5.2, fragment.rgb, clamp(fragment.life / fragment.max, 0, 1) * 0.42));
         drawPoints(glowPoints, true);
@@ -7521,6 +7716,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           drawBolt(b, "#ff5b78", 13, 5);
         });
 
+        bossMines.forEach(drawAstraxMine);
         drawBoss();
         drawBonusUfo();
         comets.forEach(drawComet);
