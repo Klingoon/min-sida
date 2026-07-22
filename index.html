@@ -2734,7 +2734,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.76 · Permanent Act 1 parallax · updated 2026-07-22 15:55 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.77 · Clean parallax WebGL overlay · updated 2026-07-22 16:17 CEST</div>
   </main>
 
   <script>
@@ -3966,13 +3966,16 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function drawSpaceBackdrop(nowSec) {
         if (!activeBackdrop) return;
         const points = [];
+        const parallaxStageActive = parallaxBackdrop.classList.contains("active");
 
-        activeBackdrop.clouds.forEach((cloud) => {
-          const waveX = Math.sin(nowSec * cloud.drift + cloud.phase) * cloud.wobble;
-          const waveY = Math.cos(nowSec * cloud.drift * 0.7 + cloud.phase) * cloud.wobble * 0.45;
-          pushPoint(points, cloud.x + waveX, cloud.y + waveY, cloud.size, cloud.color, cloud.alpha);
-        });
-        if (activeBackdrop.planet) {
+        if (!parallaxStageActive) {
+          activeBackdrop.clouds.forEach((cloud) => {
+            const waveX = Math.sin(nowSec * cloud.drift + cloud.phase) * cloud.wobble;
+            const waveY = Math.cos(nowSec * cloud.drift * 0.7 + cloud.phase) * cloud.wobble * 0.45;
+            pushPoint(points, cloud.x + waveX, cloud.y + waveY, cloud.size, cloud.color, cloud.alpha);
+          });
+        }
+        if (!parallaxStageActive && activeBackdrop.planet) {
           const planet = activeBackdrop.planet;
           pushPoint(points, planet.x, planet.y, planet.size * 1.35, planet.rim, planet.alpha * 0.72);
           pushPoint(points, planet.x, planet.y, planet.size, planet.color, planet.alpha);
@@ -8268,10 +8271,12 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         drawSpaceBackdrop(nowSec);
 
         const glowPoints = [];
-        nebulae.forEach((nebula) => {
-          const color = nebula.hue.startsWith("94") ? colors.cyan : colors.green;
-          pushPoint(glowPoints, nebula.x, nebula.y, nebula.r * 2, color, nebula.a * 3.2);
-        });
+        if (!parallaxBackdrop.classList.contains("active")) {
+          nebulae.forEach((nebula) => {
+            const color = nebula.hue.startsWith("94") ? colors.cyan : colors.green;
+            pushPoint(glowPoints, nebula.x, nebula.y, nebula.r * 2, color, nebula.a * 3.2);
+          });
+        }
         stars.forEach((star) => {
           pushPoint(glowPoints, star.x, star.y, star.r * 4.2, colors.white, star.a);
         });
