@@ -2115,6 +2115,250 @@
         min-height: 52px;
       }
     }
+
+    /* Separate arcade console screens keep instructions and scores readable. */
+    .console-tabs {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: min(360px, 86%);
+      margin: 0 auto -1px;
+      gap: 4px;
+    }
+
+    body .panel .console-tab {
+      width: auto;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid rgba(125, 174, 195, 0.34);
+      background: linear-gradient(180deg, rgba(17, 30, 39, 0.92), rgba(4, 8, 13, 0.94));
+      clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 9px, 100% 100%, 0 100%, 0 9px);
+      color: rgba(166, 191, 199, 0.68);
+      font-family: "Void Circuit", "Arial Narrow", sans-serif;
+      font-size: 13px;
+      font-weight: 760;
+      letter-spacing: 0;
+      text-shadow: 0 1px 2px #000;
+      filter: none;
+      opacity: 0.88;
+    }
+
+    body .panel .console-tab[aria-selected="true"] {
+      border-color: rgba(244, 171, 94, 0.72);
+      background:
+        linear-gradient(180deg, rgba(57, 37, 28, 0.96), rgba(12, 13, 16, 0.96));
+      color: #ffd39d;
+      text-shadow: 0 0 9px rgba(255, 130, 54, 0.62), 0 1px 2px #000;
+      box-shadow: inset 0 2px 0 rgba(255, 194, 126, 0.12);
+      opacity: 1;
+    }
+
+    body .panel .console-tab:hover {
+      transform: none;
+      filter: brightness(1.16);
+    }
+
+    .console-display {
+      position: relative;
+      width: 100%;
+      min-height: 286px;
+      padding: 24px 30px 22px;
+      overflow: hidden;
+      clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 14px), 0 14px);
+      border: 1px solid rgba(132, 181, 198, 0.34);
+      background:
+        linear-gradient(180deg, rgba(4, 12, 17, 0.88), rgba(3, 6, 10, 0.94)),
+        radial-gradient(circle at 50% 14%, rgba(65, 171, 183, 0.13), transparent 52%);
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.38),
+        inset 0 0 30px rgba(37, 123, 148, 0.1),
+        0 12px 26px rgba(0, 0, 0, 0.42);
+    }
+
+    .console-display::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(125, 208, 220, 0.035) 3px 4px);
+      mix-blend-mode: screen;
+    }
+
+    .console-display::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      pointer-events: none;
+      border-left: 1px solid rgba(238, 154, 81, 0.24);
+      border-right: 1px solid rgba(92, 181, 202, 0.2);
+    }
+
+    .console-pane {
+      position: relative;
+      z-index: 1;
+      min-height: 238px;
+    }
+
+    .console-pane[hidden] {
+      display: none !important;
+    }
+
+    .console-screen-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 17px;
+      color: #f0a566;
+      font-family: "Void Circuit", "Arial Narrow", sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(239, 114, 50, 0.58);
+    }
+
+    .console-screen-label::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #ef7840;
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      box-shadow: 0 0 9px #ef7840;
+    }
+
+    body .panel .console-display .panel-copy {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      opacity: 1;
+      color: #c7d6d5 !important;
+      font-family: "Void Circuit", "Arial Narrow", sans-serif;
+      font-size: 12px;
+      font-weight: 560;
+      line-height: 1.62;
+      white-space: pre-line;
+      text-align: left;
+      text-transform: uppercase;
+      text-shadow: 0 0 5px rgba(80, 192, 203, 0.28), 0 1px 2px #000;
+    }
+
+    body .panel .score-pane .leaderboard {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      opacity: 1;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    body .panel .score-pane .leaderboard-title {
+      margin-bottom: 14px;
+      color: #ffd193;
+      font-size: 22px;
+      font-weight: 820;
+      letter-spacing: 0;
+      text-shadow: 0 0 12px rgba(255, 133, 56, 0.7), 0 2px 2px #000;
+    }
+
+    .leaderboard-columns {
+      display: grid;
+      grid-template-columns: 4ch 1fr 8ch;
+      padding: 0 10px 7px;
+      border-bottom: 1px solid rgba(110, 174, 188, 0.24);
+      color: rgba(133, 175, 182, 0.68);
+      font-family: "Void Circuit", monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    .leaderboard-columns span:last-child {
+      text-align: right;
+    }
+
+    body .panel .score-pane .leaderboard ol {
+      display: grid;
+      gap: 4px;
+      margin: 8px 0 0;
+      padding: 0;
+    }
+
+    body .panel .score-pane .leaderboard li {
+      display: grid;
+      grid-template-columns: 4ch 1fr 8ch;
+      min-height: 28px;
+      align-items: center;
+      padding: 0 10px;
+      border-left: 2px solid rgba(77, 156, 175, 0.2);
+      background: linear-gradient(90deg, rgba(60, 119, 132, 0.1), transparent 66%);
+      color: #b9d1d2;
+      font-family: "Void Circuit", monospace;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    body .panel .score-pane .leaderboard li span:last-child {
+      color: #edf4df;
+      text-align: right;
+    }
+
+    body .panel .score-pane .leaderboard li:first-child {
+      border-left-color: #f58e4f;
+      background: linear-gradient(90deg, rgba(232, 104, 46, 0.16), transparent 72%);
+      color: #ffd19b;
+      text-shadow: 0 0 9px rgba(245, 125, 58, 0.62);
+    }
+
+    body .overlay.demo-mode .console-display {
+      opacity: 1;
+      background:
+        linear-gradient(180deg, rgba(4, 12, 17, 0.3), rgba(3, 6, 10, 0.34)),
+        radial-gradient(circle at 50% 14%, rgba(65, 171, 183, 0.06), transparent 52%);
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    body .overlay.demo-mode .console-display .panel-copy,
+    body .overlay.demo-mode .console-display .leaderboard {
+      opacity: 0.72;
+    }
+
+    body .overlay.demo-mode .console-tabs {
+      opacity: 0.74;
+    }
+
+    body .panel .actions {
+      margin-top: 10px;
+    }
+
+    @media (max-width: 460px) {
+      .console-tabs {
+        width: 92%;
+      }
+
+      body .panel .console-tab {
+        min-height: 38px;
+        font-size: 11px;
+      }
+
+      .console-display {
+        min-height: 248px;
+        padding: 18px 20px;
+      }
+
+      .console-pane {
+        min-height: 210px;
+      }
+
+      body .panel .console-display .panel-copy {
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      body .panel .score-pane .leaderboard-title {
+        font-size: 18px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2158,8 +2402,24 @@
 
     <section class="overlay visible" id="overlay">
       <div class="panel">
-        <p class="panel-copy" id="overlayText">Lives are unlimited. Desktop: shoot with Space or W; use ←/→ to move sideways, ↑ to fly forward, ↓ to move back, and X for the shield. A/D also move sideways. On iPhone, hold your thumb on the ship and drag to steer, tap the playfield with your index finger to fire, and hold the lower-left corner to keep the shield active. You can also enable Voice Shield and speak, for example “la la la”, to raise the shield. Destroying the bonus UFO clears the entire wave. Do not shoot the comet - it splits into more, smaller pieces.</p>
-        <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
+        <div class="console-tabs" role="tablist" aria-label="Arcade console">
+          <button class="console-tab" id="infoTab" type="button" role="tab" aria-selected="true" aria-controls="infoPane">How to play</button>
+          <button class="console-tab" id="scoresTab" type="button" role="tab" aria-selected="false" aria-controls="scoresPane">HI-Scores</button>
+        </div>
+        <div class="console-display">
+          <section class="console-pane info-pane" id="infoPane" role="tabpanel" aria-labelledby="infoTab">
+            <h2 class="console-screen-label">Mission controls</h2>
+            <p class="panel-copy" id="overlayText">LIVES  ∞   SHIELD  X / ∞
+MOVE   ← A   D →   ↑ FORWARD   ↓ BACK
+FIRE   SPACE / W
+MOBILE DRAG SHIP · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD
+BONUS  DESTROY UFO TO CLEAR THE WAVE
+WARNING  DO NOT SHOOT THE HYDRA COMET</p>
+          </section>
+          <section class="console-pane score-pane" id="scoresPane" role="tabpanel" aria-labelledby="scoresTab" hidden>
+            <div class="leaderboard" id="leaderboard" aria-label="High score leaderboard"></div>
+          </section>
+        </div>
         <div class="actions">
           <button id="startBtn" type="button">Start</button>
           <button class="secondary" id="muteBtn" type="button">Sound on</button>
@@ -2215,7 +2475,7 @@
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.67 · Encouragement overlays removed · updated 2026-07-22 11:44 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.68 · Split arcade info and HI-SCORES console · updated 2026-07-22 12:03 CEST</div>
   </main>
 
   <script>
@@ -2251,6 +2511,10 @@
       const startBtn = document.querySelector("#startBtn");
       const muteBtn = document.querySelector("#muteBtn");
       const voiceShieldBtn = document.querySelector("#voiceShieldBtn");
+      const infoTab = document.querySelector("#infoTab");
+      const scoresTab = document.querySelector("#scoresTab");
+      const infoPane = document.querySelector("#infoPane");
+      const scoresPane = document.querySelector("#scoresPane");
       const winScene = document.querySelector("#winScene");
       const winTitle = document.querySelector(".win-title");
       const winSubtitle = document.querySelector(".win-subtitle");
@@ -4232,6 +4496,15 @@
         return Math.max(score, leaderboard[0]?.score || 0);
       }
 
+      function setConsolePane(mode, focusTab = false) {
+        const showScores = mode === "scores";
+        infoTab.setAttribute("aria-selected", String(!showScores));
+        scoresTab.setAttribute("aria-selected", String(showScores));
+        infoPane.hidden = showScores;
+        scoresPane.hidden = !showScores;
+        if (focusTab) (showScores ? scoresTab : infoTab).focus();
+      }
+
       function saveLeaderboard() {
         try {
           localStorage.setItem(scoreKey, JSON.stringify(leaderboard));
@@ -4241,7 +4514,7 @@
       }
 
       function renderLeaderboard() {
-        const html = `<div class="leaderboard-title">HI-SCORE</div><ol>${leaderboard.map((entry, index) => (
+        const html = `<div class="leaderboard-title">HI-SCORES</div><div class="leaderboard-columns"><span>Rank</span><span>Pilot</span><span>Score</span></div><ol>${leaderboard.map((entry, index) => (
           `<li><span>${index + 1}.</span><span>${entry.name}</span><span>${entry.score.toString().padStart(6, "0")}</span></li>`
         )).join("")}</ol>`;
         leaderboardEl.innerHTML = html;
@@ -4663,7 +4936,8 @@
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "Attract mode is running in the background. Press Start to play. Lives are unlimited. Desktop: shoot with Space or W; use ←/→ to move sideways, ↑ to fly forward, ↓ to move back, and X for the shield. A/D also move sideways. On iPhone, drag the ship with your thumb, tap to fire, hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it. The bonus UFO clears the wave, but do not shoot the comet.";
+        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\nLIVES  ∞   SHIELD  X / ∞\nMOVE  ← A   D →   ↑ FORWARD   ↓ BACK\nFIRE  SPACE / W\nMOBILE  DRAG · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD";
+        setConsolePane("scores");
         updateHud();
       }
 
@@ -4794,8 +5068,9 @@
         bonusUfo = null;
         rifts.length = 0;
         submitScore("END");
-        overlayText.textContent = `Game over. You scored ${score} points. High score ${getHiScore()}.`;
+        overlayText.textContent = `GAME OVER\nSCORE  ${score.toString().padStart(6, "0")}\nHI-SCORE  ${getHiScore().toString().padStart(6, "0")}\nPRESS PLAY AGAIN TO RETURN`;
         startBtn.textContent = "Play again";
+        setConsolePane("info");
         overlay.classList.add("visible");
         scheduleAttractMode(5000);
       }
@@ -4852,8 +5127,9 @@
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON ODYSSEY: Cross eleven wreck sectors and survive more than two minutes of tightening bends. Every sector has a unique guardian alien; each one takes three hits to destroy. Apollo, Mars and Voyager wrecks lead to the shattered International Space Station, Hubble, Soyuz and vast unknown relics. Do not touch either canyon wall. On desktop use ←/→ for sideways movement, ↑ to fly forward and ↓ to move back, Space or W to fire, and X for the shield. On iPhone, drag the ship with your thumb, tap to fire and hold the lower-left corner for the shield, or enable Voice Shield and speak to raise it.";
+        overlayText.textContent = "SELENE CANYON ODYSSEY\nOBJECTIVE  SURVIVE ELEVEN WRECK SECTORS\nGUARDIANS  THREE HITS EACH\nHAZARD  DO NOT TOUCH THE CANYON WALLS\nMOVE  ← A   D →   ↑ FORWARD   ↓ BACK\nFIRE  SPACE / W   SHIELD  X\nMOBILE  DRAG · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD";
         startBtn.textContent = "Enter canyon";
+        setConsolePane("info");
         overlay.classList.add("visible");
         updateHud();
       }
@@ -7369,6 +7645,15 @@
 
       startBtn.addEventListener("click", startGame);
       winRestartBtn.addEventListener("click", startGame);
+      infoTab.addEventListener("click", () => setConsolePane("info", true));
+      scoresTab.addEventListener("click", () => setConsolePane("scores", true));
+      [infoTab, scoresTab].forEach((tab) => {
+        tab.addEventListener("keydown", (event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          setConsolePane(tab === infoTab ? "scores" : "info", true);
+        });
+      });
       voiceShieldBtn.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
