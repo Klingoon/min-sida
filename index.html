@@ -160,6 +160,34 @@
       background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-02-near-v1.png");
     }
 
+    .parallax-backdrop.stage-three .parallax-layer.far {
+      background-image:
+        linear-gradient(180deg, rgba(2, 12, 10, 0.06), rgba(1, 7, 9, 0.24)),
+        url("varldsrymden-anfaller/assets/backdrops/stage-03.jpg");
+    }
+
+    .parallax-backdrop.stage-three .parallax-layer.mid {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-03-mid-v1.png");
+    }
+
+    .parallax-backdrop.stage-three .parallax-layer.near {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-03-near-v1.png");
+    }
+
+    .parallax-backdrop.stage-four .parallax-layer.far {
+      background-image:
+        linear-gradient(180deg, rgba(7, 3, 15, 0.05), rgba(3, 2, 10, 0.22)),
+        url("varldsrymden-anfaller/assets/backdrops/stage-04.jpg");
+    }
+
+    .parallax-backdrop.stage-four .parallax-layer.mid {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-04-mid-v1.png");
+    }
+
+    .parallax-backdrop.stage-four .parallax-layer.near {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-04-near-v1.png");
+    }
+
     #spriteLayer {
       position: absolute;
       inset: 0;
@@ -2613,6 +2641,16 @@
       <div class="parallax-layer mid" id="stageTwoParallaxMid"></div>
       <div class="parallax-layer near" id="stageTwoParallaxNear"></div>
     </div>
+    <div class="parallax-backdrop stage-three" id="stageThreeParallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="stageThreeParallaxFar"></div>
+      <div class="parallax-layer mid" id="stageThreeParallaxMid"></div>
+      <div class="parallax-layer near" id="stageThreeParallaxNear"></div>
+    </div>
+    <div class="parallax-backdrop stage-four" id="stageFourParallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="stageFourParallaxFar"></div>
+      <div class="parallax-layer mid" id="stageFourParallaxMid"></div>
+      <div class="parallax-layer near" id="stageFourParallaxNear"></div>
+    </div>
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
@@ -2723,7 +2761,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.84 · Mobile voice shield instructions · updated 2026-07-22 17:21 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.86 · Permanent Act 1 boss-stage parallax · updated 2026-07-22 17:58 CEST</div>
   </main>
 
   <script>
@@ -2796,6 +2834,14 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const stageTwoParallaxFar = document.querySelector("#stageTwoParallaxFar");
       const stageTwoParallaxMid = document.querySelector("#stageTwoParallaxMid");
       const stageTwoParallaxNear = document.querySelector("#stageTwoParallaxNear");
+      const stageThreeParallaxBackdrop = document.querySelector("#stageThreeParallaxBackdrop");
+      const stageThreeParallaxFar = document.querySelector("#stageThreeParallaxFar");
+      const stageThreeParallaxMid = document.querySelector("#stageThreeParallaxMid");
+      const stageThreeParallaxNear = document.querySelector("#stageThreeParallaxNear");
+      const stageFourParallaxBackdrop = document.querySelector("#stageFourParallaxBackdrop");
+      const stageFourParallaxFar = document.querySelector("#stageFourParallaxFar");
+      const stageFourParallaxMid = document.querySelector("#stageFourParallaxMid");
+      const stageFourParallaxNear = document.querySelector("#stageFourParallaxNear");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -3457,6 +3503,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       });
       stageBackdropCatalog[0].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
       stageBackdropCatalog[1].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
+      stageBackdropCatalog[2].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
+      stageBackdropCatalog[3].typeLabel = "Boss backdrop · Act 1 · permanent 3-layer parallax";
       const canyonBackdropCatalogItem = {
         name: "Selene Canyon Odyssey",
         id: "BACKDROP-SPECIAL-SELENE-CANYON",
@@ -3819,6 +3867,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function setCanyonBackdrop() {
         parallaxBackdrop.classList.remove("active");
         stageTwoParallaxBackdrop.classList.remove("active");
+        stageThreeParallaxBackdrop.classList.remove("active");
+        stageFourParallaxBackdrop.classList.remove("active");
         shell.dataset.parallaxMode = "unavailable";
         canvas.style.backgroundImage = `linear-gradient(180deg, rgba(2, 4, 8, 0.05), rgba(2, 4, 8, 0.2)), url("${canyonRun.imageUrl}")`;
         canvas.style.backgroundSize = `${W}px ${canyonRun.imageHeight}px`;
@@ -3835,28 +3885,51 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         return activeBackdropMode === "wave" && act === 1 && alienRoundsCleared === 1 && activeBackdropIndex === 1;
       }
 
+      function stageThreeParallaxAvailable() {
+        return activeBackdropMode === "wave" && act === 1 && alienRoundsCleared === 2 && activeBackdropIndex === 2;
+      }
+
+      function stageFourParallaxAvailable() {
+        return activeBackdropMode === "boss" && act === 1 && activeBackdropIndex === 3;
+      }
+
       function anyParallaxActive() {
-        return parallaxBackdrop.classList.contains("active") || stageTwoParallaxBackdrop.classList.contains("active");
+        return parallaxBackdrop.classList.contains("active")
+          || stageTwoParallaxBackdrop.classList.contains("active")
+          || stageThreeParallaxBackdrop.classList.contains("active")
+          || stageFourParallaxBackdrop.classList.contains("active");
       }
 
       function refreshParallaxBackdrop() {
         if (state === "canyon" || state === "canyonBriefing") {
           parallaxBackdrop.classList.remove("active");
           stageTwoParallaxBackdrop.classList.remove("active");
+          stageThreeParallaxBackdrop.classList.remove("active");
+          stageFourParallaxBackdrop.classList.remove("active");
           shell.dataset.parallaxMode = "unavailable";
           return;
         }
         const stageOneActive = parallaxAvailableForStage();
         const stageTwoAvailable = stageTwoParallaxAvailable();
+        const stageThreeAvailable = stageThreeParallaxAvailable();
+        const stageFourAvailable = stageFourParallaxAvailable();
         const stageTwoActive = stageTwoAvailable;
-        const active = stageOneActive || stageTwoActive;
+        const stageThreeActive = stageThreeAvailable;
+        const stageFourActive = stageFourAvailable;
+        const active = stageOneActive || stageTwoActive || stageThreeActive || stageFourActive;
         parallaxBackdrop.classList.toggle("active", stageOneActive);
         stageTwoParallaxBackdrop.classList.toggle("active", stageTwoActive);
+        stageThreeParallaxBackdrop.classList.toggle("active", stageThreeActive);
+        stageFourParallaxBackdrop.classList.toggle("active", stageFourActive);
         shell.dataset.parallaxMode = stageOneActive
           ? "stage-1-parallax"
           : stageTwoAvailable
             ? "stage-2-parallax"
-            : "unavailable";
+            : stageThreeAvailable
+              ? "stage-3-parallax"
+              : stageFourAvailable
+                ? "stage-4-parallax"
+                : "unavailable";
         canvas.style.backgroundImage = active
           ? "none"
           : `linear-gradient(180deg, rgba(3, 5, 9, 0.12), rgba(2, 3, 6, 0.34)), url("${stageBackdropUrls[activeBackdropIndex]}")`;
@@ -3874,6 +3947,16 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           stageTwoParallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.12) * 1.4).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.1) * 1.2).toFixed(2)}px, 0) scale(1.055)`;
           stageTwoParallaxMid.style.transform = `translate3d(${(-playerX * 12 + Math.sin(nowSec * 0.24) * 2.8).toFixed(2)}px, ${(-playerY * 7 + Math.cos(nowSec * 0.19) * 2.4).toFixed(2)}px, 0) scale(1.08)`;
           stageTwoParallaxNear.style.transform = `translate3d(${(-playerX * 24 + Math.sin(nowSec * 0.34) * 4.6).toFixed(2)}px, ${(-playerY * 12 + Math.cos(nowSec * 0.28) * 3.6).toFixed(2)}px, 0) scale(1.12)`;
+        }
+        if (stageThreeParallaxBackdrop.classList.contains("active")) {
+          stageThreeParallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.11) * 1.3).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.09) * 1.1).toFixed(2)}px, 0) scale(1.055)`;
+          stageThreeParallaxMid.style.transform = `translate3d(${(-playerX * 13 + Math.sin(nowSec * 0.21) * 3).toFixed(2)}px, ${(-playerY * 7 + Math.cos(nowSec * 0.17) * 2.5).toFixed(2)}px, 0) scale(1.085)`;
+          stageThreeParallaxNear.style.transform = `translate3d(${(-playerX * 26 + Math.sin(nowSec * 0.3) * 4.9).toFixed(2)}px, ${(-playerY * 13 + Math.cos(nowSec * 0.25) * 3.8).toFixed(2)}px, 0) scale(1.125)`;
+        }
+        if (stageFourParallaxBackdrop.classList.contains("active")) {
+          stageFourParallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.1) * 1.5).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.08) * 1.2).toFixed(2)}px, 0) scale(1.055)`;
+          stageFourParallaxMid.style.transform = `translate3d(${(-playerX * 14 + Math.sin(nowSec * 0.26) * 3.4).toFixed(2)}px, ${(-playerY * 8 + Math.cos(nowSec * 0.2) * 2.8).toFixed(2)}px, 0) scale(1.09) rotate(${(Math.sin(nowSec * 0.12) * 0.18).toFixed(3)}deg)`;
+          stageFourParallaxNear.style.transform = `translate3d(${(-playerX * 27 + Math.sin(nowSec * 0.33) * 5.2).toFixed(2)}px, ${(-playerY * 14 + Math.cos(nowSec * 0.27) * 4).toFixed(2)}px, 0) scale(1.13)`;
         }
       }
 
