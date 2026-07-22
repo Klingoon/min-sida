@@ -1084,37 +1084,6 @@
       outline-offset: 2px;
     }
 
-    .touch {
-      position: absolute;
-      inset: auto 12px 14px;
-      display: none;
-      grid-template-columns: 1fr auto auto 1fr;
-      gap: 12px;
-      pointer-events: none;
-    }
-
-    .touch button {
-      pointer-events: auto;
-      height: 56px;
-      min-width: 72px;
-      padding: 0 14px;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--ink);
-      backdrop-filter: blur(8px);
-    }
-
-    .touch button:nth-child(2) {
-      min-width: 86px;
-      background: rgba(255, 216, 107, 0.9);
-      color: #15100a;
-    }
-
-    .touch button:nth-child(3) {
-      min-width: 80px;
-      background: rgba(94, 215, 255, 0.84);
-      color: #06111c;
-    }
-
     .win-scene {
       position: absolute;
       inset: 0;
@@ -1454,20 +1423,12 @@
       transform: translateY(-50%) scale(0.58);
     }
 
-    button.secondary,
-    .touch button {
+    button.secondary {
       border-color: rgba(170, 178, 171, 0.44);
       background:
         linear-gradient(180deg, rgba(130, 139, 136, 0.18), rgba(31, 35, 37, 0.5)),
         rgba(5, 7, 9, 0.62);
       color: #d8ddd7;
-    }
-
-    .touch button:nth-child(2),
-    .touch button:nth-child(3) {
-      background: linear-gradient(180deg, rgba(182, 80, 48, 0.88), rgba(78, 28, 29, 0.94));
-      border-color: rgba(238, 170, 103, 0.68);
-      color: #fff1db;
     }
 
     .encouragement {
@@ -1765,10 +1726,6 @@
     }
 
     @media (pointer: coarse), (max-width: 720px) {
-      .touch {
-        display: grid;
-      }
-
       #voiceShieldBtn {
         display: block;
       }
@@ -2398,8 +2355,8 @@
       width: auto;
       height: auto;
       background:
-        linear-gradient(180deg, transparent 0 47%, rgba(1, 5, 9, 0.36) 60%, rgba(1, 4, 8, 0.92) 100%),
-        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 5px);
+        linear-gradient(180deg, transparent 0 70%, rgba(1, 5, 9, 0.2) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 6px);
       animation: none;
       opacity: 1;
       pointer-events: none;
@@ -2428,19 +2385,20 @@
     .battle-report-console {
       position: absolute;
       z-index: 2;
-      right: clamp(12px, 3.2vw, 28px);
+      right: 0;
       bottom: clamp(14px, 2.8vh, 28px);
-      left: clamp(12px, 3.2vw, 28px);
-      max-height: 47%;
-      padding: 15px clamp(14px, 3vw, 24px) 13px;
-      border: 1px solid rgba(152, 226, 244, 0.42);
-      border-top-color: rgba(226, 244, 245, 0.72);
+      left: 0;
+      width: min(86%, 720px);
+      max-height: 34%;
+      margin-inline: auto;
+      padding: 10px clamp(12px, 2.4vw, 20px) 9px;
+      border-block: 1px solid rgba(152, 226, 244, 0.24);
+      border-inline: 0;
       background:
-        linear-gradient(90deg, rgba(65, 180, 205, 0.14), transparent 24% 76%, rgba(218, 126, 56, 0.12)),
-        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
-        rgba(2, 9, 14, 0.76);
-      clip-path: polygon(18px 0, calc(100% - 44px) 0, 100% 28px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 38px 100%, 0 calc(100% - 25px), 0 18px);
-      box-shadow: inset 0 0 34px rgba(72, 185, 211, 0.09), 0 20px 54px rgba(0, 0, 0, 0.58);
+        linear-gradient(90deg, transparent, rgba(3, 12, 18, 0.22) 18% 82%, transparent),
+        rgba(2, 9, 14, 0.08);
+      box-shadow: 0 10px 36px rgba(0, 0, 0, 0.14);
+      backdrop-filter: blur(1.5px);
       animation: battle-report-rise 760ms cubic-bezier(.16, .9, .24, 1) both;
       overflow: hidden;
     }
@@ -2469,7 +2427,7 @@
     .battle-report-console h2 {
       margin: 3px 0 0;
       color: #e7f1ed;
-      font: 500 clamp(19px, 4vw, 32px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      font: 500 clamp(16px, 3vw, 25px)/1 "Void Circuit", "Arial Narrow", sans-serif;
       text-transform: uppercase;
       text-shadow: 0 0 16px rgba(91, 213, 235, 0.42);
     }
@@ -2482,11 +2440,18 @@
 
     .battle-report-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 5px 7px;
-      margin: 10px 0 9px;
-      overflow: auto;
-      scrollbar-width: thin;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+      min-height: 56px;
+      margin: 8px 0 7px;
+    }
+
+    .battle-report-grid.scene-in .battle-report-row {
+      animation: battle-report-contact-in 620ms cubic-bezier(.18, .82, .22, 1) both;
+    }
+
+    .battle-report-grid.scene-in .battle-report-row:nth-child(2) {
+      animation-delay: 110ms;
     }
 
     .battle-report-row {
@@ -2494,9 +2459,9 @@
       grid-template-columns: 44px minmax(0, 1fr);
       align-items: center;
       min-width: 0;
-      min-height: 50px;
-      border-left: 2px solid rgba(92, 211, 234, 0.5);
-      background: linear-gradient(90deg, rgba(61, 154, 177, 0.13), rgba(4, 11, 16, 0.28));
+      min-height: 56px;
+      border-left: 1px solid rgba(92, 211, 234, 0.38);
+      background: linear-gradient(90deg, rgba(61, 154, 177, 0.09), transparent 82%);
     }
 
     .battle-report-row.empty {
@@ -2566,14 +2531,20 @@
       to { opacity: 1; }
     }
 
+    @keyframes battle-report-contact-in {
+      from { opacity: 0; transform: translateY(9px); filter: blur(3px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
     @media (max-width: 460px) {
       .battle-report-console {
-        max-height: 52%;
-        padding: 12px 12px 11px;
+        width: 92%;
+        max-height: 38%;
+        padding: 9px 10px 8px;
       }
 
       .battle-report-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
       }
 
       .battle-report-row {
@@ -2672,10 +2643,15 @@
         <div class="console-display">
           <section class="console-pane info-pane" id="infoPane" role="tabpanel" aria-labelledby="infoTab">
             <h2 class="console-screen-label">Mission controls</h2>
-            <p class="panel-copy" id="overlayText">LIVES  ∞   SHIELD  X / ∞
+            <p class="panel-copy" id="overlayText">DESKTOP
 MOVE   ← A   D →   ↑ FORWARD   ↓ BACK
-FIRE   SPACE / W
-MOBILE DRAG SHIP · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD
+FIRE   SPACE / W   SHIELD  X   LIVES  ∞
+
+MOBILE
+STEER  HOLD YOUR THUMB ON THE SHIP AND DRAG
+FIRE   TAP WITH ANOTHER FINGER
+SHIELD HOLD THE LOWER-LEFT CORNER
+VOICE SHIELD  ENABLE VOICE SHIELD AND KEEP SINGING "LA LA LAA"
 BONUS  DESTROY UFO TO CLEAR THE WAVE
 WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           </section>
@@ -2691,21 +2667,15 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       </div>
     </section>
 
-    <div class="touch" aria-hidden="true">
-      <button id="leftBtn" type="button">←</button>
-      <button id="fireBtn" type="button">Fire</button>
-      <button id="shieldBtn" type="button">Shield</button>
-      <button id="rightBtn" type="button">→</button>
-    </div>
     <section class="win-scene" id="winScene" aria-live="assertive">
-      <img class="battle-report-image" src="varldsrymden-anfaller/assets/intermissions/act-1-battle-report-v2.png" alt="Max and Milton with their owl inside the Millenium Owl cockpit after defeating Nhar'Kaal">
+      <img class="battle-report-image" src="varldsrymden-anfaller/assets/intermissions/act-1-battle-report-v3.png" alt="Max and Milton seated together with their owl inside the Millenium Owl cockpit after defeating Nhar'Kaal">
       <div class="battle-report-console" id="battleReportConsole" aria-hidden="true">
         <div class="battle-report-header">
           <div>
             <span class="battle-report-kicker">Act 1 · Mission archive</span>
             <h2>Battle report</h2>
           </div>
-          <span class="battle-report-status">Nhar'Kaal defeated</span>
+          <span class="battle-report-status" id="battleReportStatus">Contact archive</span>
         </div>
         <div class="battle-report-grid" id="battleReportGrid"></div>
         <div class="battle-report-footer">
@@ -2753,7 +2723,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.80 · Permanent Act 1 stage 2 parallax · updated 2026-07-22 16:54 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.84 · Mobile voice shield instructions · updated 2026-07-22 17:21 CEST</div>
   </main>
 
   <script>
@@ -2799,13 +2769,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const battleReportConsole = document.querySelector("#battleReportConsole");
       const battleReportGrid = document.querySelector("#battleReportGrid");
       const battleReportTotal = document.querySelector("#battleReportTotal");
+      const battleReportStatus = document.querySelector("#battleReportStatus");
       const leaderboardEl = document.querySelector("#leaderboard");
       const winLeaderboardEl = document.querySelector("#winLeaderboard");
       const winRestartBtn = document.querySelector("#winRestartBtn");
-      const leftBtn = document.querySelector("#leftBtn");
-      const rightBtn = document.querySelector("#rightBtn");
-      const fireBtn = document.querySelector("#fireBtn");
-      const shieldBtn = document.querySelector("#shieldBtn");
       const introSplash = document.querySelector("#introSplash");
       const introAudioBtn = document.querySelector("#introAudioBtn");
       const introMusicCredit = document.querySelector("#introMusicCredit");
@@ -3013,7 +2980,12 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const winSceneMinimumMs = 6200;
       const battleReportUnlockMs = 5000;
       let battleReportUnlockTimer = null;
+      let battleReportSceneTimer = null;
       let battleReportReady = false;
+      let battleReportEntries = [];
+      let battleReportSceneIndex = 0;
+      const battleReportSceneSize = 2;
+      const battleReportSceneMs = 1800;
       const actOneBattleStats = new Map();
       const roundsBeforeBoss = 3;
       const totalActs = 4;
@@ -5021,9 +4993,13 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         if (entry.image && !entry.image.complete) entry.image.addEventListener("load", paint, { once: true });
       }
 
-      function renderActOneBattleReport() {
-        const entries = Array.from(actOneBattleStats.values()).sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+      function renderBattleReportScene(sceneIndex) {
+        const sceneCount = Math.max(1, Math.ceil(battleReportEntries.length / battleReportSceneSize));
+        battleReportSceneIndex = ((sceneIndex % sceneCount) + sceneCount) % sceneCount;
+        const start = battleReportSceneIndex * battleReportSceneSize;
+        const entries = battleReportEntries.slice(start, start + battleReportSceneSize);
         battleReportGrid.replaceChildren();
+        battleReportGrid.classList.remove("scene-in");
         entries.forEach((entry) => {
           const row = document.createElement("div");
           row.className = "battle-report-row";
@@ -5042,20 +5018,37 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           battleReportGrid.append(row);
           drawBattleReportCreature(preview, entry);
         });
-        if (!entries.length) {
+        if (!battleReportEntries.length) {
           const empty = document.createElement("div");
           empty.className = "battle-report-row empty";
           empty.innerHTML = '<div class="battle-report-creature"><strong>No archived contacts</strong><span>Direct boss deployment</span></div>';
           battleReportGrid.append(empty);
         }
-        const confirmed = entries.reduce((total, entry) => total + entry.count, 0);
-        const points = entries.reduce((total, entry) => total + entry.points, 0);
+        battleReportStatus.textContent = battleReportEntries.length
+          ? `Contact archive ${battleReportSceneIndex + 1} / ${sceneCount}`
+          : "Nhar'Kaal defeated";
+        requestAnimationFrame(() => battleReportGrid.classList.add("scene-in"));
+      }
+
+      function renderActOneBattleReport() {
+        battleReportEntries = Array.from(actOneBattleStats.values()).sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+        const confirmed = battleReportEntries.reduce((total, entry) => total + entry.count, 0);
+        const points = battleReportEntries.reduce((total, entry) => total + entry.points, 0);
         battleReportTotal.innerHTML = `Confirmed ${confirmed} · <strong>${points.toLocaleString("en-US")} pts</strong>`;
+        renderBattleReportScene(0);
+        const sceneCount = Math.ceil(battleReportEntries.length / battleReportSceneSize);
+        if (sceneCount > 1) {
+          battleReportSceneTimer = setInterval(() => {
+            renderBattleReportScene(battleReportSceneIndex + 1);
+          }, battleReportSceneMs);
+        }
       }
 
       function clearBattleReportTimer() {
         if (battleReportUnlockTimer) clearTimeout(battleReportUnlockTimer);
+        if (battleReportSceneTimer) clearInterval(battleReportSceneTimer);
         battleReportUnlockTimer = null;
+        battleReportSceneTimer = null;
       }
 
       function hideBattleReport() {
@@ -5515,7 +5508,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\nLIVES  ∞   SHIELD  X / ∞\nMOVE  ← A   D →   ↑ FORWARD   ↓ BACK\nFIRE  SPACE / W\nMOBILE  DRAG · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD";
+        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         setConsolePane("scores");
         updateHud();
       }
@@ -5706,7 +5699,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON ODYSSEY\nOBJECTIVE  SURVIVE ELEVEN WRECK SECTORS\nGUARDIANS  THREE HITS EACH\nHAZARD  DO NOT TOUCH THE CANYON WALLS\nMOVE  ← A   D →   ↑ FORWARD   ↓ BACK\nFIRE  SPACE / W   SHIELD  X\nMOBILE  DRAG · TAP TO FIRE · HOLD LOWER-LEFT FOR SHIELD";
+        overlayText.textContent = "SELENE CANYON ODYSSEY\nOBJECTIVE  SURVIVE ELEVEN WRECK SECTORS\nGUARDIANS  THREE HITS EACH\nHAZARD  DO NOT TOUCH THE CANYON WALLS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Enter canyon";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8410,11 +8403,6 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         drawPoints(sparkPoints, true);
       }
 
-      function setTouch(code, active) {
-        if (active) keys.add(code);
-        else keys.delete(code);
-      }
-
       function pointerToGame(event) {
         const rect = canvas.getBoundingClientRect();
         return {
@@ -8592,15 +8580,6 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         keys.delete(event.code);
       });
 
-      [["pointerdown", true], ["pointerup", false], ["pointercancel", false], ["pointerleave", false]].forEach(([type, active]) => {
-        leftBtn.addEventListener(type, () => setTouch("ArrowLeft", active));
-        rightBtn.addEventListener(type, () => setTouch("ArrowRight", active));
-        fireBtn.addEventListener(type, () => setTouch("Space", active));
-      });
-      shieldBtn.addEventListener("pointerdown", (event) => {
-        event.preventDefault();
-        activateShield();
-      });
       introSplash.addEventListener("pointerdown", (event) => {
         event.preventDefault();
         initAudio();
