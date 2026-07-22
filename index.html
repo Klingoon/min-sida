@@ -2216,7 +2216,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.64 · Act 1 formation scale balance · updated 2026-07-22 10:32 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.65 · Unique Act 1 wave species · updated 2026-07-22 10:52 CEST</div>
   </main>
 
   <script>
@@ -2693,6 +2693,62 @@
         });
       });
 
+      Object.assign(alienActStyles[0], {
+        formationRadius: 60,
+        formationRingStep: 14,
+        formationRowGap: 100
+      });
+      const actOneWaveFamilies = [
+        alienActStyles[0],
+        {
+          species: "ember-rift-brood",
+          displayName: "Ember Rift Brood",
+          eye: "#ff8a36",
+          accent: "rgba(255,104,38,0.86)",
+          animationSizes: [50, 56, 60],
+          formationRadius: 62,
+          formationRingStep: 15,
+          formationRowGap: 102,
+          variants: [
+            { name: "Ashwing Skimmer", id: "ALIEN-A01-W02-SCOUT-ASHWING", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/ashwing-skimmer-96f-v1.webp" },
+            { name: "Basalt Mauler", id: "ALIEN-A01-W02-GUARD-BASALT", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/basalt-mauler-96f-v1.webp" },
+            { name: "Cinder Crown", id: "ALIEN-A01-W02-CAPTAIN-CINDER", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/cinder-crown-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "borealis-court",
+          displayName: "Borealis Court",
+          eye: "#63f3ff",
+          accent: "rgba(96,255,206,0.84)",
+          animationSizes: [50, 56, 60],
+          formationRadius: 64,
+          formationRingStep: 15,
+          formationRowGap: 104,
+          variants: [
+            { name: "Aurora Needle", id: "ALIEN-A01-W03-SCOUT-AURORA", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/aurora-needle-96f-v1.webp" },
+            { name: "Verdant Aegis", id: "ALIEN-A01-W03-GUARD-VERDANT", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/verdant-aegis-96f-v1.webp" },
+            { name: "Borealis Sovereign", id: "ALIEN-A01-W03-CAPTAIN-BOREALIS", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/borealis-sovereign-96f-v1.webp" }
+          ]
+        }
+      ];
+      actOneWaveFamilies.slice(1).forEach((style) => {
+        style.variants.forEach((variant) => {
+          variant.image = new Image();
+          variant.image.decoding = "async";
+          variant.image.src = variant.imageUrl;
+        });
+      });
+
+      function alienStyleForStage(actNumber = act, waveIndex = alienRoundsCleared) {
+        if (actNumber === 1) return actOneWaveFamilies[clamp(waveIndex, 0, actOneWaveFamilies.length - 1)];
+        return alienActStyles[clamp(actNumber - 1, 0, alienActStyles.length - 1)];
+      }
+
+      const alienCatalogFamilies = [
+        ...actOneWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 0, waveIndex })),
+        ...alienActStyles.slice(1).map((style, index) => ({ style, actIndex: index + 1, waveIndex: 0 }))
+      ];
+
       function alienAnimationReady(variant) {
         return Boolean(variant?.image?.complete && variant.image.naturalWidth);
       }
@@ -2766,10 +2822,10 @@
           rows: entry.rows,
           animationFps: entry.animationFps
         })),
-        ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
+        ...alienCatalogFamilies.flatMap(({ style, actIndex, waveIndex }) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1} · ${variant.animationFrames || 16} frames`,
+          typeLabel: `Alien · Act ${actIndex + 1}${actIndex === 0 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
           sprite: "alienAnimation",
           frame: 0,
           columns: variant.animationColumns || 4,
@@ -3789,7 +3845,7 @@
         hiScoreEl.textContent = getHiScore().toString();
         const canyonStage = state === "canyon" || state === "canyonBriefing";
         const actIndex = clamp(act - 1, 0, actNames.length - 1);
-        const alienStyle = alienActStyles[actIndex];
+        const alienStyle = alienStyleForStage(act, alienRoundsCleared);
         waveEl.textContent = canyonStage
           ? "CANYON RUN"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
@@ -4426,7 +4482,7 @@
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const wavePattern = wavePatterns[(attackWave + (act - 1) * roundsBeforeBoss) % wavePatterns.length];
         const ingressPattern = ingressPatterns[(attackWave + (act - 1) * roundsBeforeBoss) % ingressPatterns.length];
-        const alienStyle = alienActStyles[clamp(act - 1, 0, alienActStyles.length - 1)];
+        const alienStyle = alienStyleForStage(act, attackWave);
         shell.dataset.alienSpecies = alienStyle.species;
         shell.dataset.alienIngress = ingressPattern;
         setBackdropForStage("wave");
@@ -4441,8 +4497,8 @@
           const groupCol = group % groupColumns;
           const groupRow = Math.floor(group / groupColumns);
           const clusterX = W * (0.19 + groupCol * 0.31) + Math.sin(group * 1.7) * 18;
-          const clusterY = startY + groupRow * (act === 1 ? 100 : 84) + Math.cos(group * 1.3) * 10;
-          const clusterRadius = groupSlot === 0 ? 0 : (act === 1 ? 60 : 34) + (groupSlot % 2) * (act === 1 ? 14 : 12);
+          const clusterY = startY + groupRow * (alienStyle.formationRowGap || 84) + Math.cos(group * 1.3) * 10;
+          const clusterRadius = groupSlot === 0 ? 0 : (alienStyle.formationRadius || 34) + (groupSlot % 2) * (alienStyle.formationRingStep || 12);
           const clusterAngle = groupSlot === 0 ? 0 : (groupSlot - 1) / Math.max(1, groupMembers - 1) * Math.PI * 2 + (group % 2) * 0.42;
           const homeX = clusterX + Math.cos(clusterAngle) * clusterRadius;
           const homeY = clusterY + Math.sin(clusterAngle) * clusterRadius * 0.7;
@@ -4462,6 +4518,7 @@
             name: alienSpec.name,
             objectId: alienSpec.id,
             actStyle: act - 1,
+            alienStyle,
             formation: wavePattern,
             ingress: ingressPattern,
             row: groupRow,
@@ -6331,7 +6388,7 @@
 
       function drawRealisticEnemy(enemy, angle) {
         const baseFrame = enemy.type === "captain" ? 2 : enemy.type === "guard" ? 1 : 0;
-        const style = alienActStyles[clamp(enemy.actStyle ?? act - 1, 0, alienActStyles.length - 1)];
+        const style = enemy.alienStyle || alienActStyles[clamp(enemy.actStyle ?? act - 1, 0, alienActStyles.length - 1)];
         const variant = style.variants[baseFrame];
         if (alienAnimationReady(variant)) {
           const animationFrame = Math.floor(enemy.phase * ((variant.animationFps || 9) / 2.5) + enemy.col * 0.43) % (variant.animationFrames || 16);
