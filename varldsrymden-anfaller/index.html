@@ -2216,7 +2216,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.63 · Act 1 alien family 128-frame rebuild · updated 2026-07-22 10:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.64 · Act 1 formation scale balance · updated 2026-07-22 10:32 CEST</div>
   </main>
 
   <script>
@@ -2678,7 +2678,7 @@
         ]
       ];
       const alienAnimationSizes = [
-        [76, 82, 88],
+        [54, 60, 64],
         [64, 70, 68],
         [66, 70, 68],
         [64, 68, 66]
@@ -4441,8 +4441,8 @@
           const groupCol = group % groupColumns;
           const groupRow = Math.floor(group / groupColumns);
           const clusterX = W * (0.19 + groupCol * 0.31) + Math.sin(group * 1.7) * 18;
-          const clusterY = startY + groupRow * 84 + Math.cos(group * 1.3) * 10;
-          const clusterRadius = groupSlot === 0 ? 0 : 34 + (groupSlot % 2) * 12;
+          const clusterY = startY + groupRow * (act === 1 ? 100 : 84) + Math.cos(group * 1.3) * 10;
+          const clusterRadius = groupSlot === 0 ? 0 : (act === 1 ? 60 : 34) + (groupSlot % 2) * (act === 1 ? 14 : 12);
           const clusterAngle = groupSlot === 0 ? 0 : (groupSlot - 1) / Math.max(1, groupMembers - 1) * Math.PI * 2 + (group % 2) * 0.42;
           const homeX = clusterX + Math.cos(clusterAngle) * clusterRadius;
           const homeY = clusterY + Math.sin(clusterAngle) * clusterRadius * 0.7;
