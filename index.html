@@ -2475,7 +2475,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.68 · Split arcade info and HI-SCORES console · updated 2026-07-22 12:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.69 · Unique animated Act 3 alien families · updated 2026-07-22 12:52 CEST</div>
   </main>
 
   <script>
@@ -3032,7 +3032,57 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           ]
         }
       ];
-      [...actOneWaveFamilies.slice(1), ...actTwoWaveFamilies].forEach((style) => {
+      const actThreeWaveFamilies = [
+        {
+          species: "cryostorm-riftkin",
+          displayName: "Cryostorm Riftkin",
+          eye: "#c8f7ff",
+          accent: "rgba(100,218,255,0.86)",
+          animationSizes: [46, 52, 57],
+          hitboxes: [[30, 28], [36, 34], [39, 37]],
+          formationRadius: 66,
+          formationRingStep: 16,
+          formationRowGap: 106,
+          variants: [
+            { name: "Cryoshard Skimmer", id: "ALIEN-A03-W01-SCOUT-CRYOSHARD", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/cryoshard-skimmer-96f-v1.webp" },
+            { name: "Rimeplate Bulwark", id: "ALIEN-A03-W01-GUARD-RIMEPLATE", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/rimeplate-bulwark-96f-v1.webp" },
+            { name: "Boreal Rift Matriarch", id: "ALIEN-A03-W01-CAPTAIN-MATRIARCH", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/boreal-rift-matriarch-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "helios-ring-court",
+          displayName: "Helios Ring Court",
+          eye: "#ffd06b",
+          accent: "rgba(255,151,52,0.86)",
+          animationSizes: [45, 51, 57],
+          hitboxes: [[29, 29], [36, 33], [39, 38]],
+          formationRadius: 67,
+          formationRingStep: 16,
+          formationRowGap: 108,
+          variants: [
+            { name: "Corona Needle", id: "ALIEN-A03-W02-SCOUT-CORONA", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/corona-needle-96f-v1.webp" },
+            { name: "Ringforge Crusher", id: "ALIEN-A03-W02-GUARD-RINGFORGE", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/ringforge-crusher-96f-v1.webp" },
+            { name: "Helios Ring Sovereign", id: "ALIEN-A03-W02-CAPTAIN-HELIOS", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/helios-ring-sovereign-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "magnetar-hierophants",
+          displayName: "Magnetar Hierophants",
+          eye: "#d9a8ff",
+          accent: "rgba(91,180,255,0.88)",
+          animationSizes: [45, 52, 58],
+          hitboxes: [[29, 29], [36, 35], [39, 40]],
+          formationRadius: 68,
+          formationRingStep: 17,
+          formationRowGap: 108,
+          variants: [
+            { name: "Magnetar Wisp", id: "ALIEN-A03-W03-SCOUT-MAGNETAR", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/magnetar-wisp-96f-v1.webp" },
+            { name: "Quasar Aegis", id: "ALIEN-A03-W03-GUARD-QUASAR", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/quasar-aegis-96f-v1.webp" },
+            { name: "Pulsar Hierophant", id: "ALIEN-A03-W03-CAPTAIN-HIEROPHANT", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "varldsrymden-anfaller/assets/aliens/pulsar-hierophant-96f-v1.webp" }
+          ]
+        }
+      ];
+      [...actOneWaveFamilies.slice(1), ...actTwoWaveFamilies, ...actThreeWaveFamilies].forEach((style) => {
         style.variants.forEach((variant) => {
           variant.image = new Image();
           variant.image.decoding = "async";
@@ -3043,13 +3093,15 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function alienStyleForStage(actNumber = act, waveIndex = alienRoundsCleared) {
         if (actNumber === 1) return actOneWaveFamilies[clamp(waveIndex, 0, actOneWaveFamilies.length - 1)];
         if (actNumber === 2) return actTwoWaveFamilies[clamp(waveIndex, 0, actTwoWaveFamilies.length - 1)];
+        if (actNumber === 3) return actThreeWaveFamilies[clamp(waveIndex, 0, actThreeWaveFamilies.length - 1)];
         return alienActStyles[clamp(actNumber - 1, 0, alienActStyles.length - 1)];
       }
 
       const alienCatalogFamilies = [
         ...actOneWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 0, waveIndex })),
         ...actTwoWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 1, waveIndex })),
-        ...alienActStyles.slice(2).map((style, index) => ({ style, actIndex: index + 2, waveIndex: 0 }))
+        ...actThreeWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 2, waveIndex })),
+        { style: alienActStyles[3], actIndex: 3, waveIndex: 0 }
       ];
 
       function alienAnimationReady(variant) {
@@ -3128,7 +3180,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         ...alienCatalogFamilies.flatMap(({ style, actIndex, waveIndex }) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1}${actIndex <= 1 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
+          typeLabel: `Alien · Act ${actIndex + 1}${actIndex <= 2 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
           sprite: "alienAnimation",
           frame: 0,
           columns: variant.animationColumns || 4,
@@ -4805,6 +4857,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           const type = groupSlot === 0 ? "captain" : groupSlot <= 2 ? "guard" : "scout";
           const variantIndex = type === "captain" ? 2 : type === "guard" ? 1 : 0;
           const alienSpec = alienStyle.variants[variantIndex];
+          const hitbox = alienStyle.hitboxes?.[variantIndex];
           const entrySide = group % 2 === 0 ? -1 : 1;
           const entryDelay = group * (advancedAct ? 0.42 : 0.5) + groupSlot * 0.075;
           enemies.push({
@@ -4812,8 +4865,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
             homeY,
             x: entrySide < 0 ? -90 : W + 90,
             y: -120 - groupSlot * 18,
-            w: type === "captain" ? 40 : 34,
-            h: type === "captain" ? 36 : 32,
+            w: hitbox?.[0] || (type === "captain" ? 40 : 34),
+            h: hitbox?.[1] || (type === "captain" ? 36 : 32),
             type,
             name: alienSpec.name,
             objectId: alienSpec.id,
