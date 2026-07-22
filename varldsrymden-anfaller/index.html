@@ -104,6 +104,48 @@
       background-repeat: no-repeat;
     }
 
+    .parallax-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: #02050b;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 380ms ease, visibility 380ms step-end;
+    }
+
+    .parallax-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 380ms ease;
+    }
+
+    .parallax-layer {
+      position: absolute;
+      inset: -5%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+
+    .parallax-layer.far {
+      background-image:
+        linear-gradient(180deg, rgba(3, 5, 9, 0.08), rgba(2, 3, 6, 0.28)),
+        url("assets/backdrops/stage-01.jpg");
+    }
+
+    .parallax-layer.mid {
+      background-image: url("assets/backdrops/parallax/stage-01-mid-v1.png");
+    }
+
+    .parallax-layer.near {
+      background-image: url("assets/backdrops/parallax/stage-01-near-v1.png");
+    }
+
     #spriteLayer {
       position: absolute;
       inset: 0;
@@ -2576,6 +2618,11 @@
     </div>
   </section>
   <main class="shell" aria-label="Libertarian freedoom fighters, arcade shooter">
+    <div class="parallax-backdrop" id="parallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="parallaxFar"></div>
+      <div class="parallax-layer mid" id="parallaxMid"></div>
+      <div class="parallax-layer near" id="parallaxNear"></div>
+    </div>
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
@@ -2687,7 +2734,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.74 · Cockpit owl portrait integration · updated 2026-07-22 15:31 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.76 · Permanent Act 1 parallax · updated 2026-07-22 15:55 CEST</div>
   </main>
 
   <script>
@@ -2755,6 +2802,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const devDetailType = document.querySelector("#devDetailType");
       const devDetailName = document.querySelector("#devDetailName");
       const devDetailId = document.querySelector("#devDetailId");
+      const parallaxBackdrop = document.querySelector("#parallaxBackdrop");
+      const parallaxFar = document.querySelector("#parallaxFar");
+      const parallaxMid = document.querySelector("#parallaxMid");
+      const parallaxNear = document.querySelector("#parallaxNear");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -2864,6 +2915,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const spaceBackdrops = Array.from({ length: stageBackdropUrls.length }, (_, index) => makeSpaceBackdrop(index));
       let activeBackdrop = spaceBackdrops[0];
       let activeBackdropIndex = 0;
+      let activeBackdropMode = "wave";
 
       let state = "ready";
       let devScreenOpen = false;
@@ -3408,6 +3460,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           imageUrl
         };
       });
+      stageBackdropCatalog[0].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
       const canyonBackdropCatalogItem = {
         name: "Selene Canyon Odyssey",
         id: "BACKDROP-SPECIAL-SELENE-CANYON",
@@ -3752,11 +3805,12 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const stageWithinAct = mode === "boss" ? roundsBeforeBoss : attackWave;
         const index = (act - 1) * (roundsBeforeBoss + 1) + stageWithinAct;
+        activeBackdropMode = mode;
         activeBackdropIndex = index % stageBackdropUrls.length;
         activeBackdrop = spaceBackdrops[activeBackdropIndex];
         canvas.style.backgroundSize = "cover";
         canvas.style.backgroundPosition = "center";
-        canvas.style.backgroundImage = `linear-gradient(180deg, rgba(3, 5, 9, 0.12), rgba(2, 3, 6, 0.34)), url("${stageBackdropUrls[activeBackdropIndex]}")`;
+        refreshParallaxBackdrop();
         shell.dataset.stageBackdrop = String(activeBackdropIndex + 1);
         const musicIndex = mode === "boss" ? 4 : 1 + ((activeBackdropIndex + act - 1) % 3);
         selectSoundtrack(musicIndex);
@@ -3767,11 +3821,40 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       }
 
       function setCanyonBackdrop() {
+        parallaxBackdrop.classList.remove("active");
+        shell.dataset.parallaxMode = "unavailable";
         canvas.style.backgroundImage = `linear-gradient(180deg, rgba(2, 4, 8, 0.05), rgba(2, 4, 8, 0.2)), url("${canyonRun.imageUrl}")`;
         canvas.style.backgroundSize = `${W}px ${canyonRun.imageHeight}px`;
         canvas.style.backgroundPosition = `center ${canyonBackgroundOffset()}px`;
         shell.dataset.stageBackdrop = "selene-canyon-run";
         selectSoundtrack(0);
+      }
+
+      function parallaxAvailableForStage() {
+        return activeBackdropMode === "wave" && act === 1 && alienRoundsCleared === 0 && activeBackdropIndex === 0;
+      }
+
+      function refreshParallaxBackdrop() {
+        if (state === "canyon" || state === "canyonBriefing") {
+          parallaxBackdrop.classList.remove("active");
+          shell.dataset.parallaxMode = "unavailable";
+          return;
+        }
+        const active = parallaxAvailableForStage();
+        parallaxBackdrop.classList.toggle("active", active);
+        shell.dataset.parallaxMode = active ? "parallax" : "unavailable";
+        canvas.style.backgroundImage = active
+          ? "none"
+          : `linear-gradient(180deg, rgba(3, 5, 9, 0.12), rgba(2, 3, 6, 0.34)), url("${stageBackdropUrls[activeBackdropIndex]}")`;
+      }
+
+      function updateParallaxBackdrop(nowSec) {
+        if (!parallaxBackdrop.classList.contains("active")) return;
+        const playerX = clamp((player.x - W / 2) / (W / 2), -1, 1);
+        const playerY = clamp((player.y - H * 0.64) / (H * 0.36), -1, 1);
+        parallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.13) * 1.2).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.11) * 1.1).toFixed(2)}px, 0) scale(1.055)`;
+        parallaxMid.style.transform = `translate3d(${(-playerX * 11 + Math.sin(nowSec * 0.22) * 2.4).toFixed(2)}px, ${(-playerY * 6 + Math.cos(nowSec * 0.18) * 2.2).toFixed(2)}px, 0) scale(1.075)`;
+        parallaxNear.style.transform = `translate3d(${(-playerX * 22 + Math.sin(nowSec * 0.31) * 4.2).toFixed(2)}px, ${(-playerY * 11 + Math.cos(nowSec * 0.27) * 3.4).toFixed(2)}px, 0) scale(1.11)`;
       }
 
       function canyonBackgroundOffset() {
@@ -8181,6 +8264,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const nowSec = performance.now() / 1000;
+        updateParallaxBackdrop(nowSec);
         drawSpaceBackdrop(nowSec);
 
         const glowPoints = [];
