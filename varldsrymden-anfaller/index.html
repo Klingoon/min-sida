@@ -2215,8 +2215,7 @@
         </div>
       </div>
     </section>
-    <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.66 · Unique Act 2 wave species · updated 2026-07-22 11:32 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.67 · Encouragement overlays removed · updated 2026-07-22 11:44 CEST</div>
   </main>
 
   <script>
@@ -2255,7 +2254,6 @@
       const winScene = document.querySelector("#winScene");
       const winTitle = document.querySelector(".win-title");
       const winSubtitle = document.querySelector(".win-subtitle");
-      const encouragementEl = document.querySelector("#encouragement");
       const leaderboardEl = document.querySelector("#leaderboard");
       const winLeaderboardEl = document.querySelector("#winLeaderboard");
       const winRestartBtn = document.querySelector("#winRestartBtn");
@@ -2610,14 +2608,6 @@
         species.image.decoding = "async";
         species.image.src = species.imageUrl;
       });
-      let encouragementTimer = 6;
-      const encouragements = [
-        "Great job, Milton",
-        "Great job, Max",
-        "Well done, boys",
-        "My wonderful boys",
-        "Farzan Tarzan is thinking of you"
-      ];
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
       const divePatterns = ["hook", "scissor", "loop", "sweep"];
@@ -4352,18 +4342,6 @@
         }, delay);
       }
 
-      function showEncouragement(force = false) {
-        if (state !== "playing" && !force) return;
-        encouragementEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
-        encouragementEl.style.left = `${8 + Math.random() * 56}%`;
-        encouragementEl.style.top = `${18 + Math.random() * 54}%`;
-        encouragementEl.classList.add("visible");
-        clearTimeout(showEncouragement.timer);
-        showEncouragement.timer = setTimeout(() => {
-          encouragementEl.classList.remove("visible");
-        }, 2200);
-      }
-
       function formationTarget(enemy, nowSec) {
         const t = nowSec + enemy.phase + enemy.enterDelay;
         const power = 1 + (act - 1) * 0.18;
@@ -4648,7 +4626,6 @@
         player.cooldown = 0;
         player.invuln = 1.4;
         alienRoundsCleared = 0;
-        encouragementTimer = 4.5;
         boss = null;
         bonusUfo = null;
         bonusUfoTimer = 8;
@@ -4729,7 +4706,6 @@
         play(392, 0.16, "sawtooth", 0.045);
         play(587, 0.22, "sawtooth", 0.04);
         setTimeout(() => showActTitle(1), 180);
-        setTimeout(() => showEncouragement(true), 900);
       }
 
       function stageNumberFromShortcut(event) {
@@ -5833,12 +5809,6 @@
           return;
         }
 
-        encouragementTimer -= dt;
-        if (encouragementTimer <= 0) {
-          showEncouragement();
-          encouragementTimer = 8 + Math.random() * 9;
-        }
-
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
@@ -6125,7 +6095,6 @@
           updateHud();
           play(660, 0.11, "triangle", 0.04);
           play(990, 0.14, "triangle", 0.035);
-          if (state === "playing") showEncouragement(true);
         } else {
           updateHud();
         }
