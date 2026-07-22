@@ -2217,7 +2217,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.59 · Nhar'Kaal 192-frame abyssal crown rebuild · updated 2026-07-22 08:23 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.60 · Varkuun 240-frame eclipse hunter rebuild · updated 2026-07-22 08:46 CEST</div>
   </main>
 
   <script>
@@ -2327,7 +2327,7 @@
         image.decoding = "async";
       });
       bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-192f-v4.webp";
-      bossAnimationSprites.hunter.src = "assets/bosses/varkuun-128f-v2.webp";
+      bossAnimationSprites.hunter.src = "assets/bosses/varkuun-240f-v3.webp";
       bossAnimationSprites.crystal.src = "assets/bosses/astrax-128f-v2.webp";
       bossAnimationSprites.dreadnought.src = "assets/bosses/mordrath-128f-v2.webp";
 
@@ -2699,7 +2699,7 @@
       }
       const bossCatalog = [
         { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL", frames: 192, columns: 16, rows: 12, animationFps: 24 },
-        { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN", frames: 128, columns: 16, rows: 8, animationFps: 16 },
+        { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN", frames: 240, columns: 16, rows: 15, animationFps: 24 },
         { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 128, columns: 16, rows: 8, animationFps: 12 },
         { kind: "dreadnought", name: "Mordrath, the Iron Maw", id: "BOSS-A04-MORDRATH", frames: 128, columns: 16, rows: 8, animationFps: 10 }
       ];
@@ -4497,10 +4497,10 @@
         const hp = dreadnought ? 260 + wave * 18 : crystal ? 220 + wave * 17 : hunter ? 190 + wave * 16 : 115 + wave * 18;
         boss = {
           x: W / 2,
-          y: dreadnought ? -245 : hunter ? -210 : crystal ? -190 : -225,
-          targetY: dreadnought ? 190 : hunter ? 220 : crystal ? 210 : 225,
-          w: dreadnought ? 270 : hunter ? 230 : crystal ? 220 : 320,
-          h: dreadnought ? 210 : hunter ? 220 : crystal ? 210 : 330,
+          y: dreadnought ? -245 : hunter ? -250 : crystal ? -190 : -225,
+          targetY: dreadnought ? 190 : hunter ? 215 : crystal ? 210 : 225,
+          w: dreadnought ? 270 : hunter ? 390 : crystal ? 220 : 320,
+          h: dreadnought ? 210 : hunter ? 360 : crystal ? 210 : 330,
           kind,
           name: bossSpec.name,
           objectId: bossSpec.id,
@@ -4509,6 +4509,8 @@
           phase: 0,
           cooldown: dreadnought ? 0.72 : crystal ? 0.82 : hunter ? 0.95 : 1.2,
           burst: 0,
+          attackPulse: 0,
+          weaponMode: "approach",
           hurt: 0
         };
         shell.dataset.bossObjectId = bossSpec.id;
@@ -5408,6 +5410,48 @@
         const crystal = boss.kind === "crystal";
         const dreadnought = boss.kind === "dreadnought";
         boss.burst += 1;
+        if (hunter) {
+          const healthRatio = boss.hp / boss.maxHp;
+          const aimedAngle = Math.atan2(player.y - boss.y, player.x - boss.x);
+          const pushHunterBullet = (x, y, angle, speed, radius = 6) => {
+            if (enemyBullets.length >= 44) return;
+            enemyBullets.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: radius });
+          };
+          boss.attackPulse = 1;
+          if (healthRatio > 0.67) {
+            boss.weaponMode = "wing-fan";
+            const side = boss.burst % 2 === 0 ? -1 : 1;
+            const emitterX = boss.x + side * 132;
+            for (let i = 0; i < 6; i += 1) {
+              const spread = (i - 2.5) * 0.105;
+              pushHunterBullet(emitterX, boss.y + 28 + Math.abs(i - 2.5) * 4, aimedAngle + spread, 292 + wave * 7 + i * 5, 6);
+            }
+          } else if (healthRatio > 0.34) {
+            boss.weaponMode = "eclipse-corridor";
+            const count = 10;
+            const gap = 2 + (boss.burst % 6);
+            const sweep = Math.sin(boss.burst * 0.72) * 0.14;
+            for (let i = 0; i < count; i += 1) {
+              if (i === gap || i === gap + 1) continue;
+              const angle = Math.PI * 0.22 + i * (Math.PI * 0.56 / (count - 1)) + sweep;
+              const emitter = i < count / 2 ? -138 : 138;
+              pushHunterBullet(boss.x + emitter, boss.y + 42, angle, 226 + wave * 8 + (i % 3) * 12, 6);
+            }
+          } else {
+            boss.weaponMode = "crossing-scythes";
+            for (let i = 0; i < 4; i += 1) {
+              pushHunterBullet(boss.x - 148, boss.y + 34 + i * 7, 0.78 + i * 0.115, 246 + wave * 7 + i * 9, 6);
+              pushHunterBullet(boss.x + 148, boss.y + 34 + i * 7, Math.PI - 0.78 - i * 0.115, 246 + wave * 7 + i * 9, 6);
+            }
+            if (boss.burst % 2 === 0) {
+              pushHunterBullet(boss.x, boss.y + 92, aimedAngle - 0.055, 214 + wave * 7, 8);
+              pushHunterBullet(boss.x, boss.y + 92, aimedAngle + 0.055, 214 + wave * 7, 8);
+            }
+          }
+          shell.dataset.bossAttackPattern = boss.weaponMode;
+          play(92 + (1 - healthRatio) * 34, 0.26, "sawtooth", 0.058);
+          return;
+        }
         const count = dreadnought ? 7 : crystal ? 6 : hunter ? (boss.hp < boss.maxHp * 0.45 ? 7 : 5) : (boss.hp < boss.maxHp * 0.45 ? 6 : 5);
         for (let i = 0; i < count; i += 1) {
           const spread = (i - (count - 1) / 2) * (dreadnought ? 0.11 : crystal ? 0.24 : hunter ? 0.14 : 0.18);
@@ -5699,11 +5743,12 @@
         if (boss) {
           boss.phase += dt;
           boss.hurt = Math.max(0, boss.hurt - dt);
+          boss.attackPulse = Math.max(0, (boss.attackPulse || 0) - dt * 2.8);
           boss.cooldown -= dt;
           boss.y += (boss.targetY - boss.y) * Math.min(1, dt * 1.7);
           if (boss.kind === "hunter") {
-            boss.x = W / 2 + Math.sin(boss.phase * 0.9) * 142 + Math.sin(boss.phase * 2.7) * 34;
-            boss.targetY = 214 + Math.sin(boss.phase * 1.35) * 22;
+            boss.x = W / 2 + Math.sin(boss.phase * 0.72) * 112 + Math.sin(boss.phase * 2.15) * 26;
+            boss.targetY = 205 + Math.sin(boss.phase * 1.12) * 18;
           } else if (boss.kind === "crystal") {
             boss.x = W / 2 + Math.sin(boss.phase * 1.15) * 150;
             boss.targetY = 205 + Math.sin(boss.phase * 2.1) * 34;
@@ -5715,7 +5760,7 @@
           }
           if (boss.cooldown <= 0) {
             bossShoot();
-            boss.cooldown = boss.kind === "dreadnought" ? (boss.hp < boss.maxHp * 0.45 ? 0.9 : 1.25) : boss.kind === "crystal" ? (boss.hp < boss.maxHp * 0.45 ? 0.95 : 1.35) : boss.kind === "hunter" ? (boss.hp < boss.maxHp * 0.45 ? 1.05 : 1.45) : (boss.hp < boss.maxHp * 0.45 ? 1.2 : 1.7);
+            boss.cooldown = boss.kind === "dreadnought" ? (boss.hp < boss.maxHp * 0.45 ? 0.9 : 1.25) : boss.kind === "crystal" ? (boss.hp < boss.maxHp * 0.45 ? 0.95 : 1.35) : boss.kind === "hunter" ? (boss.hp / boss.maxHp > 0.67 ? 1.2 : boss.hp / boss.maxHp > 0.34 ? 1.05 : 0.88) : (boss.hp < boss.maxHp * 0.45 ? 1.2 : 1.7);
           }
         }
         enemies.forEach((enemy) => {
@@ -5768,7 +5813,7 @@
           const b = bullets[i];
           if (!b) continue;
           let consumed = b.y < -20;
-          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "dreadnought" ? 142 : boss.kind === "hunter" ? 122 : boss.kind === "crystal" ? 112 : 152, ry: boss.kind === "dreadnought" ? 96 : boss.kind === "hunter" ? 108 : boss.kind === "crystal" ? 104 : 148 })) {
+          if (boss && !consumed && hitCircleEllipse(b, { x: boss.x, y: boss.y, rx: boss.kind === "dreadnought" ? 142 : boss.kind === "hunter" ? 184 : boss.kind === "crystal" ? 112 : 152, ry: boss.kind === "dreadnought" ? 96 : boss.kind === "hunter" ? 158 : boss.kind === "crystal" ? 104 : 148 })) {
             consumed = true;
             boss.hp -= 1;
             boss.hurt = 0.12;
@@ -5864,13 +5909,13 @@
             : boss.kind === "crystal"
               ? Math.abs(player.x - boss.x) < 96 && Math.abs(player.y - boss.y) < 86
               : boss.kind === "hunter"
-                ? Math.abs(player.x - boss.x) < 102 && Math.abs(player.y - boss.y) < 88
+                ? Math.abs(player.x - boss.x) < 172 && Math.abs(player.y - boss.y) < 125
                 : Math.abs(player.x - boss.x) < 136 && Math.abs(player.y - boss.y) < 122;
           let tentacleHit = false;
           for (let i = -3; i <= 3; i += 1) {
-            const tx = boss.x + i * (boss.kind === "hunter" ? 34 : 31) + Math.sin(boss.phase * 2.4 + i) * (boss.kind === "hunter" ? 26 : 34);
-            const ty = boss.y + (boss.kind === "hunter" ? 74 : 110) + Math.cos(boss.phase * 2.1 + i) * 18;
-            if (Math.hypot(player.x - tx, player.y - ty) < (boss.kind === "hunter" ? 24 : 28)) tentacleHit = true;
+            const tx = boss.x + i * (boss.kind === "hunter" ? 56 : 31) + Math.sin(boss.phase * 2.4 + i) * (boss.kind === "hunter" ? 18 : 34);
+            const ty = boss.y + (boss.kind === "hunter" ? 82 : 110) + Math.cos(boss.phase * 2.1 + i) * 18;
+            if (Math.hypot(player.x - tx, player.y - ty) < (boss.kind === "hunter" ? 27 : 28)) tentacleHit = true;
           }
           if (bodyHit || tentacleHit) damagePlayer();
         }
@@ -6320,22 +6365,27 @@
 
       function drawRealisticBoss() {
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
-        const sizes = { octopus: [430, 430], hunter: [326, 326], crystal: [310, 310], dreadnought: [342, 342] };
-        const animationRates = { octopus: 24, hunter: 16, crystal: 12, dreadnought: 10 };
-        const animationFrames = { octopus: 192, hunter: 128, crystal: 128, dreadnought: 128 };
-        const animationRows = { octopus: 12, hunter: 8, crystal: 8, dreadnought: 8 };
+        const sizes = { octopus: [430, 430], hunter: [490, 450], crystal: [310, 310], dreadnought: [342, 342] };
+        const animationRates = { octopus: 24, hunter: 24, crystal: 12, dreadnought: 10 };
+        const animationFrames = { octopus: 192, hunter: 240, crystal: 128, dreadnought: 128 };
+        const animationRows = { octopus: 12, hunter: 15, crystal: 8, dreadnought: 8 };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
         const pulseX = 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
         const pulseY = 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
-        const filter = boss.hurt > 0 ? "brightness(1.42) saturate(0.72)" : "none";
-        const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : 0.025);
+        const filter = boss.hurt > 0
+          ? "brightness(1.42) saturate(0.72)"
+          : boss.kind === "hunter" && boss.attackPulse > 0
+            ? `brightness(${1 + boss.attackPulse * 0.2}) saturate(${1 + boss.attackPulse * 0.16})`
+            : "none";
+        const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : boss.kind === "hunter" ? 0.015 : 0.025);
         const drawX = boss.x + Math.sin(boss.phase * 0.88) * 3.2;
-        const presentationOffsetY = boss.kind === "octopus" ? 30 : boss.kind === "hunter" ? 38 : 0;
+        const presentationOffsetY = boss.kind === "octopus" ? 30 : boss.kind === "hunter" ? 18 : 0;
         const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5 + presentationOffsetY;
         if (bossAnimationReady(boss.kind)) {
           const animationFrame = Math.floor(boss.phase * animationRates[boss.kind]) % animationFrames[boss.kind];
-          const drawBossFrame = boss.kind === "octopus" ? drawSpriteFrame : drawLivingBossFrame;
+          const preanimatedBoss = boss.kind === "octopus" || boss.kind === "hunter";
+          const drawBossFrame = preanimatedBoss ? drawSpriteFrame : drawLivingBossFrame;
           drawBossFrame(
             bossAnimationSprites[boss.kind],
             animationFrame,
@@ -6346,7 +6396,7 @@
             width * pulseX,
             height * pulseY,
             angle,
-            ...(boss.kind === "octopus"
+            ...(preanimatedBoss
               ? ["transparent", 0, 1, filter]
               : [boss.kind, boss.phase, filter])
           );
@@ -6654,7 +6704,7 @@
         if (!boss) return;
         if (bossAnimationReady(boss.kind) || realisticSpritesReady) {
           drawRealisticBoss();
-          const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 300 : boss.kind === "crystal" ? 292 : 340;
+          const barW = boss.kind === "dreadnought" ? 330 : boss.kind === "hunter" ? 380 : boss.kind === "crystal" ? 292 : 340;
           const hp = clamp(boss.hp / boss.maxHp, 0, 1);
           const color = boss.kind === "dreadnought" ? colors.orange : boss.kind === "hunter" ? colors.red : boss.kind === "crystal" ? colors.cyan : colors.violet;
           drawPoly(lineShape, W / 2, 96, barW / 2, 5, 0, rgba(colors.space, 0.84), gl.LINES);
