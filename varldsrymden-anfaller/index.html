@@ -2216,7 +2216,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.65 · Unique Act 1 wave species · updated 2026-07-22 10:52 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.66 · Unique Act 2 wave species · updated 2026-07-22 11:32 CEST</div>
   </main>
 
   <script>
@@ -2731,7 +2731,54 @@
           ]
         }
       ];
-      actOneWaveFamilies.slice(1).forEach((style) => {
+      const actTwoWaveFamilies = [
+        {
+          species: "crystal-dawn-swarm",
+          displayName: "Crystal Dawn Swarm",
+          eye: "#fff0c8",
+          accent: "rgba(226,196,255,0.86)",
+          animationSizes: [48, 56, 60],
+          formationRadius: 64,
+          formationRingStep: 15,
+          formationRowGap: 104,
+          variants: [
+            { name: "Prism Dart", id: "ALIEN-A02-W01-SCOUT-PRISM", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/prism-dart-96f-v1.webp" },
+            { name: "Sunspike Bastion", id: "ALIEN-A02-W01-GUARD-SUNSPIKE", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/sunspike-bastion-96f-v1.webp" },
+            { name: "Amethyst Regent", id: "ALIEN-A02-W01-CAPTAIN-AMETHYST", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/amethyst-regent-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "stormtide-brood",
+          displayName: "Stormtide Brood",
+          eye: "#70eeff",
+          accent: "rgba(76,206,255,0.86)",
+          animationSizes: [50, 56, 60],
+          formationRadius: 62,
+          formationRingStep: 15,
+          formationRowGap: 102,
+          variants: [
+            { name: "Voltfin Hunter", id: "ALIEN-A02-W02-SCOUT-VOLTFIN", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/voltfin-hunter-96f-v1.webp" },
+            { name: "Tempest Carapace", id: "ALIEN-A02-W02-GUARD-TEMPEST", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/tempest-carapace-96f-v1.webp" },
+            { name: "Maelstrom Oracle", id: "ALIEN-A02-W02-CAPTAIN-MAELSTROM", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/maelstrom-oracle-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "ruins-archons",
+          displayName: "Ruins Archons",
+          eye: "#e3a34f",
+          accent: "rgba(176,132,77,0.78)",
+          animationSizes: [48, 56, 60],
+          formationRadius: 64,
+          formationRingStep: 15,
+          formationRowGap: 104,
+          variants: [
+            { name: "Relic Wasp", id: "ALIEN-A02-W03-SCOUT-RELIC", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/relic-wasp-96f-v1.webp" },
+            { name: "Archon Crusher", id: "ALIEN-A02-W03-GUARD-ARCHON", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/archon-crusher-96f-v1.webp" },
+            { name: "Gate Warden", id: "ALIEN-A02-W03-CAPTAIN-GATEWARDEN", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/gate-warden-96f-v1.webp" }
+          ]
+        }
+      ];
+      [...actOneWaveFamilies.slice(1), ...actTwoWaveFamilies].forEach((style) => {
         style.variants.forEach((variant) => {
           variant.image = new Image();
           variant.image.decoding = "async";
@@ -2741,12 +2788,14 @@
 
       function alienStyleForStage(actNumber = act, waveIndex = alienRoundsCleared) {
         if (actNumber === 1) return actOneWaveFamilies[clamp(waveIndex, 0, actOneWaveFamilies.length - 1)];
+        if (actNumber === 2) return actTwoWaveFamilies[clamp(waveIndex, 0, actTwoWaveFamilies.length - 1)];
         return alienActStyles[clamp(actNumber - 1, 0, alienActStyles.length - 1)];
       }
 
       const alienCatalogFamilies = [
         ...actOneWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 0, waveIndex })),
-        ...alienActStyles.slice(1).map((style, index) => ({ style, actIndex: index + 1, waveIndex: 0 }))
+        ...actTwoWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 1, waveIndex })),
+        ...alienActStyles.slice(2).map((style, index) => ({ style, actIndex: index + 2, waveIndex: 0 }))
       ];
 
       function alienAnimationReady(variant) {
@@ -2825,7 +2874,7 @@
         ...alienCatalogFamilies.flatMap(({ style, actIndex, waveIndex }) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1}${actIndex === 0 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
+          typeLabel: `Alien · Act ${actIndex + 1}${actIndex <= 1 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
           sprite: "alienAnimation",
           frame: 0,
           columns: variant.animationColumns || 4,
