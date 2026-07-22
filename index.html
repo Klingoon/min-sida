@@ -2216,7 +2216,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.62 · Nhar'Kaal 288-frame organic abyss rebuild · updated 2026-07-22 09:28 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.63 · Act 1 alien family 128-frame rebuild · updated 2026-07-22 10:03 CEST</div>
   </main>
 
   <script>
@@ -2625,9 +2625,9 @@
         {
           species: "glacial-wraith", displayName: "Glacial Wraiths", frames: [2, 0, 2], eye: "#bff7ff", accent: "rgba(170,235,255,0.82)", filter: "hue-rotate(145deg) saturate(0.72) brightness(1.16)",
           variants: [
-            { name: "Shardling Scout", id: "ALIEN-A01-SCOUT-SHARDLING" },
-            { name: "Frostclaw Guard", id: "ALIEN-A01-GUARD-FROSTCLAW" },
-            { name: "Pale Crown Captain", id: "ALIEN-A01-CAPTAIN-PALECROWN" }
+            { name: "Shardling Scout", id: "ALIEN-A01-SCOUT-SHARDLING", animationFrames: 128, animationColumns: 16, animationRows: 8, animationFps: 24 },
+            { name: "Frostclaw Guard", id: "ALIEN-A01-GUARD-FROSTCLAW", animationFrames: 128, animationColumns: 16, animationRows: 8, animationFps: 24 },
+            { name: "Pale Crown Captain", id: "ALIEN-A01-CAPTAIN-PALECROWN", animationFrames: 128, animationColumns: 16, animationRows: 8, animationFps: 24 }
           ]
         },
         {
@@ -2657,9 +2657,9 @@
       ];
       const alienAnimationUrls = [
         [
-          "varldsrymden-anfaller/assets/aliens/shardling-scout-16f.webp",
-          "varldsrymden-anfaller/assets/aliens/frostclaw-guard-16f.webp",
-          "varldsrymden-anfaller/assets/aliens/pale-crown-captain-16f.webp"
+          "varldsrymden-anfaller/assets/aliens/shardling-scout-128f-v2.webp",
+          "varldsrymden-anfaller/assets/aliens/frostclaw-guard-128f-v2.webp",
+          "varldsrymden-anfaller/assets/aliens/pale-crown-captain-128f-v2.webp"
         ],
         [
           "varldsrymden-anfaller/assets/aliens/cinder-skitter-16f.webp",
@@ -2678,7 +2678,7 @@
         ]
       ];
       const alienAnimationSizes = [
-        [66, 70, 68],
+        [76, 82, 88],
         [64, 70, 68],
         [66, 70, 68],
         [64, 68, 66]
@@ -2769,11 +2769,12 @@
         ...alienActStyles.flatMap((style, actIndex) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1} · 16 frames`,
+          typeLabel: `Alien · Act ${actIndex + 1} · ${variant.animationFrames || 16} frames`,
           sprite: "alienAnimation",
           frame: 0,
-          columns: 4,
-          rows: 4,
+          columns: variant.animationColumns || 4,
+          rows: variant.animationRows || 4,
+          animationFps: variant.animationFps || 9,
           variantIndex
         }))),
         ...canyonAlienSpecies.map((species, index) => ({
@@ -3948,7 +3949,7 @@
         }
 
         if (item.sprite === "alienAnimation") {
-          const animatedItem = { ...item, frame: Math.floor(t * 9 + item.variantIndex * 1.7) % 16 };
+          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps + item.variantIndex * 1.7) % (item.animationFrames || 16) };
           const previewSize = canvas === devDetailCanvas ? 246 : item.variantIndex === 2 ? 150 : 142;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
           return;
@@ -6333,11 +6334,11 @@
         const style = alienActStyles[clamp(enemy.actStyle ?? act - 1, 0, alienActStyles.length - 1)];
         const variant = style.variants[baseFrame];
         if (alienAnimationReady(variant)) {
-          const animationFrame = Math.floor(enemy.phase * 3.6 + enemy.col * 0.43) % 16;
+          const animationFrame = Math.floor(enemy.phase * ((variant.animationFps || 9) / 2.5) + enemy.col * 0.43) % (variant.animationFrames || 16);
           const size = style.animationSizes[baseFrame];
           const pulse = 1 + Math.sin(enemy.phase * 2.2) * 0.018;
           const bob = Math.sin(enemy.phase * 2.8 + enemy.col * 0.45) * 2.2;
-          drawSpriteFrame(variant.image, animationFrame, 4, 4, enemy.x, enemy.y + bob, size * pulse, size * pulse, angle, "transparent", 0);
+          drawSpriteFrame(variant.image, animationFrame, variant.animationColumns || 4, variant.animationRows || 4, enemy.x, enemy.y + bob, size * pulse, size * pulse, angle, "transparent", 0);
           return;
         }
         const frame = style.frames[baseFrame];
