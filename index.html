@@ -3059,7 +3059,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.100 · Mordrath Helios Parallax · updated 2026-07-22 21:44 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.101 · Regolith Sarcophagus Reforged · updated 2026-07-22 22:18 CEST</div>
   </main>
 
   <script>
@@ -3456,11 +3456,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         image.src = src;
         return image;
       });
+      const regolithSarcophagusImage = new Image();
+      regolithSarcophagusImage.decoding = "async";
+      regolithSarcophagusImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/regolith-sarcophagus-144f-v2.webp";
       const canyonBonusImage = new Image();
       canyonBonusImage.decoding = "async";
-      canyonBonusImage.src = "varldsrymden-anfaller/assets/canyon-bonuses/selene-life-shield-12f-v1.png";
+      canyonBonusImage.src = "varldsrymden-anfaller/assets/canyon-bonuses/selene-life-shield-96f-v2.webp";
       const canyonAlienSpecies = [
-        { name: "Regolith Sarcophagus", id: "SELENE-MINIBOSS-01-REGOLITH-SARCOPHAGUS", progress: 0.010 * canyonLegacyProgressScale, size: 190, hp: 24, accent: "#ffbd70", atlas: 0, block: 0, attack: "fan", weapon: "lance" },
+        { name: "Regolith Sarcophagus", id: "SELENE-MINIBOSS-01-REGOLITH-SARCOPHAGUS", progress: 0.010 * canyonLegacyProgressScale, size: 198, hp: 32, accent: "#ffbd70", atlas: 0, block: 0, attack: "regolith", weapon: "regolith-mine", special: "regolith" },
         { name: "Dune Surveyor Prime", id: "SELENE-MINIBOSS-02-DUNE-SURVEYOR", progress: 0.110 * canyonLegacyProgressScale, size: 196, hp: 26, accent: "#f08a4b", atlas: 0, block: 1, attack: "weave", weapon: "claw" },
         { name: "Heliopause Cantor", id: "SELENE-MINIBOSS-03-HELIOPAUSE-CANTOR", progress: 0.215 * canyonLegacyProgressScale, size: 202, hp: 28, accent: "#63dcff", atlas: 0, block: 2, attack: "spiral", weapon: "disc" },
         { name: "Gravemaw Annulus", id: "SELENE-MINIBOSS-04-GRAVEMAW-ANNULUS", progress: 0.321 * canyonLegacyProgressScale, size: 208, hp: 30, accent: "#aa82ff", atlas: 1, block: 0, attack: "rings", weapon: "mine" },
@@ -3475,11 +3478,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       ].sort((a, b) => a.progress - b.progress).map((species, encounterIndex) => ({
         ...species,
         encounterIndex,
-        image: canyonMinibossAtlases[species.atlas],
-        imageUrl: canyonMinibossAtlasUrls[species.atlas],
-        frameOffset: species.block * 12,
-        animationFrames: 12,
-        animationFps: 9 + (encounterIndex % 3)
+        image: species.special === "regolith" ? regolithSarcophagusImage : canyonMinibossAtlases[species.atlas],
+        imageUrl: species.special === "regolith" ? regolithSarcophagusImage.src : canyonMinibossAtlasUrls[species.atlas],
+        frameOffset: species.special === "regolith" ? 0 : species.block * 12,
+        animationFrames: species.special === "regolith" ? 144 : 12,
+        animationColumns: species.special === "regolith" ? 12 : 6,
+        animationRows: species.special === "regolith" ? 12 : 6,
+        animationFps: species.special === "regolith" ? 30 : 9 + (encounterIndex % 3)
       }));
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
@@ -3867,17 +3872,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ...canyonAlienSpecies.map((species, index) => ({
           ...species,
           category: "alien",
-          typeLabel: `Selene miniboss · Sector ${index + 1} · 12 generated keyframes · interpolated motion`,
+          typeLabel: species.special === "regolith"
+            ? "Selene miniboss · Sector 1 · 144-frame reconstructed motion · multi-phase destruction"
+            : `Selene miniboss · Sector ${index + 1} · 12 generated keyframes · interpolated motion`,
           sprite: "canyonAlien",
           frame: species.frameOffset,
-          columns: 6,
-          rows: 6,
+          columns: species.animationColumns,
+          rows: species.animationRows,
           eye: species.accent
         })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
-        { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 12 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 6, rows: 4 },
-        { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 12 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 12, columns: 6, rows: 4 },
+        { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
+        { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 48 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 48, columns: 12, rows: 8 },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard · 64 frames", sprite: "objectAnimation", objectKind: "hydraComet", image: objectAnimationSprites.hydraComet, frame: 0, columns: 8, rows: 8, animationFps: 12 },
         { name: "Astrax Prism Mine", id: "BOSS-A03-MINE-PRISM-01", category: "object", typeLabel: "Boss weapon · destructible mine · 64 frames", sprite: "objectAnimation", objectKind: "astraxPrismMine", image: objectAnimationSprites.astraxPrismMine, frame: 0, columns: 8, rows: 8, animationFps: 24 },
@@ -4514,7 +4521,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             engaged: false,
             attackCooldown: 1.4,
             weaponCooldown: 3.8,
-            entrance: 0
+            entrance: 0,
+            attackSequence: 0,
+            weaponSequence: 0,
+            deathDuration: species.special === "regolith" ? 3.25 : 1.05,
+            deathElapsed: 0,
+            deathBurstNext: 0,
+            rewardSpawned: false
           });
         });
       }
@@ -4524,17 +4537,58 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function spawnCanyonBonus(alien) {
+        const type = alien.species.special === "regolith"
+          ? (Math.random() < 0.5 ? "life" : "shield")
+          : alien.index % 2 === 0 ? "life" : "shield";
         canyonBonuses.push({
-          type: alien.index % 2 === 0 ? "life" : "shield",
+          type,
           x: alien.x,
           y: alien.y,
-          vy: 72,
+          vy: 48,
           phase: alien.phase,
-          life: 12
+          age: 0,
+          life: 14,
+          source: alien.species.id
         });
+        shell.dataset.canyonReward = `${alien.species.id}:${type}`;
       }
 
       function spawnCanyonWeaponFormation(alien) {
+        if (alien.species.special === "regolith") {
+          const ownedMines = canyonWeapons.filter((weapon) => weapon.owner === alien.index).length;
+          if (ownedMines >= 12) return;
+          const patterns = ["regolith-chevron", "regolith-orbit", "regolith-arc"];
+          const pattern = patterns[alien.weaponSequence % patterns.length];
+          const desiredCount = 5 + (alien.weaponSequence % 3);
+          const count = Math.min(desiredCount, 12 - ownedMines);
+          const center = (count - 1) / 2;
+          alien.weaponSequence += 1;
+          for (let slot = 0; slot < count; slot += 1) {
+            canyonWeapons.push({
+              type: "regolith-mine",
+              pattern,
+              owner: alien.index,
+              slot,
+              count,
+              x: alien.x,
+              y: alien.y + alien.species.size * 0.23,
+              originX: alien.x,
+              originY: alien.y + alien.species.size * 0.23,
+              vx: 0,
+              vy: 0,
+              phase: alien.phase + slot * 0.79,
+              t: -slot * 0.11,
+              r: 21,
+              hp: 3,
+              maxHp: 3,
+              renderAngle: (slot - center) * 0.08,
+              accent: alien.species.accent
+            });
+          }
+          play(118, 0.24, "sawtooth", 0.052);
+          setTimeout(() => play(174, 0.16, "triangle", 0.032), 90);
+          return;
+        }
         const count = 3 + (alien.index % 3);
         const center = (count - 1) / 2;
         for (let slot = 0; slot < count; slot += 1) {
@@ -4564,7 +4618,21 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const aimed = Math.atan2(dy, dx);
         const healthPhase = alien.hp / alien.maxHp < 0.45 ? 1 : 0;
         const shots = [];
-        if (alien.species.attack === "fan") {
+        if (alien.species.special === "regolith") {
+          const pattern = alien.attackSequence % 3;
+          alien.attackSequence += 1;
+          if (pattern === 0) {
+            [-0.42, -0.24, -0.08, 0.08, 0.24, 0.42].forEach((offset) => shots.push({ angle: aimed + offset, speed: 176, turnRate: -offset * 0.18 }));
+          } else if (pattern === 1) {
+            [-0.56, -0.4, -0.25, -0.11, 0.11, 0.25, 0.4, 0.56].forEach((offset, index) => shots.push({ angle: Math.PI / 2 + offset, speed: 148 + (index % 2) * 24, turnRate: offset * 0.22 }));
+          } else {
+            const count = healthPhase ? 10 : 8;
+            for (let i = 0; i < count; i += 1) {
+              const offset = (i - (count - 1) / 2) * 0.135;
+              shots.push({ angle: aimed + offset, speed: 158 + Math.abs(offset) * 54, turnRate: i % 2 ? 0.16 : -0.16 });
+            }
+          }
+        } else if (alien.species.attack === "fan") {
           const count = 4 + healthPhase * 2;
           for (let i = 0; i < count; i += 1) shots.push(aimed + (i - (count - 1) / 2) * 0.18);
         } else if (alien.species.attack === "weave") {
@@ -4577,16 +4645,20 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           const count = 7 + healthPhase * 2;
           for (let i = 0; i < count; i += 1) shots.push(Math.PI * 0.22 + i * (Math.PI * 0.56 / Math.max(1, count - 1)));
         }
-        shots.slice(0, Math.max(0, 34 - enemyBullets.length)).forEach((angle, index) => {
-          const speed = 154 + alien.index * 3 + (index % 2) * 18;
+        shots.slice(0, Math.max(0, 34 - enemyBullets.length)).forEach((shot, index) => {
+          const angle = typeof shot === "number" ? shot : shot.angle;
+          const speed = typeof shot === "number" ? 154 + alien.index * 3 + (index % 2) * 18 : shot.speed;
           enemyBullets.push({
             x: alien.x + Math.cos(angle) * alien.species.size * 0.16,
             y: alien.y + Math.sin(angle) * alien.species.size * 0.16,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
-            r: 5,
+            r: alien.species.special === "regolith" ? 5.5 : 5,
             canyon: true,
-            turnRate: alien.species.attack === "spiral" ? (index % 2 ? 0.22 : -0.22) : 0
+            regolith: alien.species.special === "regolith",
+            turnRate: typeof shot === "number"
+              ? alien.species.attack === "spiral" ? (index % 2 ? 0.22 : -0.22) : 0
+              : shot.turnRate
           });
         });
         play(245 + alien.index * 8, 0.1, "triangle", 0.026);
@@ -4621,14 +4693,47 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           if (alien.dead) return;
           if (alien.dying > 0) {
             alien.dying -= dt;
-            alien.y += dt * 46;
-            if (alien.dying <= 0) alien.dead = true;
+            alien.deathElapsed += dt;
+            if (alien.species.special === "regolith") {
+              alien.y += Math.sin(alien.deathElapsed * 7.4) * dt * 11;
+              alien.x += Math.sin(alien.deathElapsed * 5.1) * dt * 16;
+              while (alien.deathElapsed >= alien.deathBurstNext && alien.deathBurstNext < alien.deathDuration - 0.18) {
+                const burstIndex = Math.floor(alien.deathBurstNext / 0.22);
+                const angle = burstIndex * 2.39996 + alien.phase;
+                const radius = 22 + (burstIndex % 5) * 18;
+                const burstX = alien.x + Math.cos(angle) * radius;
+                const burstY = alien.y + Math.sin(angle) * radius * 0.62;
+                makeParticles(burstX, burstY, burstIndex % 3 === 0 ? "#fff1c2" : alien.species.accent, burstIndex % 3 === 0 ? 34 : 18);
+                if (burstIndex % 3 === 0) {
+                  shake = Math.max(shake, 14 + burstIndex * 0.8);
+                  explosionSound(0.5 + burstIndex * 0.035);
+                }
+                alien.deathBurstNext += 0.22;
+              }
+            } else {
+              alien.y += dt * 46;
+            }
+            if (alien.dying <= 0) {
+              alien.dead = true;
+              if (!alien.rewardSpawned) {
+                alien.rewardSpawned = true;
+                spawnCanyonBonus(alien);
+              }
+              if (alien.species.special === "regolith") {
+                makeParticles(alien.x, alien.y, "#fff1c2", 120);
+                makeParticles(alien.x - 54, alien.y + 20, "#ff9a45", 54);
+                makeParticles(alien.x + 58, alien.y - 12, "#ffbd70", 54);
+                shake = Math.max(shake, 46);
+                explosionSound(1.5);
+              }
+            }
             return;
           }
           if (!alien.engaged) {
             alien.y = alien.worldY - canyonRun.maxScroll + canyonRun.scroll;
             alien.x = W / 2 + Math.sin(now * 0.72 + alien.index) * 68;
-            if (alien.y >= 178 && !activeCanyonAlien()) {
+            const destructionInProgress = canyonAliens.some((candidate) => candidate.dying > 0);
+            if (alien.y >= 178 && !activeCanyonAlien() && !destructionInProgress) {
               alien.engaged = true;
               alien.entrance = 1;
               alien.y = 178;
@@ -4642,34 +4747,67 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           }
           alien.entrance = Math.max(0, alien.entrance - dt * 0.7);
           const motion = alien.index % 4;
-          alien.x = W / 2
-            + Math.sin(alien.phase * (motion === 2 ? 0.72 : 0.54)) * (motion === 1 ? 168 : 124)
-            + Math.sin(alien.phase * 1.67) * (motion === 3 ? 42 : 20);
-          alien.y = 180 + Math.cos(alien.phase * (motion === 0 ? 0.9 : 1.15)) * (motion === 2 ? 42 : 25);
+          if (alien.species.special === "regolith") {
+            const healthRatio = alien.hp / alien.maxHp;
+            alien.x = W / 2 + Math.sin(alien.phase * 0.48) * 142 + Math.sin(alien.phase * 1.34) * 26;
+            alien.y = 184 + Math.cos(alien.phase * 0.71) * 28 + Math.sin(alien.phase * 1.82) * 8;
+            alien.phase += dt * (healthRatio < 0.38 ? 0.34 : healthRatio < 0.7 ? 0.16 : 0);
+          } else {
+            alien.x = W / 2
+              + Math.sin(alien.phase * (motion === 2 ? 0.72 : 0.54)) * (motion === 1 ? 168 : 124)
+              + Math.sin(alien.phase * 1.67) * (motion === 3 ? 42 : 20);
+            alien.y = 180 + Math.cos(alien.phase * (motion === 0 ? 0.9 : 1.15)) * (motion === 2 ? 42 : 25);
+          }
           alien.attackCooldown -= dt;
           alien.weaponCooldown -= dt;
           if (alien.attackCooldown <= 0) {
             fireCanyonPattern(alien);
-            alien.attackCooldown = Math.max(0.88, 1.62 - alien.index * 0.035 - (alien.hp / alien.maxHp < 0.45 ? 0.22 : 0));
+            alien.attackCooldown = alien.species.special === "regolith"
+              ? (alien.hp / alien.maxHp < 0.45 ? 1.42 : 1.78)
+              : Math.max(0.88, 1.62 - alien.index * 0.035 - (alien.hp / alien.maxHp < 0.45 ? 0.22 : 0));
           }
           if (alien.weaponCooldown <= 0) {
             spawnCanyonWeaponFormation(alien);
-            alien.weaponCooldown = Math.max(3.4, 5.1 - alien.index * 0.08);
+            alien.weaponCooldown = alien.species.special === "regolith"
+              ? (alien.hp / alien.maxHp < 0.45 ? 3.7 : 4.6)
+              : Math.max(3.4, 5.1 - alien.index * 0.08);
           }
         });
 
         canyonWeapons.forEach((weapon) => {
           weapon.t += dt;
           if (weapon.t < 0) return;
-          weapon.x += weapon.vx * dt + Math.sin(weapon.t * 3.1 + weapon.phase) * 28 * dt;
-          weapon.y += weapon.vy * dt;
-          if (weapon.type === "disc") weapon.vx += Math.sin(weapon.t * 2.4) * 16 * dt;
+          if (weapon.type === "regolith-mine") {
+            const center = (weapon.count - 1) / 2;
+            const spread = weapon.slot - center;
+            const previousX = weapon.x;
+            const previousY = weapon.y;
+            if (weapon.pattern === "regolith-chevron") {
+              weapon.x = weapon.originX + spread * 43 + Math.sin(weapon.t * 2.4 + weapon.slot) * 10;
+              weapon.y = weapon.originY + weapon.t * 82 + Math.abs(spread) * 24;
+            } else if (weapon.pattern === "regolith-orbit") {
+              weapon.x = weapon.originX + Math.sin(weapon.t * 2.05 + weapon.slot * 0.88) * (92 + Math.abs(spread) * 8);
+              weapon.y = weapon.originY + weapon.t * 76 + weapon.slot * 18;
+            } else {
+              const angle = Math.PI * 0.18 + weapon.slot / Math.max(1, weapon.count - 1) * Math.PI * 0.64;
+              const bloom = Math.min(1, weapon.t * 1.5);
+              weapon.x = weapon.originX + Math.cos(angle) * 168 * bloom + Math.sin(weapon.t * 2.2 + weapon.slot) * 9;
+              weapon.y = weapon.originY + weapon.t * 80 + Math.sin(angle) * 72 * bloom;
+            }
+            weapon.renderAngle = Math.atan2(weapon.y - previousY, weapon.x - previousX) - Math.PI / 2;
+          } else {
+            weapon.x += weapon.vx * dt + Math.sin(weapon.t * 3.1 + weapon.phase) * 28 * dt;
+            weapon.y += weapon.vy * dt;
+            if (weapon.type === "disc") weapon.vx += Math.sin(weapon.t * 2.4) * 16 * dt;
+          }
         });
         canyonBonuses.forEach((bonus) => {
-          bonus.phase += dt * 2.2;
+          bonus.age += dt;
+          bonus.phase += dt * 1.5;
           bonus.life -= dt;
-          bonus.y += bonus.vy * dt;
-          bonus.x += Math.sin(bonus.phase * 1.8) * 22 * dt;
+          const entrance = Math.min(1, bonus.age / 0.75);
+          bonus.y += bonus.vy * dt * (0.35 + entrance * 0.65);
+          bonus.x += Math.sin(bonus.phase * 1.8) * (14 + entrance * 10) * dt;
         });
 
         for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
@@ -4701,11 +4839,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           play(alien.hp > 0 ? 176 : 92, alien.hp > 0 ? 0.08 : 0.34, "sawtooth", alien.hp > 0 ? 0.03 : 0.075);
           if (alien.hp <= 0) {
             alien.engaged = false;
-            alien.dying = 1.05;
+            alien.dying = alien.deathDuration;
+            alien.deathElapsed = 0;
+            alien.deathBurstNext = 0;
             score += 5200 + alien.index * 480;
             shake = Math.max(shake, 32);
             explosionSound(1.25);
-            spawnCanyonBonus(alien);
+            if (alien.species.special !== "regolith") {
+              alien.rewardSpawned = true;
+              spawnCanyonBonus(alien);
+            }
             enemyBullets.length = 0;
             for (let i = canyonWeapons.length - 1; i >= 0; i -= 1) {
               if (canyonWeapons[i].owner === alien.index) canyonWeapons.splice(i, 1);
@@ -5504,8 +5647,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         if (item.sprite === "canyonBonus") {
-          const localFrame = Math.floor(t * 10) % 12;
-          const animatedItem = { ...item, frame: (item.bonusType === "shield" ? 12 : 0) + localFrame };
+          const localFrame = Math.floor(t * 30) % 48;
+          const animatedItem = { ...item, frame: (item.bonusType === "shield" ? 48 : 0) + localFrame };
           const previewSize = canvas === devDetailCanvas ? 210 : 128;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
           return;
@@ -8636,37 +8779,59 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const localFrame = Math.floor(frameFloat) % alien.species.animationFrames;
         const nextLocalFrame = (localFrame + 1) % alien.species.animationFrames;
         const frameBlend = frameFloat - Math.floor(frameFloat);
-        const sourceWidth = image.naturalWidth / 6;
-        const sourceHeight = image.naturalHeight / 6;
+        const columns = alien.species.animationColumns || 6;
+        const rows = alien.species.animationRows || 6;
+        const sourceWidth = image.naturalWidth / columns;
+        const sourceHeight = image.naturalHeight / rows;
         const size = alien.species.size;
         const bob = Math.sin(t * 2.05 + alien.index * 0.9) * 6;
         const breathe = 1 + Math.sin(t * 2.7 + alien.index) * 0.024;
-        const deathProgress = alien.dying > 0 ? 1 - alien.dying / 1.05 : 0;
-        const alpha = alien.dying > 0 ? clamp(alien.dying / 1.05, 0, 1) : 1;
-        const strips = 12;
+        const deathProgress = alien.dying > 0 ? 1 - alien.dying / alien.deathDuration : 0;
+        const alpha = alien.dying > 0
+          ? alien.species.special === "regolith"
+            ? clamp(1 - Math.max(0, deathProgress - 0.3) / 0.7, 0, 1)
+            : clamp(alien.dying / alien.deathDuration, 0, 1)
+          : 1;
+        const strips = alien.species.special === "regolith" ? 24 : 12;
 
         function paintFrame(localIndex, opacity, temporalOffset) {
           const frame = alien.species.frameOffset + localIndex;
-          const sourceX = (frame % 6) * sourceWidth;
-          const sourceY = Math.floor(frame / 6) * sourceHeight;
+          const sourceX = (frame % columns) * sourceWidth;
+          const sourceY = Math.floor(frame / columns) * sourceHeight;
           spriteCtx.globalAlpha = alpha * opacity;
           for (let strip = 0; strip < strips; strip += 1) {
             const stripSourceY = sourceY + strip * sourceHeight / strips;
             const stripHeight = sourceHeight / strips + 1;
             const stripDestY = -size / 2 + strip * size / strips;
-            const organicOffset = Math.sin(t * 2.2 + temporalOffset + strip * 0.66 + alien.index) * (2 + Math.abs(strip - 5.5) * 0.16);
-            const deathOffset = deathProgress * Math.sin(strip * 1.7) * 18;
-            spriteCtx.drawImage(image, sourceX, stripSourceY, sourceWidth, stripHeight, -size / 2 + organicOffset + deathOffset, stripDestY, size, size / strips + 1);
+            const organicOffset = Math.sin(t * 2.2 + temporalOffset + strip * 0.66 + alien.index) * (2 + Math.abs(strip - (strips - 1) / 2) * 0.12);
+            const deathSpread = alien.species.special === "regolith" ? 92 : 18;
+            const deathOffset = deathProgress * deathProgress * Math.sin(strip * 1.7) * deathSpread;
+            const verticalBreak = alien.species.special === "regolith"
+              ? deathProgress * deathProgress * (strip - (strips - 1) / 2) * 3.4
+              : 0;
+            spriteCtx.drawImage(image, sourceX, stripSourceY, sourceWidth, stripHeight, -size / 2 + organicOffset + deathOffset, stripDestY + verticalBreak, size, size / strips + 1);
           }
         }
 
         spriteCtx.save();
         spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
-        spriteCtx.rotate(Math.sin(t * 1.22 + alien.index) * 0.045 + deathProgress * 0.42);
-        spriteCtx.scale(breathe + deathProgress * 0.22, 1 / breathe - deathProgress * 0.12);
+        spriteCtx.rotate(Math.sin(t * 1.22 + alien.index) * 0.045 + deathProgress * (alien.species.special === "regolith" ? 0.16 : 0.42));
+        const deathScale = alien.species.special === "regolith" ? deathProgress * 0.42 : deathProgress * 0.22;
+        spriteCtx.scale(breathe + deathScale, 1 / breathe - deathProgress * (alien.species.special === "regolith" ? 0.28 : 0.12));
         spriteCtx.filter = alien.hurt > 0 ? "brightness(2.35) saturate(0.48)" : "contrast(1.08) saturate(1.06)";
-        paintFrame(localFrame, 1 - frameBlend * 0.58, 0);
-        paintFrame(nextLocalFrame, frameBlend * 0.58, 0.18);
+        paintFrame(localFrame, 1 - frameBlend, 0);
+        paintFrame(nextLocalFrame, frameBlend, 0.18);
+        if (alien.species.special === "regolith" && alien.dying > 0) {
+          spriteCtx.globalCompositeOperation = "screen";
+          spriteCtx.globalAlpha = clamp(1 - deathProgress, 0, 1) * 0.72;
+          spriteCtx.strokeStyle = deathProgress < 0.52 ? "#fff1c2" : "#ff8a42";
+          spriteCtx.lineWidth = 2 + deathProgress * 5;
+          for (let ring = 0; ring < 3; ring += 1) {
+            spriteCtx.beginPath();
+            spriteCtx.ellipse(0, 0, size * (0.18 + deathProgress * (0.52 + ring * 0.16)), size * (0.12 + deathProgress * (0.34 + ring * 0.1)), ring * 0.4 + deathProgress * 2, 0, Math.PI * 2);
+            spriteCtx.stroke();
+          }
+        }
         spriteCtx.restore();
 
         if (alien.engaged && alien.dying <= 0) {
@@ -8691,7 +8856,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (state !== "canyon" || weapon.t < 0) return;
         const spin = weapon.phase + weapon.t * (weapon.type === "disc" ? 5.8 : 3.1);
         const rgb = hexToRgb(weapon.accent);
-        if (weapon.type === "mine") {
+        if (weapon.type === "regolith-mine") {
+          const warning = 0.5 + Math.sin(weapon.t * 8.2 + weapon.phase) * 0.5;
+          const damaged = weapon.hp < weapon.maxHp;
+          const tint = damaged ? colors.orange : rgb;
+          drawPoly(ringShape, weapon.x, weapon.y, weapon.r * (1.12 + warning * 0.15), weapon.r * (0.78 + warning * 0.08), spin, rgba(tint, 0.76), gl.LINE_LOOP);
+          drawPoly(ringShape, weapon.x, weapon.y, weapon.r * 0.82, weapon.r * 0.82, -spin * 1.4, rgba(colors.white, 0.34 + warning * 0.28), gl.LINE_LOOP);
+          for (let spike = 0; spike < 4; spike += 1) {
+            drawPoly(hunterBladeShape, weapon.x, weapon.y, 5, weapon.r * 1.42, spin + spike * Math.PI / 2, rgba(tint, 0.72));
+          }
+          drawPoly(bossEyeShape, weapon.x, weapon.y, 7 + warning * 2, 7 + warning * 2, -spin, rgba(damaged ? colors.red : colors.gold, 0.94));
+        } else if (weapon.type === "mine") {
           drawPoly(ringShape, weapon.x, weapon.y, weapon.r, weapon.r, spin, rgba(rgb, 0.78), gl.LINE_LOOP);
           drawPoly(bossEyeShape, weapon.x, weapon.y, weapon.r * 0.54, weapon.r * 0.54, -spin, rgba(colors.violet, 0.9));
         } else if (weapon.type === "blade") {
@@ -8711,17 +8886,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawCanyonBonus(bonus, t) {
         if (state !== "canyon" || !canyonBonusImage.complete || !canyonBonusImage.naturalWidth) return;
-        const localFrame = Math.floor(t * 10 + bonus.phase) % 12;
-        const frame = (bonus.type === "shield" ? 12 : 0) + localFrame;
-        const sourceWidth = canyonBonusImage.naturalWidth / 6;
-        const sourceHeight = canyonBonusImage.naturalHeight / 4;
-        const pulse = 1 + Math.sin(t * 4.2 + bonus.phase) * 0.055;
-        const size = 90 * pulse;
+        const localFrame = Math.floor(t * 30 + bonus.phase * 4) % 48;
+        const frame = (bonus.type === "shield" ? 48 : 0) + localFrame;
+        const sourceWidth = canyonBonusImage.naturalWidth / 12;
+        const sourceHeight = canyonBonusImage.naturalHeight / 8;
+        const entrance = Math.min(1, bonus.age / 0.75);
+        const pulse = 1 + Math.sin(t * 4.2 + bonus.phase) * 0.045;
+        const size = 94 * pulse * (0.22 + 0.78 * (1 - Math.pow(1 - entrance, 3)));
         spriteCtx.save();
         spriteCtx.translate(bonus.x + renderShake.x, bonus.y + renderShake.y);
-        spriteCtx.rotate(Math.sin(t * 1.8 + bonus.phase) * 0.08);
+        spriteCtx.rotate((1 - entrance) * Math.PI * 1.6 + Math.sin(t * 1.8 + bonus.phase) * 0.08);
+        spriteCtx.globalAlpha = Math.min(1, bonus.age * 3.2, bonus.life * 1.4);
         spriteCtx.filter = bonus.type === "shield" ? "drop-shadow(0 0 12px rgba(78,218,255,.72))" : "drop-shadow(0 0 12px rgba(255,190,76,.68))";
-        spriteCtx.drawImage(canyonBonusImage, (frame % 6) * sourceWidth, Math.floor(frame / 6) * sourceHeight, sourceWidth, sourceHeight, -size / 2, -size / 2, size, size);
+        spriteCtx.drawImage(canyonBonusImage, (frame % 12) * sourceWidth, Math.floor(frame / 12) * sourceHeight, sourceWidth, sourceHeight, -size / 2, -size / 2, size, size);
         spriteCtx.restore();
       }
 
@@ -9112,7 +9289,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         });
         pushPoint(glowPoints, player.x, player.y + 5, 124, colors.cyan, 0.42);
         bullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, 52, colors.gold, 0.55));
-        enemyBullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, b.flame ? 36 : 44, b.flame ? colors.orange : colors.pink, b.flame ? 0.42 : 0.5));
+        enemyBullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, b.flame ? 36 : b.regolith ? 54 : 44, b.flame ? colors.orange : b.regolith ? colors.gold : colors.pink, b.flame ? 0.42 : b.regolith ? 0.58 : 0.5));
         bossMines.forEach((mine) => {
           if (mine.t >= 0) pushPoint(glowPoints, mine.x, mine.y, 62, mine.hp < mine.maxHp ? colors.orange : colors.violet, 0.38);
         });
@@ -9158,7 +9335,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         });
 
         enemyBullets.forEach((b) => {
-          drawBolt(b, b.flame ? "#ff9a36" : "#ff5b78", b.flame ? 10 : 13, b.flame ? 4 : 5);
+          drawBolt(b, b.flame ? "#ff9a36" : b.regolith ? "#ffcc72" : "#ff5b78", b.flame ? 10 : b.regolith ? 16 : 13, b.flame ? 4 : b.regolith ? 5.5 : 5);
         });
 
         bossMines.forEach(drawAstraxMine);
