@@ -146,6 +146,20 @@
       background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-01-near-v1.png");
     }
 
+    .parallax-backdrop.stage-two .parallax-layer.far {
+      background-image:
+        linear-gradient(180deg, rgba(18, 5, 3, 0.08), rgba(7, 2, 2, 0.28)),
+        url("varldsrymden-anfaller/assets/backdrops/stage-02.jpg");
+    }
+
+    .parallax-backdrop.stage-two .parallax-layer.mid {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-02-mid-v1.png");
+    }
+
+    .parallax-backdrop.stage-two .parallax-layer.near {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-02-near-v1.png");
+    }
+
     #spriteLayer {
       position: absolute;
       inset: 0;
@@ -2623,6 +2637,11 @@
       <div class="parallax-layer mid" id="parallaxMid"></div>
       <div class="parallax-layer near" id="parallaxNear"></div>
     </div>
+    <div class="parallax-backdrop stage-two" id="stageTwoParallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="stageTwoParallaxFar"></div>
+      <div class="parallax-layer mid" id="stageTwoParallaxMid"></div>
+      <div class="parallax-layer near" id="stageTwoParallaxNear"></div>
+    </div>
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
@@ -2734,7 +2753,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.77 · Clean parallax WebGL overlay · updated 2026-07-22 16:17 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.80 · Permanent Act 1 stage 2 parallax · updated 2026-07-22 16:54 CEST</div>
   </main>
 
   <script>
@@ -2806,6 +2825,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const parallaxFar = document.querySelector("#parallaxFar");
       const parallaxMid = document.querySelector("#parallaxMid");
       const parallaxNear = document.querySelector("#parallaxNear");
+      const stageTwoParallaxBackdrop = document.querySelector("#stageTwoParallaxBackdrop");
+      const stageTwoParallaxFar = document.querySelector("#stageTwoParallaxFar");
+      const stageTwoParallaxMid = document.querySelector("#stageTwoParallaxMid");
+      const stageTwoParallaxNear = document.querySelector("#stageTwoParallaxNear");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -3461,6 +3484,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         };
       });
       stageBackdropCatalog[0].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
+      stageBackdropCatalog[1].typeLabel = "Wave backdrop · Act 1 · permanent 3-layer parallax";
       const canyonBackdropCatalogItem = {
         name: "Selene Canyon Odyssey",
         id: "BACKDROP-SPECIAL-SELENE-CANYON",
@@ -3822,6 +3846,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
 
       function setCanyonBackdrop() {
         parallaxBackdrop.classList.remove("active");
+        stageTwoParallaxBackdrop.classList.remove("active");
         shell.dataset.parallaxMode = "unavailable";
         canvas.style.backgroundImage = `linear-gradient(180deg, rgba(2, 4, 8, 0.05), rgba(2, 4, 8, 0.2)), url("${canyonRun.imageUrl}")`;
         canvas.style.backgroundSize = `${W}px ${canyonRun.imageHeight}px`;
@@ -3834,27 +3859,50 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         return activeBackdropMode === "wave" && act === 1 && alienRoundsCleared === 0 && activeBackdropIndex === 0;
       }
 
+      function stageTwoParallaxAvailable() {
+        return activeBackdropMode === "wave" && act === 1 && alienRoundsCleared === 1 && activeBackdropIndex === 1;
+      }
+
+      function anyParallaxActive() {
+        return parallaxBackdrop.classList.contains("active") || stageTwoParallaxBackdrop.classList.contains("active");
+      }
+
       function refreshParallaxBackdrop() {
         if (state === "canyon" || state === "canyonBriefing") {
           parallaxBackdrop.classList.remove("active");
+          stageTwoParallaxBackdrop.classList.remove("active");
           shell.dataset.parallaxMode = "unavailable";
           return;
         }
-        const active = parallaxAvailableForStage();
-        parallaxBackdrop.classList.toggle("active", active);
-        shell.dataset.parallaxMode = active ? "parallax" : "unavailable";
+        const stageOneActive = parallaxAvailableForStage();
+        const stageTwoAvailable = stageTwoParallaxAvailable();
+        const stageTwoActive = stageTwoAvailable;
+        const active = stageOneActive || stageTwoActive;
+        parallaxBackdrop.classList.toggle("active", stageOneActive);
+        stageTwoParallaxBackdrop.classList.toggle("active", stageTwoActive);
+        shell.dataset.parallaxMode = stageOneActive
+          ? "stage-1-parallax"
+          : stageTwoAvailable
+            ? "stage-2-parallax"
+            : "unavailable";
         canvas.style.backgroundImage = active
           ? "none"
           : `linear-gradient(180deg, rgba(3, 5, 9, 0.12), rgba(2, 3, 6, 0.34)), url("${stageBackdropUrls[activeBackdropIndex]}")`;
       }
 
       function updateParallaxBackdrop(nowSec) {
-        if (!parallaxBackdrop.classList.contains("active")) return;
         const playerX = clamp((player.x - W / 2) / (W / 2), -1, 1);
         const playerY = clamp((player.y - H * 0.64) / (H * 0.36), -1, 1);
-        parallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.13) * 1.2).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.11) * 1.1).toFixed(2)}px, 0) scale(1.055)`;
-        parallaxMid.style.transform = `translate3d(${(-playerX * 11 + Math.sin(nowSec * 0.22) * 2.4).toFixed(2)}px, ${(-playerY * 6 + Math.cos(nowSec * 0.18) * 2.2).toFixed(2)}px, 0) scale(1.075)`;
-        parallaxNear.style.transform = `translate3d(${(-playerX * 22 + Math.sin(nowSec * 0.31) * 4.2).toFixed(2)}px, ${(-playerY * 11 + Math.cos(nowSec * 0.27) * 3.4).toFixed(2)}px, 0) scale(1.11)`;
+        if (parallaxBackdrop.classList.contains("active")) {
+          parallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.13) * 1.2).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.11) * 1.1).toFixed(2)}px, 0) scale(1.055)`;
+          parallaxMid.style.transform = `translate3d(${(-playerX * 11 + Math.sin(nowSec * 0.22) * 2.4).toFixed(2)}px, ${(-playerY * 6 + Math.cos(nowSec * 0.18) * 2.2).toFixed(2)}px, 0) scale(1.075)`;
+          parallaxNear.style.transform = `translate3d(${(-playerX * 22 + Math.sin(nowSec * 0.31) * 4.2).toFixed(2)}px, ${(-playerY * 11 + Math.cos(nowSec * 0.27) * 3.4).toFixed(2)}px, 0) scale(1.11)`;
+        }
+        if (stageTwoParallaxBackdrop.classList.contains("active")) {
+          stageTwoParallaxFar.style.transform = `translate3d(${(-playerX * 3 + Math.sin(nowSec * 0.12) * 1.4).toFixed(2)}px, ${(-playerY * 2 + Math.cos(nowSec * 0.1) * 1.2).toFixed(2)}px, 0) scale(1.055)`;
+          stageTwoParallaxMid.style.transform = `translate3d(${(-playerX * 12 + Math.sin(nowSec * 0.24) * 2.8).toFixed(2)}px, ${(-playerY * 7 + Math.cos(nowSec * 0.19) * 2.4).toFixed(2)}px, 0) scale(1.08)`;
+          stageTwoParallaxNear.style.transform = `translate3d(${(-playerX * 24 + Math.sin(nowSec * 0.34) * 4.6).toFixed(2)}px, ${(-playerY * 12 + Math.cos(nowSec * 0.28) * 3.6).toFixed(2)}px, 0) scale(1.12)`;
+        }
       }
 
       function canyonBackgroundOffset() {
@@ -3966,7 +4014,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       function drawSpaceBackdrop(nowSec) {
         if (!activeBackdrop) return;
         const points = [];
-        const parallaxStageActive = parallaxBackdrop.classList.contains("active");
+        const parallaxStageActive = anyParallaxActive();
 
         if (!parallaxStageActive) {
           activeBackdrop.clouds.forEach((cloud) => {
@@ -8271,7 +8319,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         drawSpaceBackdrop(nowSec);
 
         const glowPoints = [];
-        if (!parallaxBackdrop.classList.contains("active")) {
+        if (!anyParallaxActive()) {
           nebulae.forEach((nebula) => {
             const color = nebula.hue.startsWith("94") ? colors.cyan : colors.green;
             pushPoint(glowPoints, nebula.x, nebula.y, nebula.r * 2, color, nebula.a * 3.2);
