@@ -2331,7 +2331,204 @@
       margin-top: 10px;
     }
 
+    body .win-scene.battle-report {
+      place-items: stretch;
+      padding: 0;
+      background: #020509;
+    }
+
+    body .win-scene.battle-report::before {
+      inset: 0;
+      width: auto;
+      height: auto;
+      background:
+        linear-gradient(180deg, transparent 0 47%, rgba(1, 5, 9, 0.36) 60%, rgba(1, 4, 8, 0.92) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 5px);
+      animation: none;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    body .win-scene.battle-report::after,
+    body .win-scene.battle-report .win-card {
+      display: none;
+    }
+
+    .battle-report-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 50%;
+      filter: saturate(0.92) contrast(1.05);
+    }
+
+    .win-scene:not(.battle-report) > .battle-report-image,
+    .win-scene:not(.battle-report) > .battle-report-console {
+      display: none;
+    }
+
+    .battle-report-console {
+      position: absolute;
+      z-index: 2;
+      right: clamp(12px, 3.2vw, 28px);
+      bottom: clamp(14px, 2.8vh, 28px);
+      left: clamp(12px, 3.2vw, 28px);
+      max-height: 47%;
+      padding: 15px clamp(14px, 3vw, 24px) 13px;
+      border: 1px solid rgba(152, 226, 244, 0.42);
+      border-top-color: rgba(226, 244, 245, 0.72);
+      background:
+        linear-gradient(90deg, rgba(65, 180, 205, 0.14), transparent 24% 76%, rgba(218, 126, 56, 0.12)),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+        rgba(2, 9, 14, 0.76);
+      clip-path: polygon(18px 0, calc(100% - 44px) 0, 100% 28px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 38px 100%, 0 calc(100% - 25px), 0 18px);
+      box-shadow: inset 0 0 34px rgba(72, 185, 211, 0.09), 0 20px 54px rgba(0, 0, 0, 0.58);
+      animation: battle-report-rise 760ms cubic-bezier(.16, .9, .24, 1) both;
+      overflow: hidden;
+    }
+
+    .battle-report-header,
+    .battle-report-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+    }
+
+    .battle-report-kicker,
+    .battle-report-status,
+    .battle-report-total,
+    .battle-report-continue {
+      font-family: "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+    }
+
+    .battle-report-kicker {
+      color: rgba(129, 222, 239, 0.82);
+      font-size: clamp(8px, 1.45vw, 11px);
+    }
+
+    .battle-report-console h2 {
+      margin: 3px 0 0;
+      color: #e7f1ed;
+      font: 500 clamp(19px, 4vw, 32px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      text-transform: uppercase;
+      text-shadow: 0 0 16px rgba(91, 213, 235, 0.42);
+    }
+
+    .battle-report-status {
+      color: #ffc47e;
+      font-size: clamp(8px, 1.5vw, 11px);
+      text-align: right;
+    }
+
+    .battle-report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px 7px;
+      margin: 10px 0 9px;
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+
+    .battle-report-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      align-items: center;
+      min-width: 0;
+      min-height: 50px;
+      border-left: 2px solid rgba(92, 211, 234, 0.5);
+      background: linear-gradient(90deg, rgba(61, 154, 177, 0.13), rgba(4, 11, 16, 0.28));
+    }
+
+    .battle-report-row.empty {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr;
+      padding-left: 10px;
+    }
+
+    .battle-report-row canvas {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .battle-report-creature {
+      min-width: 0;
+      padding: 5px 5px 5px 0;
+    }
+
+    .battle-report-creature strong {
+      display: block;
+      overflow: hidden;
+      color: #dfecea;
+      font: 600 clamp(7px, 1.25vw, 10px)/1.08 "Void Circuit", "Arial Narrow", sans-serif;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .battle-report-creature span {
+      display: block;
+      margin-top: 4px;
+      color: #88c9d7;
+      font: 700 clamp(7px, 1.2vw, 9px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .battle-report-total {
+      color: rgba(221, 235, 231, 0.72);
+      font-size: clamp(8px, 1.35vw, 10px);
+    }
+
+    .battle-report-total strong {
+      color: #ffd08c;
+    }
+
+    .battle-report-continue {
+      color: #e7f5ef;
+      font-size: clamp(9px, 1.7vw, 13px);
+      opacity: 0;
+      text-align: right;
+      text-shadow: 0 0 12px rgba(96, 222, 241, 0.85);
+      transition: opacity 420ms ease;
+    }
+
+    .battle-report-console.ready .battle-report-continue {
+      opacity: 1;
+      animation: battle-report-prompt 1.15s ease-in-out infinite alternate;
+    }
+
+    @keyframes battle-report-rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes battle-report-prompt {
+      from { opacity: 0.58; }
+      to { opacity: 1; }
+    }
+
     @media (max-width: 460px) {
+      .battle-report-console {
+        max-height: 52%;
+        padding: 12px 12px 11px;
+      }
+
+      .battle-report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .battle-report-row {
+        grid-template-columns: 38px minmax(0, 1fr);
+      }
+
+      .battle-report-row canvas {
+        width: 36px;
+        height: 36px;
+      }
+
       .console-tabs {
         width: 92%;
       }
@@ -2435,6 +2632,21 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       <button id="rightBtn" type="button">→</button>
     </div>
     <section class="win-scene" id="winScene" aria-live="assertive">
+      <img class="battle-report-image" src="varldsrymden-anfaller/assets/intermissions/act-1-battle-report-v2.png" alt="Max and Milton with their owl inside the Millenium Owl cockpit after defeating Nhar'Kaal">
+      <div class="battle-report-console" id="battleReportConsole" aria-hidden="true">
+        <div class="battle-report-header">
+          <div>
+            <span class="battle-report-kicker">Act 1 · Mission archive</span>
+            <h2>Battle report</h2>
+          </div>
+          <span class="battle-report-status">Nhar'Kaal defeated</span>
+        </div>
+        <div class="battle-report-grid" id="battleReportGrid"></div>
+        <div class="battle-report-footer">
+          <span class="battle-report-total" id="battleReportTotal">Confirmed 0 · <strong>0 pts</strong></span>
+          <span class="battle-report-continue" id="battleReportContinue">Press any key to continute</span>
+        </div>
+      </div>
       <div class="win-card">
         <h2 class="win-title">Congratulations, you won</h2>
         <p class="win-subtitle">Farzan Tarzan is buying kebab!</p>
@@ -2475,7 +2687,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.72 · Organic Mordrath helios arsenal · updated 2026-07-22 14:47 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.74 · Cockpit owl portrait integration · updated 2026-07-22 15:31 CEST</div>
   </main>
 
   <script>
@@ -2518,6 +2730,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const winScene = document.querySelector("#winScene");
       const winTitle = document.querySelector(".win-title");
       const winSubtitle = document.querySelector(".win-subtitle");
+      const battleReportConsole = document.querySelector("#battleReportConsole");
+      const battleReportGrid = document.querySelector("#battleReportGrid");
+      const battleReportTotal = document.querySelector("#battleReportTotal");
       const leaderboardEl = document.querySelector("#leaderboard");
       const winLeaderboardEl = document.querySelector("#winLeaderboard");
       const winRestartBtn = document.querySelector("#winRestartBtn");
@@ -2721,6 +2936,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       let actIntroTimer = null;
       let winSceneUnlockAt = 0;
       const winSceneMinimumMs = 6200;
+      const battleReportUnlockMs = 5000;
+      let battleReportUnlockTimer = null;
+      let battleReportReady = false;
+      const actOneBattleStats = new Map();
       const roundsBeforeBoss = 3;
       const totalActs = 4;
       const actNames = [
@@ -4633,6 +4852,107 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         updateHud();
       }
 
+      function recordActOneKill(enemy, pointsAwarded) {
+        if (act !== 1 || !enemy?.objectId) return;
+        const variant = enemy.alienStyle?.variants?.find((candidate) => candidate.id === enemy.objectId);
+        const existing = actOneBattleStats.get(enemy.objectId);
+        if (existing) {
+          existing.count += 1;
+          existing.points += pointsAwarded;
+          return;
+        }
+        actOneBattleStats.set(enemy.objectId, {
+          name: enemy.name || variant?.name || enemy.objectId,
+          count: 1,
+          points: pointsAwarded,
+          image: variant?.image || null,
+          columns: variant?.animationColumns || 4,
+          rows: variant?.animationRows || 4
+        });
+      }
+
+      function drawBattleReportCreature(canvas, entry) {
+        const context = canvas.getContext("2d");
+        const paint = () => {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          if (!entry.image?.naturalWidth) return;
+          const frameWidth = entry.image.naturalWidth / entry.columns;
+          const frameHeight = entry.image.naturalHeight / entry.rows;
+          const scale = Math.min(canvas.width / frameWidth, canvas.height / frameHeight) * 0.88;
+          const width = frameWidth * scale;
+          const height = frameHeight * scale;
+          context.drawImage(entry.image, 0, 0, frameWidth, frameHeight, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+        };
+        paint();
+        if (entry.image && !entry.image.complete) entry.image.addEventListener("load", paint, { once: true });
+      }
+
+      function renderActOneBattleReport() {
+        const entries = Array.from(actOneBattleStats.values()).sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+        battleReportGrid.replaceChildren();
+        entries.forEach((entry) => {
+          const row = document.createElement("div");
+          row.className = "battle-report-row";
+          const preview = document.createElement("canvas");
+          preview.width = 96;
+          preview.height = 96;
+          preview.setAttribute("aria-label", entry.name);
+          const info = document.createElement("div");
+          info.className = "battle-report-creature";
+          const name = document.createElement("strong");
+          name.textContent = entry.name;
+          const scoreLine = document.createElement("span");
+          scoreLine.textContent = `${entry.count} × · ${entry.points.toLocaleString("en-US")} pts`;
+          info.append(name, scoreLine);
+          row.append(preview, info);
+          battleReportGrid.append(row);
+          drawBattleReportCreature(preview, entry);
+        });
+        if (!entries.length) {
+          const empty = document.createElement("div");
+          empty.className = "battle-report-row empty";
+          empty.innerHTML = '<div class="battle-report-creature"><strong>No archived contacts</strong><span>Direct boss deployment</span></div>';
+          battleReportGrid.append(empty);
+        }
+        const confirmed = entries.reduce((total, entry) => total + entry.count, 0);
+        const points = entries.reduce((total, entry) => total + entry.points, 0);
+        battleReportTotal.innerHTML = `Confirmed ${confirmed} · <strong>${points.toLocaleString("en-US")} pts</strong>`;
+      }
+
+      function clearBattleReportTimer() {
+        if (battleReportUnlockTimer) clearTimeout(battleReportUnlockTimer);
+        battleReportUnlockTimer = null;
+      }
+
+      function hideBattleReport() {
+        clearBattleReportTimer();
+        battleReportReady = false;
+        battleReportConsole.classList.remove("ready");
+        battleReportConsole.setAttribute("aria-hidden", "true");
+        winScene.classList.remove("battle-report");
+      }
+
+      function showActOneBattleReport() {
+        hideBattleReport();
+        renderActOneBattleReport();
+        winScene.classList.remove("finale");
+        winScene.classList.add("visible", "intermission", "battle-report");
+        battleReportConsole.setAttribute("aria-hidden", "false");
+        winSceneUnlockAt = performance.now() + battleReportUnlockMs;
+        battleReportUnlockTimer = setTimeout(() => {
+          battleReportUnlockTimer = null;
+          battleReportReady = true;
+          battleReportConsole.classList.add("ready");
+        }, battleReportUnlockMs);
+      }
+
+      function continueFromBattleReport() {
+        if (!battleReportReady || state !== "transition" || !winScene.classList.contains("battle-report")) return false;
+        hideBattleReport();
+        finishBossTransition(false, false);
+        return true;
+      }
+
       function submitScore(label = "ACE") {
         if (scoreSubmitted || score <= 0) return;
         scoreSubmitted = true;
@@ -4649,6 +4969,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
         bossTransitionTimer = null;
         clearBossEffectTimer();
+        clearBattleReportTimer();
       }
 
       function clearBossEffectTimer() {
@@ -5007,6 +5328,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
 
       function resetGame(spawnInitialWave = true) {
         resetDirectTouchControls();
+        hideBattleReport();
+        actOneBattleStats.clear();
         score = 0;
         scoreSubmitted = false;
         wave = 1;
@@ -5030,7 +5353,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         riftTimer = 16;
         bossDefeated = false;
         clearBossTimers();
-        winScene.classList.remove("visible", "finale", "intermission");
+        winScene.classList.remove("visible", "finale", "intermission", "battle-report");
         winTitle.textContent = "Congratulations, you won";
         winSubtitle.textContent = "Farzan Tarzan is buying kebab!";
         bullets.length = 0;
@@ -5335,6 +5658,11 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       }
 
       function showBossClearScene() {
+        if (act === 1) {
+          showActOneBattleReport();
+          return;
+        }
+        hideBattleReport();
         winScene.classList.remove("finale");
         winScene.classList.add("intermission");
         winTitle.textContent = "Congratulations, you won";
@@ -5372,6 +5700,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         if (bossTransitionTimer) clearTimeout(bossTransitionTimer);
         bossTransitionTimer = null;
         if (state !== "transition") return;
+        hideBattleReport();
         if (finale && demoMode && fullAutoPlaythrough) {
           fullAutoPlaythrough = false;
           delete shell.dataset.autoPlaythrough;
@@ -5480,7 +5809,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         explosionSound(1.55);
 
         enemies.forEach((enemy, index) => {
+          const alienPoints = Math.floor(enemy.value * 0.45) + 180;
           score += Math.floor(enemy.value * 0.45);
+          recordActOneKill(enemy, alienPoints);
           setTimeout(() => {
             makeParticles(enemy.x, enemy.y, enemy.type === "captain" ? "#ffd86b" : "#ff5b78", enemy.type === "captain" ? 48 : 34);
             if (index % 4 === 0) explosionSound(0.42);
@@ -6292,7 +6623,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         shake = kind === "dreadnought" ? 50 : kind === "hunter" ? 42 : 34;
         if (!finale && !demoMode) showBossClearScene();
         const transitionDelay = demoMode ? (finale ? 820 : 760) : finale ? 1100 : 6800;
-        bossTransitionTimer = setTimeout(() => finishBossTransition(finale, demoMode), transitionDelay);
+        if (demoMode || finale || act !== 1) {
+          bossTransitionTimer = setTimeout(() => finishBossTransition(finale, demoMode), transitionDelay);
+        }
       }
 
       function damagePlayer() {
@@ -6674,7 +7007,9 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
               e.hp -= 1;
               makeParticles(b.x, b.y, e.type === "captain" ? "#ffd86b" : "#ff5b78", 6);
               if (e.hp <= 0) {
-                score += e.value + (e.dive ? 120 : 0);
+                const alienPoints = e.value + (e.dive ? 120 : 0);
+                score += alienPoints;
+                recordActOneKill(e, alienPoints);
                 makeParticles(e.x, e.y, e.type === "captain" ? "#ffd86b" : "#ff5b78", e.type === "captain" ? 42 : 28);
                 enemies.splice(j, 1);
                 shake = Math.max(shake, e.type === "captain" ? 14 : 8);
@@ -8058,6 +8393,11 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       shell.addEventListener("pointercancel", (event) => finishGamePointer(event, false), { capture: true });
 
       window.addEventListener("keydown", (event) => {
+        if (winScene.classList.contains("battle-report")) {
+          event.preventDefault();
+          if (!event.repeat) continueFromBattleReport();
+          return;
+        }
         if (event.ctrlKey && event.code === "KeyU") {
           event.preventDefault();
           if (!event.repeat) startFullAutoPlaythrough();
@@ -8128,6 +8468,12 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         event.preventDefault();
         initAudio();
         finishIntro();
+      });
+      winScene.addEventListener("pointerdown", (event) => {
+        if (!winScene.classList.contains("battle-report")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        continueFromBattleReport();
       });
       introAudioBtn.addEventListener("pointerdown", (event) => {
         event.stopPropagation();
