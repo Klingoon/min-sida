@@ -188,6 +188,38 @@
       background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/stage-04-near-v1.png");
     }
 
+    .parallax-backdrop.canyon-parallax {
+      background: #07080b;
+    }
+
+    .parallax-backdrop.canyon-parallax .parallax-layer.far {
+      inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(2, 4, 8, 0.04), rgba(2, 4, 8, 0.16)),
+        url("varldsrymden-anfaller/assets/backdrops/selene-canyon-odyssey-v2.jpg");
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-size: 760px 12964px;
+    }
+
+    .parallax-backdrop.canyon-parallax .parallax-layer.mid,
+    .parallax-backdrop.canyon-parallax .parallax-layer.near {
+      inset: -3%;
+      background-position: center top;
+      background-repeat: repeat-y;
+      background-size: 100% 2880px;
+    }
+
+    .parallax-backdrop.canyon-parallax .parallax-layer.mid {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/selene-canyon-mid-v1.png");
+      opacity: 0.68;
+    }
+
+    .parallax-backdrop.canyon-parallax .parallax-layer.near {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/parallax/selene-canyon-near-v1.png");
+      opacity: 0.76;
+    }
+
     #spriteLayer {
       position: absolute;
       inset: 0;
@@ -2651,6 +2683,11 @@
       <div class="parallax-layer mid" id="stageFourParallaxMid"></div>
       <div class="parallax-layer near" id="stageFourParallaxNear"></div>
     </div>
+    <div class="parallax-backdrop canyon-parallax" id="canyonParallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="canyonParallaxFar"></div>
+      <div class="parallax-layer mid" id="canyonParallaxMid"></div>
+      <div class="parallax-layer near" id="canyonParallaxNear"></div>
+    </div>
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
     <div class="hud" aria-live="polite">
@@ -2761,7 +2798,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.86 · Permanent Act 1 boss-stage parallax · updated 2026-07-22 17:58 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.87 · Selene Canyon 3-layer parallax · updated 2026-07-22 18:27 CEST</div>
   </main>
 
   <script>
@@ -2842,6 +2879,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
       const stageFourParallaxFar = document.querySelector("#stageFourParallaxFar");
       const stageFourParallaxMid = document.querySelector("#stageFourParallaxMid");
       const stageFourParallaxNear = document.querySelector("#stageFourParallaxNear");
+      const canyonParallaxBackdrop = document.querySelector("#canyonParallaxBackdrop");
+      const canyonParallaxFar = document.querySelector("#canyonParallaxFar");
+      const canyonParallaxMid = document.querySelector("#canyonParallaxMid");
+      const canyonParallaxNear = document.querySelector("#canyonParallaxNear");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -3509,7 +3550,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         name: "Selene Canyon Odyssey",
         id: "BACKDROP-SPECIAL-SELENE-CANYON",
         category: "backdrop",
-        typeLabel: "Special ravine stage",
+        typeLabel: "Special ravine stage · permanent 3-layer parallax",
         stageNumber: 5,
         shortcutLabel: stageShortcutLabel(5),
         sprite: "backdrop",
@@ -3869,10 +3910,10 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         stageTwoParallaxBackdrop.classList.remove("active");
         stageThreeParallaxBackdrop.classList.remove("active");
         stageFourParallaxBackdrop.classList.remove("active");
-        shell.dataset.parallaxMode = "unavailable";
-        canvas.style.backgroundImage = `linear-gradient(180deg, rgba(2, 4, 8, 0.05), rgba(2, 4, 8, 0.2)), url("${canyonRun.imageUrl}")`;
-        canvas.style.backgroundSize = `${W}px ${canyonRun.imageHeight}px`;
-        canvas.style.backgroundPosition = `center ${canyonBackgroundOffset()}px`;
+        canyonParallaxBackdrop.classList.add("active");
+        shell.dataset.parallaxMode = "selene-canyon-parallax";
+        canvas.style.backgroundImage = "none";
+        updateCanyonParallaxBackdrop();
         shell.dataset.stageBackdrop = "selene-canyon-run";
         selectSoundtrack(0);
       }
@@ -3897,7 +3938,8 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         return parallaxBackdrop.classList.contains("active")
           || stageTwoParallaxBackdrop.classList.contains("active")
           || stageThreeParallaxBackdrop.classList.contains("active")
-          || stageFourParallaxBackdrop.classList.contains("active");
+          || stageFourParallaxBackdrop.classList.contains("active")
+          || canyonParallaxBackdrop.classList.contains("active");
       }
 
       function refreshParallaxBackdrop() {
@@ -3906,9 +3948,11 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           stageTwoParallaxBackdrop.classList.remove("active");
           stageThreeParallaxBackdrop.classList.remove("active");
           stageFourParallaxBackdrop.classList.remove("active");
-          shell.dataset.parallaxMode = "unavailable";
+          canyonParallaxBackdrop.classList.add("active");
+          shell.dataset.parallaxMode = "selene-canyon-parallax";
           return;
         }
+        canyonParallaxBackdrop.classList.remove("active");
         const stageOneActive = parallaxAvailableForStage();
         const stageTwoAvailable = stageTwoParallaxAvailable();
         const stageThreeAvailable = stageThreeParallaxAvailable();
@@ -3962,6 +4006,17 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
 
       function canyonBackgroundOffset() {
         return -(canyonRun.maxScroll - canyonRun.scroll);
+      }
+
+      function updateCanyonParallaxBackdrop() {
+        if (!canyonParallaxBackdrop.classList.contains("active")) return;
+        const offset = canyonBackgroundOffset();
+        const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
+        canyonParallaxFar.style.backgroundPosition = `center ${offset}px`;
+        canyonParallaxMid.style.backgroundPosition = `center ${(offset * 0.72).toFixed(2)}px`;
+        canyonParallaxNear.style.backgroundPosition = `center ${(offset * 1.16).toFixed(2)}px`;
+        canyonParallaxMid.style.transform = `translate3d(${(-playerShift * 8).toFixed(2)}px, 0, 0)`;
+        canyonParallaxNear.style.transform = `translate3d(${(-playerShift * 18).toFixed(2)}px, 0, 0)`;
       }
 
       function canyonWorldY(screenY) {
@@ -6904,7 +6959,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         syncPhysics(dt);
 
         canyonRun.scroll = Math.min(canyonRun.maxScroll, canyonRun.scroll + canyonRun.speed * dt);
-        canvas.style.backgroundPosition = `center ${canyonBackgroundOffset()}px`;
+        updateCanyonParallaxBackdrop();
         shell.dataset.canyonProgress = Math.round(canyonRun.scroll / canyonRun.maxScroll * 100).toString();
         updateCanyonCombat(dt);
 
