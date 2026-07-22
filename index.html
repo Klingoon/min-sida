@@ -2217,7 +2217,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.57 · Helix Raider rebuilt from scratch · updated 2026-07-22 07:48 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.58 · Galaga-inspired alien attack patterns · updated 2026-07-22 07:59 CEST</div>
   </main>
 
   <script>
@@ -2621,6 +2621,7 @@
       ];
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
+      const divePatterns = ["hook", "scissor", "loop", "sweep"];
       const alienActStyles = [
         {
           species: "glacial-wraith", displayName: "Glacial Wraiths", frames: [2, 0, 2], eye: "#bff7ff", accent: "rgba(170,235,255,0.82)", filter: "hue-rotate(145deg) saturate(0.72) brightness(1.16)",
@@ -4469,6 +4470,7 @@
             hp: type === "captain" ? 2 + Math.floor(wave / 4) + (advancedAct ? act - 1 : 0) : advancedAct && groupRow <= Math.min(2, act - 1) ? 2 : 1,
             phase: Math.random() * Math.PI * 2,
             dive: null,
+            renderAngle: 0,
             cooldown: 1.2 + entryDelay + Math.random() * 2.4,
             value: (type === "captain" ? 320 : type === "guard" ? 180 : 100) + (advancedAct ? 70 * act : 0)
           });
@@ -5283,20 +5285,109 @@
         });
       }
 
-      function chooseDiver() {
-        if (!isActiveRun()) return;
-        const pool = enemies.filter((e) => e.entered && !e.dive && e.y > 70);
-        if (!pool.length) return;
-        const enemy = pool[Math.floor(Math.random() * pool.length)];
+      function cubicPoint(a, b, c, d, t) {
+        const inv = 1 - t;
+        return inv * inv * inv * a + 3 * inv * inv * t * b + 3 * inv * t * t * c + t * t * t * d;
+      }
+
+      function launchDiver(enemy, pattern, side, escortIndex, escortCount) {
+        const spacing = escortIndex - (escortCount - 1) / 2;
         enemy.dive = {
-          t: 0,
+          phase: "attack",
+          t: -escortIndex * 0.13,
           sx: enemy.x,
           sy: enemy.y,
-          side: Math.random() > 0.5 ? 1 : -1,
-          amp: (act >= 2 ? 110 + act * 18 : 80) + Math.random() * (act >= 2 ? 100 + act * 14 : 90),
-          freq: act >= 2 ? 5.8 + act * 0.45 + Math.random() * 2.8 : 5.2
+          side,
+          pattern,
+          escortIndex,
+          targetX: clamp(player.x + spacing * 64 + side * 24, 76, W - 76),
+          attackDuration: Math.max(1.45, 1.86 - act * 0.055),
+          returnDuration: 1.34 + escortIndex * 0.06,
+          canFire: escortIndex === 0 || (escortIndex === 1 && alienRoundsCleared >= 1),
+          fired: false
         };
-        if (Math.random() < 0.5) enemyShoot(enemy);
+      }
+
+      function chooseDiver() {
+        if (!isActiveRun()) return;
+        const activeDivers = enemies.filter((enemy) => enemy.dive).length;
+        const maxDivers = Math.min(5, 2 + alienRoundsCleared + Math.floor(act / 2));
+        if (activeDivers >= maxDivers) return;
+
+        const occupiedGroups = new Set(enemies.filter((enemy) => enemy.dive).map((enemy) => enemy.group));
+        const pool = enemies.filter((enemy) => enemy.entered && !enemy.dive && enemy.y > 70 && !occupiedGroups.has(enemy.group));
+        if (!pool.length) return;
+        const captains = pool.filter((enemy) => enemy.type === "captain");
+        const leaderPool = captains.length && Math.random() < 0.72 ? captains : pool;
+        const leader = leaderPool[Math.floor(Math.random() * leaderPool.length)];
+        const desiredSize = Math.min(maxDivers - activeDivers, alienRoundsCleared === 0 ? 2 : act >= 3 ? 4 : 3);
+        const escorts = pool
+          .filter((enemy) => enemy !== leader && enemy.group === leader.group)
+          .sort((a, b) => Math.abs(a.groupSlot - leader.groupSlot) - Math.abs(b.groupSlot - leader.groupSlot));
+        const attackers = [leader, ...escorts].slice(0, desiredSize);
+        const side = leader.homeX < W / 2 ? 1 : -1;
+        const patternIndex = (alienRoundsCleared + act - 1 + leader.group) % divePatterns.length;
+        const pattern = divePatterns[patternIndex];
+        attackers.forEach((enemy, index) => launchDiver(enemy, pattern, side, index, attackers.length));
+      }
+
+      function updateDiver(enemy, dt, nowSec) {
+        const dive = enemy.dive;
+        dive.t += dt;
+        if (dive.t < 0) {
+          enemy.x = dive.sx;
+          enemy.y = dive.sy;
+          return;
+        }
+
+        if (dive.phase === "attack") {
+          const progress = clamp(dive.t / dive.attackDuration, 0, 1);
+          const escortSpread = dive.escortIndex * 18;
+          const endY = H + 86 + dive.escortIndex * 14;
+          if (dive.pattern === "scissor") {
+            const weave = Math.sin(progress * Math.PI * 2.2) * (92 + escortSpread) * (1 - progress * 0.28) * dive.side;
+            enemy.x = cubicPoint(dive.sx, dive.sx - dive.side * 138, dive.targetX + dive.side * 122, dive.targetX, progress) + weave;
+            enemy.y = cubicPoint(dive.sy, dive.sy - 62, H * 0.58, endY, progress);
+          } else if (dive.pattern === "loop") {
+            const orbit = Math.sin(progress * Math.PI * 2) * (154 + escortSpread) * (1 - progress * 0.34) * dive.side;
+            enemy.x = cubicPoint(dive.sx, W / 2 + dive.side * 82, dive.targetX - dive.side * 94, dive.targetX, progress) + orbit;
+            enemy.y = cubicPoint(dive.sy, dive.sy - 112, H * 0.64, endY, progress);
+          } else if (dive.pattern === "sweep") {
+            enemy.x = cubicPoint(dive.sx, dive.sx + dive.side * 228, W / 2 - dive.side * 238, dive.targetX, progress);
+            enemy.y = cubicPoint(dive.sy, dive.sy + 34, H * 0.48, endY, progress) + Math.sin(progress * Math.PI * 3) * 22;
+          } else {
+            enemy.x = cubicPoint(dive.sx, dive.sx + dive.side * (188 + escortSpread), dive.targetX - dive.side * 146, dive.targetX, progress);
+            enemy.y = cubicPoint(dive.sy, dive.sy - 86, H * 0.56, endY, progress);
+          }
+
+          if (dive.canFire && !dive.fired && progress > 0.43) {
+            dive.fired = true;
+            enemyShoot(enemy);
+          }
+          if (progress >= 1) {
+            dive.phase = "return";
+            dive.t = 0;
+            dive.returnX = clamp(dive.targetX + dive.side * (118 + dive.escortIndex * 24), 58, W - 58);
+            enemy.x = dive.returnX;
+            enemy.y = -82 - dive.escortIndex * 16;
+          }
+          return;
+        }
+
+        const progress = clamp(dive.t / dive.returnDuration, 0, 1);
+        const eased = progress * progress * (3 - 2 * progress);
+        const target = formationTarget(enemy, nowSec);
+        const groupOffset = swarmGroupOffset(enemy, nowSec);
+        target.x += groupOffset.x;
+        target.y += groupOffset.y;
+        enemy.x = cubicPoint(dive.returnX, dive.returnX + dive.side * 132, target.x - dive.side * 84, target.x, eased);
+        enemy.y = cubicPoint(-82 - dive.escortIndex * 16, 18, target.y - 92, target.y, eased);
+        if (progress >= 1) {
+          enemy.x = target.x;
+          enemy.y = target.y;
+          enemy.dive = null;
+          enemy.cooldown = Math.max(enemy.cooldown, 0.8 + Math.random() * 0.7);
+        }
       }
 
       function hitCircleRect(circle, rect) {
@@ -5630,6 +5721,8 @@
         enemies.forEach((enemy) => {
           enemy.phase += dt * 2.5;
           enemy.cooldown -= dt;
+          const previousX = enemy.x;
+          const previousY = enemy.y;
 
           if (!enemy.entered) {
             enemy.entryTime += dt;
@@ -5642,15 +5735,7 @@
               enemy.y = enemy.homeY;
             }
           } else if (enemy.dive) {
-            enemy.dive.t += dt;
-            const t = enemy.dive.t;
-            enemy.x = enemy.dive.sx + Math.sin(t * enemy.dive.freq) * enemy.dive.amp * enemy.dive.side + (act >= 2 ? Math.sin(t * (11 + act)) * (12 + act * 4) : 0);
-            enemy.y = enemy.dive.sy + t * (act >= 2 ? 340 + act * 28 + wave * 28 : 310 + wave * 24);
-            if (enemy.y > H + 60) {
-              enemy.dive = null;
-              enemy.x = enemy.homeX;
-              enemy.y = -35;
-            }
+            updateDiver(enemy, dt, nowSec);
           } else {
             const target = formationTarget(enemy, nowSec);
             const groupOffset = swarmGroupOffset(enemy, nowSec);
@@ -5660,11 +5745,24 @@
             enemy.y += (target.y - enemy.y) * Math.min(1, dt * (2.85 + act * 0.22));
           }
 
+          const motionX = enemy.x - previousX;
+          const motionY = enemy.y - previousY;
+          if ((!enemy.entered || enemy.dive) && Math.hypot(motionX, motionY) > 0.35) {
+            const flightAngle = clamp(Math.atan2(motionY, motionX) - Math.PI / 2, -0.82, 0.82);
+            enemy.renderAngle += (flightAngle - enemy.renderAngle) * Math.min(1, dt * 8.5);
+          } else {
+            enemy.renderAngle += (0 - enemy.renderAngle) * Math.min(1, dt * 6.5);
+          }
+
           if (enemy.entered && enemy.cooldown <= 0 && enemy.y > 90 && Math.random() < 0.27) {
             enemyShoot(enemy);
             enemy.cooldown = 2.35 + Math.random() * 2.5;
           }
         });
+        const activeAlienAttacks = enemies.filter((enemy) => enemy.dive);
+        shell.dataset.alienAttackers = String(activeAlienAttacks.length);
+        shell.dataset.alienAttackPhases = activeAlienAttacks.map((enemy) => enemy.dive.phase).join(",");
+        shell.dataset.alienAttackPatterns = [...new Set(activeAlienAttacks.map((enemy) => enemy.dive.pattern))].join(",");
 
         for (let i = bullets.length - 1; i >= 0; i -= 1) {
           const b = bullets[i];
@@ -6353,7 +6451,7 @@
       function drawEnemy(enemy) {
         const captain = enemy.type === "captain";
         const guard = enemy.type === "guard";
-        const angle = enemy.dive ? Math.sin(enemy.dive.t * 5) * 0.28 : Math.sin(enemy.phase) * 0.07;
+        const angle = (enemy.renderAngle || 0) + (!enemy.dive && enemy.entered ? Math.sin(enemy.phase) * 0.045 : 0);
         if (realisticSpritesReady) {
           drawRealisticEnemy(enemy, angle);
           return;
