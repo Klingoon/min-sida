@@ -3059,7 +3059,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.101 · Regolith Sarcophagus Reforged · updated 2026-07-22 22:18 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.102 · Regolith Native Frames · updated 2026-07-22 23:12 CEST</div>
   </main>
 
   <script>
@@ -3458,12 +3458,15 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       });
       const regolithSarcophagusImage = new Image();
       regolithSarcophagusImage.decoding = "async";
-      regolithSarcophagusImage.src = "assets/canyon-minibosses/regolith-sarcophagus-144f-v2.webp";
+      regolithSarcophagusImage.src = "assets/canyon-minibosses/regolith-sarcophagus-native-64f-v3.webp";
+      const regolithSarcophagusDestructionImage = new Image();
+      regolithSarcophagusDestructionImage.decoding = "async";
+      regolithSarcophagusDestructionImage.src = "assets/canyon-minibosses/regolith-sarcophagus-destruction-native-64f-v3.webp";
       const canyonBonusImage = new Image();
       canyonBonusImage.decoding = "async";
       canyonBonusImage.src = "assets/canyon-bonuses/selene-life-shield-96f-v2.webp";
       const canyonAlienSpecies = [
-        { name: "Regolith Sarcophagus", id: "SELENE-MINIBOSS-01-REGOLITH-SARCOPHAGUS", progress: 0.010 * canyonLegacyProgressScale, size: 198, hp: 32, accent: "#ffbd70", atlas: 0, block: 0, attack: "regolith", weapon: "regolith-mine", special: "regolith" },
+        { name: "Regolith Sarcophagus", id: "SELENE-MINIBOSS-01-REGOLITH-SARCOPHAGUS", progress: 0.010 * canyonLegacyProgressScale, size: 242, hp: 32, accent: "#ffbd70", atlas: 0, block: 0, attack: "regolith", weapon: "regolith-mine", special: "regolith" },
         { name: "Dune Surveyor Prime", id: "SELENE-MINIBOSS-02-DUNE-SURVEYOR", progress: 0.110 * canyonLegacyProgressScale, size: 196, hp: 26, accent: "#f08a4b", atlas: 0, block: 1, attack: "weave", weapon: "claw" },
         { name: "Heliopause Cantor", id: "SELENE-MINIBOSS-03-HELIOPAUSE-CANTOR", progress: 0.215 * canyonLegacyProgressScale, size: 202, hp: 28, accent: "#63dcff", atlas: 0, block: 2, attack: "spiral", weapon: "disc" },
         { name: "Gravemaw Annulus", id: "SELENE-MINIBOSS-04-GRAVEMAW-ANNULUS", progress: 0.321 * canyonLegacyProgressScale, size: 208, hp: 30, accent: "#aa82ff", atlas: 1, block: 0, attack: "rings", weapon: "mine" },
@@ -3481,10 +3484,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         image: species.special === "regolith" ? regolithSarcophagusImage : canyonMinibossAtlases[species.atlas],
         imageUrl: species.special === "regolith" ? regolithSarcophagusImage.src : canyonMinibossAtlasUrls[species.atlas],
         frameOffset: species.special === "regolith" ? 0 : species.block * 12,
-        animationFrames: species.special === "regolith" ? 144 : 12,
-        animationColumns: species.special === "regolith" ? 12 : 6,
-        animationRows: species.special === "regolith" ? 12 : 6,
-        animationFps: species.special === "regolith" ? 30 : 9 + (encounterIndex % 3)
+        animationFrames: species.special === "regolith" ? 64 : 12,
+        animationColumns: species.special === "regolith" ? 8 : 6,
+        animationRows: species.special === "regolith" ? 8 : 6,
+        animationFps: species.special === "regolith" ? 18 : 9 + (encounterIndex % 3)
       }));
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
@@ -3873,7 +3876,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ...species,
           category: "alien",
           typeLabel: species.special === "regolith"
-            ? "Selene miniboss · Sector 1 · 144-frame reconstructed motion · multi-phase destruction"
+            ? "Selene miniboss · Sector 1 · 64 native combat frames · no interpolation"
             : `Selene miniboss · Sector ${index + 1} · 12 generated keyframes · interpolated motion`,
           sprite: "canyonAlien",
           frame: species.frameOffset,
@@ -3881,6 +3884,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rows: species.animationRows,
           eye: species.accent
         })),
+        { name: "Regolith Sarcophagus Destruction", id: "SELENE-MINIBOSS-01-REGOLITH-DESTRUCTION", category: "object", typeLabel: "64 native destruction frames · no interpolation", sprite: "canyonAlienDestruction", image: regolithSarcophagusDestructionImage, frame: 0, columns: 8, rows: 8, animationFrames: 64, animationFps: 20 },
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
@@ -4527,6 +4531,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             deathDuration: species.special === "regolith" ? 3.25 : 1.05,
             deathElapsed: 0,
             deathBurstNext: 0,
+            motionMode: "idle",
+            motionTime: 0,
+            motionDuration: 0,
             rewardSpawned: false
           });
         });
@@ -4562,6 +4569,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           const desiredCount = 5 + (alien.weaponSequence % 3);
           const count = Math.min(desiredCount, 12 - ownedMines);
           const center = (count - 1) / 2;
+          alien.motionMode = "mines";
+          alien.motionDuration = 0.88;
+          alien.motionTime = alien.motionDuration;
           alien.weaponSequence += 1;
           for (let slot = 0; slot < count; slot += 1) {
             canyonWeapons.push({
@@ -4619,6 +4629,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const healthPhase = alien.hp / alien.maxHp < 0.45 ? 1 : 0;
         const shots = [];
         if (alien.species.special === "regolith") {
+          alien.motionMode = "volley";
+          alien.motionDuration = 0.72;
+          alien.motionTime = alien.motionDuration;
           const pattern = alien.attackSequence % 3;
           alien.attackSequence += 1;
           if (pattern === 0) {
@@ -4690,25 +4703,23 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         canyonAliens.forEach((alien) => {
           alien.phase += dt * (1.35 + alien.index * 0.025);
           alien.hurt = Math.max(0, alien.hurt - dt);
+          alien.motionTime = Math.max(0, alien.motionTime - dt);
+          if (alien.motionTime <= 0 && alien.dying <= 0) alien.motionMode = "idle";
           if (alien.dead) return;
           if (alien.dying > 0) {
             alien.dying -= dt;
             alien.deathElapsed += dt;
             if (alien.species.special === "regolith") {
-              alien.y += Math.sin(alien.deathElapsed * 7.4) * dt * 11;
-              alien.x += Math.sin(alien.deathElapsed * 5.1) * dt * 16;
-              while (alien.deathElapsed >= alien.deathBurstNext && alien.deathBurstNext < alien.deathDuration - 0.18) {
-                const burstIndex = Math.floor(alien.deathBurstNext / 0.22);
+              while (alien.deathElapsed >= alien.deathBurstNext && alien.deathBurstNext < alien.deathDuration - 0.2) {
+                const burstIndex = Math.floor(alien.deathBurstNext / 0.78);
                 const angle = burstIndex * 2.39996 + alien.phase;
-                const radius = 22 + (burstIndex % 5) * 18;
+                const radius = 32 + (burstIndex % 3) * 24;
                 const burstX = alien.x + Math.cos(angle) * radius;
                 const burstY = alien.y + Math.sin(angle) * radius * 0.62;
-                makeParticles(burstX, burstY, burstIndex % 3 === 0 ? "#fff1c2" : alien.species.accent, burstIndex % 3 === 0 ? 34 : 18);
-                if (burstIndex % 3 === 0) {
-                  shake = Math.max(shake, 14 + burstIndex * 0.8);
-                  explosionSound(0.5 + burstIndex * 0.035);
-                }
-                alien.deathBurstNext += 0.22;
+                makeParticles(burstX, burstY, burstIndex % 2 === 0 ? "#fff1c2" : alien.species.accent, 14);
+                shake = Math.max(shake, 10 + burstIndex * 2);
+                explosionSound(0.42 + burstIndex * 0.04);
+                alien.deathBurstNext += 0.78;
               }
             } else {
               alien.y += dt * 46;
@@ -4720,9 +4731,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 spawnCanyonBonus(alien);
               }
               if (alien.species.special === "regolith") {
-                makeParticles(alien.x, alien.y, "#fff1c2", 120);
-                makeParticles(alien.x - 54, alien.y + 20, "#ff9a45", 54);
-                makeParticles(alien.x + 58, alien.y - 12, "#ffbd70", 54);
+                makeParticles(alien.x, alien.y, "#fff1c2", 58);
+                makeParticles(alien.x, alien.y, "#ff9a45", 34);
                 shake = Math.max(shake, 46);
                 explosionSound(1.5);
               }
@@ -4834,6 +4844,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           bullets.splice(bulletIndex, 1);
           alien.hp -= 1;
           alien.hurt = 0.16;
+          if (alien.species.special === "regolith" && alien.hp > 0) {
+            alien.motionMode = "hurt";
+            alien.motionDuration = 0.52;
+            alien.motionTime = alien.motionDuration;
+          }
           score += 35;
           makeParticles(bullet.x, bullet.y, alien.species.accent, alien.hp > 0 ? 10 : 72);
           play(alien.hp > 0 ? 176 : 92, alien.hp > 0 ? 0.08 : 0.34, "sawtooth", alien.hp > 0 ? 0.03 : 0.075);
@@ -4842,6 +4857,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             alien.dying = alien.deathDuration;
             alien.deathElapsed = 0;
             alien.deathBurstNext = 0;
+            alien.motionMode = "death";
+            alien.motionTime = 0;
             score += 5200 + alien.index * 480;
             shake = Math.max(shake, 32);
             explosionSound(1.25);
@@ -5642,6 +5659,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           const localFrame = Math.floor(t * item.animationFps + item.encounterIndex * 1.7) % item.animationFrames;
           const animatedItem = { ...item, frame: item.frameOffset + localFrame };
           const previewSize = canvas === devDetailCanvas ? 260 : 154;
+          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
+          return;
+        }
+
+        if (item.sprite === "canyonAlienDestruction") {
+          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % item.animationFrames };
+          const previewSize = canvas === devDetailCanvas ? 280 : 164;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
           return;
         }
@@ -8775,6 +8799,67 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (state !== "canyon" || alien.dead || alien.y < -150 || alien.y > H + 150) return;
         const image = alien.species.image;
         if (!image.complete || !image.naturalWidth) return;
+        if (alien.species.special === "regolith") {
+          const dying = alien.dying > 0;
+          const nativeImage = dying ? regolithSarcophagusDestructionImage : regolithSarcophagusImage;
+          if (!nativeImage.complete || !nativeImage.naturalWidth) return;
+          let frame;
+          if (dying) {
+            const progress = clamp(alien.deathElapsed / alien.deathDuration, 0, 0.99999);
+            frame = Math.floor(progress * 64);
+          } else if (alien.motionMode === "volley") {
+            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
+            frame = 16 + Math.floor(progress * 16);
+          } else if (alien.motionMode === "mines") {
+            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
+            frame = 32 + Math.floor(progress * 16);
+          } else if (alien.motionMode === "hurt") {
+            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
+            frame = 48 + Math.floor(progress * 16);
+          } else {
+            frame = Math.floor(t * 18 + alien.index * 3) % 16;
+          }
+          const sourceWidth = nativeImage.naturalWidth / 8;
+          const sourceHeight = nativeImage.naturalHeight / 8;
+          const drawSize = dying ? alien.species.size * 1.42 : alien.species.size;
+          const bob = dying ? 0 : Math.sin(t * 1.8 + alien.index) * 4;
+          spriteCtx.save();
+          spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
+          spriteCtx.rotate(dying ? 0 : Math.sin(t * 0.82 + alien.index) * 0.018);
+          spriteCtx.filter = alien.hurt > 0 && !dying ? "brightness(1.55) saturate(0.82)" : "contrast(1.05) saturate(1.04)";
+          spriteCtx.drawImage(
+            nativeImage,
+            (frame % 8) * sourceWidth,
+            Math.floor(frame / 8) * sourceHeight,
+            sourceWidth,
+            sourceHeight,
+            -drawSize / 2,
+            -drawSize / 2,
+            drawSize,
+            drawSize
+          );
+          spriteCtx.restore();
+          shell.dataset.regolithFrame = String(frame);
+          shell.dataset.regolithMotion = dying ? "destruction" : alien.motionMode;
+
+          if (alien.engaged && !dying) {
+            const barWidth = 236;
+            const hpRatio = clamp(alien.hp / alien.maxHp, 0, 1);
+            spriteCtx.save();
+            spriteCtx.translate(W / 2 - barWidth / 2, 84);
+            spriteCtx.fillStyle = "rgba(3,7,12,0.76)";
+            spriteCtx.fillRect(-3, -3, barWidth + 6, 10);
+            spriteCtx.fillStyle = alien.species.accent;
+            spriteCtx.fillRect(0, 0, barWidth * hpRatio, 4);
+            spriteCtx.fillStyle = "rgba(255,255,255,0.7)";
+            spriteCtx.fillRect(0, 0, barWidth * hpRatio, 1);
+            spriteCtx.font = "10px Orbitron, monospace";
+            spriteCtx.textAlign = "center";
+            spriteCtx.fillText(alien.species.name.toUpperCase(), barWidth / 2, -9);
+            spriteCtx.restore();
+          }
+          return;
+        }
         const frameFloat = t * alien.species.animationFps + alien.index * 1.73;
         const localFrame = Math.floor(frameFloat) % alien.species.animationFrames;
         const nextLocalFrame = (localFrame + 1) % alien.species.animationFrames;
@@ -8792,7 +8877,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             ? clamp(1 - Math.max(0, deathProgress - 0.3) / 0.7, 0, 1)
             : clamp(alien.dying / alien.deathDuration, 0, 1)
           : 1;
-        const strips = alien.species.special === "regolith" ? 24 : 12;
+        const strips = 12;
 
         function paintFrame(localIndex, opacity, temporalOffset) {
           const frame = alien.species.frameOffset + localIndex;
@@ -8804,34 +8889,21 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             const stripHeight = sourceHeight / strips + 1;
             const stripDestY = -size / 2 + strip * size / strips;
             const organicOffset = Math.sin(t * 2.2 + temporalOffset + strip * 0.66 + alien.index) * (2 + Math.abs(strip - (strips - 1) / 2) * 0.12);
-            const deathSpread = alien.species.special === "regolith" ? 92 : 18;
+            const deathSpread = 18;
             const deathOffset = deathProgress * deathProgress * Math.sin(strip * 1.7) * deathSpread;
-            const verticalBreak = alien.species.special === "regolith"
-              ? deathProgress * deathProgress * (strip - (strips - 1) / 2) * 3.4
-              : 0;
+            const verticalBreak = 0;
             spriteCtx.drawImage(image, sourceX, stripSourceY, sourceWidth, stripHeight, -size / 2 + organicOffset + deathOffset, stripDestY + verticalBreak, size, size / strips + 1);
           }
         }
 
         spriteCtx.save();
         spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
-        spriteCtx.rotate(Math.sin(t * 1.22 + alien.index) * 0.045 + deathProgress * (alien.species.special === "regolith" ? 0.16 : 0.42));
-        const deathScale = alien.species.special === "regolith" ? deathProgress * 0.42 : deathProgress * 0.22;
-        spriteCtx.scale(breathe + deathScale, 1 / breathe - deathProgress * (alien.species.special === "regolith" ? 0.28 : 0.12));
+        spriteCtx.rotate(Math.sin(t * 1.22 + alien.index) * 0.045 + deathProgress * 0.42);
+        const deathScale = deathProgress * 0.22;
+        spriteCtx.scale(breathe + deathScale, 1 / breathe - deathProgress * 0.12);
         spriteCtx.filter = alien.hurt > 0 ? "brightness(2.35) saturate(0.48)" : "contrast(1.08) saturate(1.06)";
         paintFrame(localFrame, 1 - frameBlend, 0);
         paintFrame(nextLocalFrame, frameBlend, 0.18);
-        if (alien.species.special === "regolith" && alien.dying > 0) {
-          spriteCtx.globalCompositeOperation = "screen";
-          spriteCtx.globalAlpha = clamp(1 - deathProgress, 0, 1) * 0.72;
-          spriteCtx.strokeStyle = deathProgress < 0.52 ? "#fff1c2" : "#ff8a42";
-          spriteCtx.lineWidth = 2 + deathProgress * 5;
-          for (let ring = 0; ring < 3; ring += 1) {
-            spriteCtx.beginPath();
-            spriteCtx.ellipse(0, 0, size * (0.18 + deathProgress * (0.52 + ring * 0.16)), size * (0.12 + deathProgress * (0.34 + ring * 0.1)), ring * 0.4 + deathProgress * 2, 0, Math.PI * 2);
-            spriteCtx.stroke();
-          }
-        }
         spriteCtx.restore();
 
         if (alien.engaged && alien.dying <= 0) {
