@@ -2475,7 +2475,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.69 · Unique animated Act 3 alien families · updated 2026-07-22 12:52 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.70 · Unique animated Act 4 alien families · updated 2026-07-22 13:30 CEST</div>
   </main>
 
   <script>
@@ -3082,7 +3082,57 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
           ]
         }
       ];
-      [...actOneWaveFamilies.slice(1), ...actTwoWaveFamilies, ...actThreeWaveFamilies].forEach((style) => {
+      const actFourWaveFamilies = [
+        {
+          species: "blackglass-brood",
+          displayName: "Blackglass Brood",
+          eye: "#d8efff",
+          accent: "rgba(62,123,255,0.86)",
+          animationSizes: [45, 51, 57],
+          hitboxes: [[29, 29], [36, 34], [39, 38]],
+          formationRadius: 88,
+          formationRingStep: 18,
+          formationRowGap: 190,
+          variants: [
+            { name: "Voidglass Dart", id: "ALIEN-A04-W01-SCOUT-VOIDGLASS", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/voidglass-dart-96f-v1.webp" },
+            { name: "Fracture Bastion", id: "ALIEN-A04-W01-GUARD-FRACTURE", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/fracture-bastion-96f-v1.webp" },
+            { name: "Singularity Regent", id: "ALIEN-A04-W01-CAPTAIN-SINGULARITY", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/singularity-regent-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "emberveil-nomads",
+          displayName: "Emberveil Nomads",
+          eye: "#ffd08b",
+          accent: "rgba(255,112,91,0.86)",
+          animationSizes: [46, 52, 58],
+          hitboxes: [[30, 29], [36, 35], [40, 39]],
+          formationRadius: 88,
+          formationRingStep: 18,
+          formationRowGap: 190,
+          variants: [
+            { name: "Cinderveil Ray", id: "ALIEN-A04-W02-SCOUT-CINDERVEIL", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/cinderveil-ray-96f-v1.webp" },
+            { name: "Nebula Husk", id: "ALIEN-A04-W02-GUARD-NEBULA", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/nebula-husk-96f-v1.webp" },
+            { name: "Roselight Oracle", id: "ALIEN-A04-W02-CAPTAIN-ROSELIGHT", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/roselight-oracle-96f-v1.webp" }
+          ]
+        },
+        {
+          species: "gravemarch-choir",
+          displayName: "Gravemarch Choir",
+          eye: "#f0f6ff",
+          accent: "rgba(143,190,255,0.84)",
+          animationSizes: [45, 52, 58],
+          hitboxes: [[29, 29], [36, 34], [39, 39]],
+          formationRadius: 89,
+          formationRingStep: 18,
+          formationRowGap: 190,
+          variants: [
+            { name: "Eventide Needle", id: "ALIEN-A04-W03-SCOUT-EVENTIDE", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/eventide-needle-96f-v1.webp" },
+            { name: "Gravity Carapace", id: "ALIEN-A04-W03-GUARD-GRAVITY", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/gravity-carapace-96f-v1.webp" },
+            { name: "Spiral Maw Archon", id: "ALIEN-A04-W03-CAPTAIN-SPIRALMAW", animationFrames: 96, animationColumns: 12, animationRows: 8, animationFps: 24, imageUrl: "assets/aliens/spiral-maw-archon-96f-v1.webp" }
+          ]
+        }
+      ];
+      [...actOneWaveFamilies.slice(1), ...actTwoWaveFamilies, ...actThreeWaveFamilies, ...actFourWaveFamilies].forEach((style) => {
         style.variants.forEach((variant) => {
           variant.image = new Image();
           variant.image.decoding = "async";
@@ -3094,6 +3144,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         if (actNumber === 1) return actOneWaveFamilies[clamp(waveIndex, 0, actOneWaveFamilies.length - 1)];
         if (actNumber === 2) return actTwoWaveFamilies[clamp(waveIndex, 0, actTwoWaveFamilies.length - 1)];
         if (actNumber === 3) return actThreeWaveFamilies[clamp(waveIndex, 0, actThreeWaveFamilies.length - 1)];
+        if (actNumber === 4) return actFourWaveFamilies[clamp(waveIndex, 0, actFourWaveFamilies.length - 1)];
         return alienActStyles[clamp(actNumber - 1, 0, alienActStyles.length - 1)];
       }
 
@@ -3101,7 +3152,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         ...actOneWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 0, waveIndex })),
         ...actTwoWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 1, waveIndex })),
         ...actThreeWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 2, waveIndex })),
-        { style: alienActStyles[3], actIndex: 3, waveIndex: 0 }
+        ...actFourWaveFamilies.map((style, waveIndex) => ({ style, actIndex: 3, waveIndex }))
       ];
 
       function alienAnimationReady(variant) {
@@ -3180,7 +3231,7 @@ WARNING  DO NOT SHOOT THE HYDRA COMET</p>
         ...alienCatalogFamilies.flatMap(({ style, actIndex, waveIndex }) => style.variants.map((variant, variantIndex) => ({
           ...variant,
           category: "alien",
-          typeLabel: `Alien · Act ${actIndex + 1}${actIndex <= 2 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
+          typeLabel: `Alien · Act ${actIndex + 1}${actIndex <= 3 ? ` Assault ${waveIndex + 1}` : ""} · ${variant.animationFrames || 16} frames`,
           sprite: "alienAnimation",
           frame: 0,
           columns: variant.animationColumns || 4,
