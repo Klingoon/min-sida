@@ -2217,7 +2217,7 @@
       </div>
     </section>
     <div class="encouragement" id="encouragement" aria-live="polite"></div>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.56 · Hydra Comet rebuilt from scratch · updated 2026-07-22 07:23 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.57 · Helix Raider rebuilt from scratch · updated 2026-07-22 07:48 CEST</div>
   </main>
 
   <script>
@@ -2310,7 +2310,7 @@
       Object.values(objectAnimationSprites).forEach((image) => {
         image.decoding = "async";
       });
-      objectAnimationSprites.helixRaider.src = "varldsrymden-anfaller/assets/objects/helix-raider-64f.webp";
+      objectAnimationSprites.helixRaider.src = "varldsrymden-anfaller/assets/objects/helix-raider-128f-v2.webp";
       objectAnimationSprites.hydraComet.src = "varldsrymden-anfaller/assets/objects/hydra-comet-64f-v2.webp";
 
       function objectAnimationReady(kind) {
@@ -2788,7 +2788,7 @@
         })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
-        { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 64 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 8, rows: 8, animationFps: 12 },
+        { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard · 64 frames", sprite: "objectAnimation", objectKind: "hydraComet", image: objectAnimationSprites.hydraComet, frame: 0, columns: 8, rows: 8, animationFps: 12 },
         { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
         ...backdropObjectCatalog,
@@ -3953,7 +3953,8 @@
         }
 
         if (item.sprite === "objectAnimation") {
-          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % 64 };
+          const frameCount = item.columns * item.rows;
+          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % frameCount };
           const detail = canvas === devDetailCanvas;
           const previewSize = item.objectKind === "helixRaider"
             ? (detail ? 260 : 156)
@@ -6471,7 +6472,7 @@
         const bob = Math.sin(t * 6) * 2.5;
         const tilt = Math.sin(t * 3.2) * 0.08;
         if (objectAnimationReady("helixRaider")) {
-          const frame = Math.floor(t * 12) % 64;
+          const frame = Math.floor(t * 24) % 128;
           const filter = act === 2
             ? "sepia(0.14) saturate(1.2) brightness(1.04)"
             : act === 3
@@ -6479,7 +6480,7 @@
               : act >= 4
                 ? "saturate(0.82) contrast(1.18) brightness(0.88)"
                 : "saturate(0.92) brightness(1.08)";
-          drawSpriteFrame(objectAnimationSprites.helixRaider, frame, 8, 8, bonusUfo.x, bonusUfo.y + bob, 138, 138, tilt, "transparent", 0, 1, filter);
+          drawSpriteFrame(objectAnimationSprites.helixRaider, frame, 16, 8, bonusUfo.x, bonusUfo.y + bob, 138, 138, tilt, "transparent", 0, 1, filter);
           return;
         }
         if (realisticSpritesReady) {
