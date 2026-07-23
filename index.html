@@ -657,6 +657,22 @@
     .intro-sequence[data-position="5"] { left: 50%; bottom: 11%; transform: translateX(-50%); }
     .intro-sequence[data-position="6"] { right: 8%; bottom: 13%; }
 
+    .intro-splash.ship-only .intro-sequence {
+      width: min(430px, 30vw);
+    }
+
+    .intro-splash.ship-only .intro-sequence[data-position="0"] { left: 4%; right: auto; bottom: 23%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="1"] { left: auto; right: 4%; bottom: 27%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="2"] { left: 5%; right: auto; bottom: 15%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="3"] { left: auto; right: 5%; bottom: 14%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="4"] { left: 5%; right: auto; bottom: 31%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="5"] { left: auto; right: 5%; bottom: 19%; transform: none; }
+    .intro-splash.ship-only .intro-sequence[data-position="6"] { left: 5%; right: auto; bottom: 11%; transform: none; }
+
+    .intro-splash.ship-only .intro-phrase {
+      font-size: clamp(11px, 1.25vw, 17px);
+    }
+
     .intro-copy footer {
       position: absolute;
       inset: 0;
@@ -2121,6 +2137,13 @@
       .intro-sequence[data-position="5"] { bottom: 10%; }
       .intro-sequence[data-position="6"] { right: 7%; bottom: 12%; }
 
+      .intro-splash.ship-only .intro-sequence {
+        left: 50% !important;
+        right: auto !important;
+        width: 88vw;
+        transform: translateX(-50%) !important;
+      }
+
       .intro-phrase {
         font-size: clamp(11px, 3.5vw, 15px);
       }
@@ -2949,8 +2972,8 @@
   </style>
 </head>
 <body>
-  <section class="intro-splash" id="introSplash" aria-label="Libertarian freedoom fighters, Max and Milton search the galaxy for their lost father">
-    <img src="varldsrymden-anfaller/assets/opening-max-milton-v4.png" alt="Max and Milton in front of their spaceship in a distant galaxy, with a light-colored owl perched on the lighter-haired man's shoulder">
+  <section class="intro-splash ship-only" id="introSplash" aria-label="Libertarian freedoom fighters, a spaceship crosses a distant galaxy">
+    <img src="varldsrymden-anfaller/assets/opening-spaceship-v10.png" alt="A detailed spaceship flying through a richly textured distant galaxy filled with planets, stars, nebula filaments and ancient space structures">
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3181,7 +3204,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.111 · Responsive Current · updated 2026-07-23 09:20 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.117 · Restored Galaxy · updated 2026-07-23 10:50 CEST</div>
   </main>
 
   <script>
