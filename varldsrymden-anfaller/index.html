@@ -444,7 +444,7 @@
     }
 
     [data-underwater-fx="active"] .parallax-backdrop.luyten-parallax {
-      filter: url("#abyssalRefraction") saturate(var(--luyten-saturation, 1.08)) contrast(1.055);
+      filter: none;
     }
 
     .parallax-backdrop.luyten-parallax .parallax-layer.far {
@@ -3181,7 +3181,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.110 · Fluid Current · updated 2026-07-23 10:11 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.111 · Responsive Current · updated 2026-07-23 09:20 CEST</div>
   </main>
 
   <script>
@@ -3332,6 +3332,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       const W = canvas.width;
       const H = canvas.height;
+      const luytenOrganismCanvas = document.createElement("canvas");
+      luytenOrganismCanvas.width = W;
+      luytenOrganismCanvas.height = H;
+      const luytenOrganismCtx = luytenOrganismCanvas.getContext("2d", { alpha: true });
+      let luytenOrganismRenderFrame = -1;
+      let underwaterEffectsRenderFrame = -1;
       const realisticSprites = {
         player: new Image(),
         enemies: new Image(),
@@ -3580,6 +3586,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         speed: 72,
         sceneIndex: 0
       };
+      let luytenVisualSceneIndex = -1;
+      let luytenDisplayedProgress = -1;
+      let luytenDisplayedCurve = "";
+      let luytenDisplayedPlayerPosition = "";
+      let luytenPlayerVx = 0;
+      let luytenPlayerVy = 0;
       const luytenCurveProfile = [
         0.08, -0.14, 0.18, 0.28,
         -0.22, 0.16, 0.72, -0.86,
@@ -4389,8 +4401,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         flesh: hexToRgb("#b66cff")
       };
 
+      const rgbaScratch = new Float32Array(4);
       function rgba(rgb, alpha = 1) {
-        return [rgb[0], rgb[1], rgb[2], alpha];
+        rgbaScratch[0] = rgb[0];
+        rgbaScratch[1] = rgb[1];
+        rgbaScratch[2] = rgb[2];
+        rgbaScratch[3] = alpha;
+        return rgbaScratch;
       }
 
       function cssRgba(hex, alpha = 1) {
@@ -4881,13 +4898,20 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenParallaxFar.style.transform = `translate3d(${(-playerShift * 3 - curve * 5).toFixed(2)}px, 0, 0) scaleX(1.04)`;
         luytenParallaxMid.style.transform = `translate3d(${(-playerShift * 11 - curve * 16).toFixed(2)}px, 0, 0) scaleX(1.1)`;
         luytenParallaxNear.style.transform = `translate3d(${(-playerShift * 24 - curve * 34).toFixed(2)}px, 0, 0) scaleX(1.16)`;
-        const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
-        const waterRgb = hexToRgb(sceneStyle.water).map((channel) => Math.round(channel * 255)).join(", ");
-        const lightRgb = hexToRgb(sceneStyle.rim).map((channel) => Math.round(channel * 255)).join(", ");
-        shell.style.setProperty("--luyten-water-rgb", waterRgb);
-        shell.style.setProperty("--luyten-light-rgb", lightRgb);
-        shell.style.setProperty("--luyten-saturation", sceneStyle.saturation);
-        shell.dataset.luytenCurve = curve.toFixed(3);
+        if (luytenVisualSceneIndex !== luytenRun.sceneIndex) {
+          luytenVisualSceneIndex = luytenRun.sceneIndex;
+          const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
+          const waterRgb = hexToRgb(sceneStyle.water).map((channel) => Math.round(channel * 255)).join(", ");
+          const lightRgb = hexToRgb(sceneStyle.rim).map((channel) => Math.round(channel * 255)).join(", ");
+          shell.style.setProperty("--luyten-water-rgb", waterRgb);
+          shell.style.setProperty("--luyten-light-rgb", lightRgb);
+          shell.style.setProperty("--luyten-saturation", sceneStyle.saturation);
+        }
+        const curveLabel = curve.toFixed(2);
+        if (luytenDisplayedCurve !== curveLabel) {
+          luytenDisplayedCurve = curveLabel;
+          shell.dataset.luytenCurve = curveLabel;
+        }
       }
 
       function activeCanyonLandmark() {
@@ -5300,7 +5324,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawSpaceBackdrop(nowSec) {
         if (!activeBackdrop) return;
-        const points = [];
+        backdropPoints.length = 0;
+        const points = backdropPoints;
         const parallaxStageActive = anyParallaxActive();
 
         if (!parallaxStageActive) {
@@ -5781,6 +5806,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       const polyBuffer = gl.createBuffer();
       const pointBuffer = gl.createBuffer();
+      const shapeGpuBuffers = new WeakMap();
+      let pointUploadBuffer = new Float32Array(4096);
       const shapeLoc = {
         pos: gl.getAttribLocation(shapeProgram, "a_pos"),
         resolution: gl.getUniformLocation(shapeProgram, "u_resolution"),
@@ -5804,8 +5831,15 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawPoly(points, x, y, sx, sy, angle, color, mode = gl.TRIANGLE_FAN) {
         gl.useProgram(shapeProgram);
-        gl.bindBuffer(gl.ARRAY_BUFFER, polyBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STREAM_DRAW);
+        let cachedBuffer = shapeGpuBuffers.get(points);
+        if (!cachedBuffer) {
+          cachedBuffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, cachedBuffer);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+          shapeGpuBuffers.set(points, cachedBuffer);
+        } else {
+          gl.bindBuffer(gl.ARRAY_BUFFER, cachedBuffer);
+        }
         gl.enableVertexAttribArray(shapeLoc.pos);
         gl.vertexAttribPointer(shapeLoc.pos, 2, gl.FLOAT, false, 0, 0);
         gl.uniform2f(shapeLoc.resolution, W, H);
@@ -5820,10 +5854,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawPoints(items, additive = true) {
         if (!items.length) return;
+        if (pointUploadBuffer.length < items.length) {
+          pointUploadBuffer = new Float32Array(2 ** Math.ceil(Math.log2(items.length)));
+        }
+        pointUploadBuffer.set(items, 0);
         gl.useProgram(pointProgram);
         gl.blendFunc(gl.SRC_ALPHA, additive ? gl.ONE : gl.ONE_MINUS_SRC_ALPHA);
         gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(items), gl.STREAM_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, pointUploadBuffer.subarray(0, items.length), gl.STREAM_DRAW);
         const stride = 7 * 4;
         gl.enableVertexAttribArray(pointLoc.pos);
         gl.vertexAttribPointer(pointLoc.pos, 2, gl.FLOAT, false, stride, 0);
@@ -5884,6 +5922,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const debrisShape = [0, 0, -0.92, -0.38, -0.24, -1, 0.78, -0.54, 0.96, 0.42, 0.12, 1, -0.74, 0.56, -0.92, -0.38];
       const lineShape = [-1, 0, 1, 0];
       const renderShake = { x: 0, y: 0 };
+      const backdropPoints = [];
+      const glowPoints = [];
+      const starCores = [];
+      const sparkPoints = [];
 
       function renderLives() {
         const label = player.bonusLives > 0 ? `∞ +${player.bonusLives}` : "∞";
@@ -5896,24 +5938,30 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function updateHud() {
-        scoreEl.textContent = score.toString();
-        hiScoreEl.textContent = getHiScore().toString();
+        const setHudText = (element, value) => {
+          if (element.textContent !== value) element.textContent = value;
+        };
+        setHudText(scoreEl, score.toString());
+        setHudText(hiScoreEl, getHiScore().toString());
         const canyonStage = state === "canyon" || state === "canyonBriefing";
         const luytenStage = state === "luyten" || state === "luytenBriefing";
         const actIndex = clamp(act - 1, 0, actNames.length - 1);
         const alienStyle = alienStyleForStage(act, alienRoundsCleared);
-        waveEl.textContent = luytenStage
+        const waveLabel = luytenStage
           ? `DIVE ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
           : canyonStage
           ? "MINIBOSS GAUNTLET"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
-        hudStageName.textContent = luytenStage ? "Luyten b Abyssal Descent" : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
-        hudEncounterName.textContent = luytenStage
+        const stageLabel = luytenStage ? "Luyten b Abyssal Descent" : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
+        const encounterLabel = luytenStage
           ? luytenScenes[luytenRun.sceneIndex].name
           : canyonStage
           ? (activeCanyonAlien()?.species.name || activeCanyonLandmark()?.name || "Selene Wreck Gauntlet")
           : boss ? boss.name : alienStyle.displayName;
-        shieldCountEl.textContent = player.bonusShields > 0 ? `∞ +${player.bonusShields}` : "∞";
+        setHudText(waveEl, waveLabel);
+        setHudText(hudStageName, stageLabel);
+        setHudText(hudEncounterName, encounterLabel);
+        setHudText(shieldCountEl, player.bonusShields > 0 ? `∞ +${player.bonusShields}` : "∞");
         renderLives();
       }
 
@@ -7139,6 +7187,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.lives = Infinity;
         player.invuln = 2.2;
         player.shieldTime = 1.5;
+        luytenPlayerVx = 0;
+        luytenPlayerVy = 0;
+        luytenDisplayedProgress = -1;
+        luytenDisplayedPlayerPosition = "";
         resetPhysicsBody(player, player.x, player.y);
         resetDirectTouchControls();
         overlay.classList.remove("visible", "demo-mode");
@@ -8283,11 +8335,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
           if (keys.has("Space") || keys.has("KeyW")) shoot();
         }
-        syncPhysics(dt);
+        updateLuytenKinematics(dt);
         luytenRun.scroll = Math.min(luytenRun.maxScroll, luytenRun.scroll + luytenRun.speed * dt);
         updateLuytenParallaxBackdrop();
-        shell.dataset.luytenProgress = Math.round(luytenRun.scroll / luytenRun.maxScroll * 100).toString();
-        shell.dataset.luytenScene = luytenScenes[luytenRun.sceneIndex].id;
+        const displayedProgress = Math.round(luytenRun.scroll / luytenRun.maxScroll * 100);
+        if (displayedProgress !== luytenDisplayedProgress) {
+          luytenDisplayedProgress = displayedProgress;
+          shell.dataset.luytenProgress = displayedProgress.toString();
+        }
+        const displayedScene = luytenScenes[luytenRun.sceneIndex].id;
+        if (shell.dataset.luytenScene !== displayedScene) shell.dataset.luytenScene = displayedScene;
 
         for (let i = bullets.length - 1; i >= 0; i -= 1) {
           if (bullets[i].y < -60 || bullets[i].x < -60 || bullets[i].x > W + 60) {
@@ -8307,6 +8364,50 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
         updateHud();
         if (luytenRun.scroll >= luytenRun.maxScroll) finishLuytenRun();
+      }
+
+      function updateLuytenKinematics(dt) {
+        const safeDt = Math.max(0.001, dt);
+        if (directDragPointerId !== null && directDragTarget) {
+          const targetX = clamp(directDragTarget.x + directDragOffset.x, 54, W - 54);
+          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 72);
+          const follow = 1 - Math.exp(-24 * dt);
+          const nextX = player.x + (targetX - player.x) * follow;
+          const nextY = player.y + (targetY - player.y) * follow;
+          luytenPlayerVx = (nextX - player.x) / safeDt;
+          luytenPlayerVy = (nextY - player.y) / safeDt;
+          player.x = nextX;
+          player.y = nextY;
+        } else {
+          const response = 1 - Math.exp(-15 * dt);
+          luytenPlayerVx += (playerInput * player.speed - luytenPlayerVx) * response;
+          luytenPlayerVy += (playerInputY * player.speed * 0.84 - luytenPlayerVy) * response;
+          player.x += luytenPlayerVx * dt;
+          player.y += luytenPlayerVy * dt;
+        }
+
+        const boundedX = clamp(player.x, 54, W - 54);
+        const boundedY = clamp(player.y, 120, H - 72);
+        if (boundedX !== player.x) luytenPlayerVx = 0;
+        if (boundedY !== player.y) luytenPlayerVy = 0;
+        player.x = boundedX;
+        player.y = boundedY;
+
+        if (player.body) {
+          matter.Body.setPosition(player.body, { x: player.x, y: player.y });
+          matter.Body.setVelocity(player.body, { x: luytenPlayerVx / 60, y: luytenPlayerVy / 60 });
+        }
+        const playerPosition = `${Math.round(player.x)},${Math.round(player.y)}`;
+        if (luytenDisplayedPlayerPosition !== playerPosition) {
+          luytenDisplayedPlayerPosition = playerPosition;
+          shell.dataset.playerPosition = playerPosition;
+        }
+
+        bullets.forEach((bullet) => {
+          if (bullet.body) removePhysicsBody(bullet);
+          bullet.x += (bullet.vx || 0) * dt;
+          bullet.y += (bullet.vy || 0) * dt;
+        });
       }
 
       function step(dt) {
@@ -9691,9 +9792,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.restore();
       }
 
-      function drawLuytenOrganisms(t) {
+      function drawLuytenOrganisms(t, ctx = spriteCtx) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
-        const ctx = spriteCtx;
         const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
         const animationFrame = Math.floor(t * 24);
         const firstVisibleScene = Math.max(0, luytenRun.sceneIndex - 1);
@@ -9936,6 +10036,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ctx.restore();
       }
 
+      function compositeLuytenOrganisms(t) {
+        if (state !== "luyten" && state !== "luytenBriefing") return;
+        const renderFrame = Math.floor(t * 30);
+        if (luytenOrganismRenderFrame !== renderFrame) {
+          luytenOrganismRenderFrame = renderFrame;
+          luytenOrganismCtx.clearRect(0, 0, W, H);
+          drawLuytenOrganisms(t, luytenOrganismCtx);
+        }
+        spriteCtx.drawImage(luytenOrganismCanvas, 0, 0);
+      }
+
       function drawUnderwaterRippleField(ctx, frame, frameTime, sceneStyle) {
         if (underwaterRippleFrame !== frame) {
           underwaterRippleFrame = frame;
@@ -9971,12 +10082,18 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawUnderwaterEffects(t) {
         const ctx = underwaterFxCtx;
+        if (state !== "luyten" && state !== "luytenBriefing") {
+          underwaterEffectsRenderFrame = -1;
+          ctx.clearRect(0, 0, W, H);
+          return;
+        }
+        const frame = Math.floor(t * 30);
+        if (underwaterEffectsRenderFrame === frame) return;
+        underwaterEffectsRenderFrame = frame;
         ctx.clearRect(0, 0, W, H);
-        if (state !== "luyten" && state !== "luytenBriefing") return;
 
         const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
-        const frame = Math.floor(t * 24);
-        const frameTime = frame / 24;
+        const frameTime = frame / 30;
         ctx.save();
 
         const waterVeil = ctx.createLinearGradient(0, 0, 0, H);
@@ -10542,7 +10659,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         updateParallaxBackdrop(nowSec);
         drawSpaceBackdrop(nowSec);
 
-        const glowPoints = [];
+        glowPoints.length = 0;
         if (!anyParallaxActive()) {
           nebulae.forEach((nebula) => {
             const color = nebula.hue.startsWith("94") ? colors.cyan : colors.green;
@@ -10574,7 +10691,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         debris.forEach((fragment) => pushPoint(glowPoints, fragment.x, fragment.y, fragment.size * 5.2, fragment.rgb, clamp(fragment.life / fragment.max, 0, 1) * 0.42));
         drawPoints(glowPoints, true);
 
-        const starCores = [];
+        starCores.length = 0;
         stars.forEach((star, index) => {
           const twinkle = 0.55 + Math.sin(nowSec * (1.4 + star.s) + star.phase) * 0.45;
           pushPoint(starCores, star.x, star.y, 1.6 + star.r * 2.2, index % 11 === 0 ? colors.cyan : colors.white, star.a * twinkle);
@@ -10608,7 +10725,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           drawBolt(b, b.flame ? "#ff9a36" : b.regolith ? "#ffcc72" : "#ff5b78", b.flame ? 10 : b.regolith ? 16 : 13, b.flame ? 4 : b.regolith ? 5.5 : 5);
         });
 
-        drawLuytenOrganisms(nowSec);
+        compositeLuytenOrganisms(nowSec);
         bossMines.forEach(drawAstraxMine);
         mordrathFireballs.forEach(drawMordrathFireball);
         canyonWeapons.forEach(drawCanyonWeapon);
@@ -10626,7 +10743,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           drawPoly(lineShape, fragment.x, fragment.y, fragment.size * 0.78, 1, fragment.phase + 0.5, rgba(colors.white, a * 0.38), gl.LINES);
         });
 
-        const sparkPoints = [];
+        sparkPoints.length = 0;
         particles.forEach((p) => {
           const a = clamp(p.life / p.max, 0, 1);
           pushPoint(sparkPoints, p.x, p.y, p.r * (p.flare ? 3.8 : 2.4), p.rgb, a);
@@ -10885,6 +11002,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       beginIntro();
       let renderFpsFrames = 0;
       let renderFpsStarted = performance.now();
+      let renderWorkTotal = 0;
+      let renderWorkMax = 0;
       new Phaser.Game({
         type: Phaser.HEADLESS,
         width: W,
@@ -10900,16 +11019,25 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           },
           update() {
             const now = performance.now();
+            const workStarted = now;
             const dt = Math.min(0.033, Math.max(0, (now - last) / 1000));
             last = now;
             step(dt);
             draw();
+            const workDuration = performance.now() - workStarted;
+            renderWorkTotal += workDuration;
+            renderWorkMax = Math.max(renderWorkMax, workDuration);
             renderFpsFrames += 1;
             const fpsElapsed = now - renderFpsStarted;
             if (fpsElapsed >= 1000) {
               shell.dataset.renderFps = (renderFpsFrames * 1000 / fpsElapsed).toFixed(1);
+              shell.dataset.frameWorkMs = (renderWorkTotal / renderFpsFrames).toFixed(2);
+              shell.dataset.frameWorkMaxMs = renderWorkMax.toFixed(2);
+              shell.dataset.activeShots = bullets.length.toString();
               renderFpsFrames = 0;
               renderFpsStarted = now;
+              renderWorkTotal = 0;
+              renderWorkMax = 0;
             }
           }
         }
