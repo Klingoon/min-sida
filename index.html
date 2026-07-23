@@ -2862,13 +2862,15 @@
     .battle-report-console {
       position: absolute;
       z-index: 2;
+      top: 50%;
       right: 0;
-      bottom: clamp(12px, 2.2vh, 22px);
+      bottom: auto;
       left: 0;
-      width: min(74%, 650px);
-      max-height: 26%;
+      width: min(72%, 650px);
+      max-height: 52%;
       margin-inline: auto;
       padding: 8px clamp(10px, 2vw, 16px) 7px;
+      translate: 0 -50%;
       border-block: 1px solid rgba(152, 226, 244, 0.16);
       border-inline: 0;
       background:
@@ -2877,6 +2879,35 @@
       backdrop-filter: blur(0.7px);
       animation: battle-report-rise 760ms cubic-bezier(.16, .9, .24, 1) both;
       overflow: hidden;
+    }
+
+    .battle-report-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3px 18px;
+      margin: 6px 0 4px;
+      padding-block: 5px;
+      border-block: 1px solid rgba(149, 223, 239, 0.08);
+    }
+
+    .battle-report-summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      color: rgba(136, 201, 215, 0.68);
+      font: 500 clamp(7px, 1vw, 8px)/1.2 "Void Circuit", "Arial Narrow", sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .battle-report-summary-row strong {
+      overflow: hidden;
+      color: rgba(230, 239, 234, 0.82);
+      font-weight: 500;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .battle-report-header,
@@ -3034,8 +3065,13 @@
     @media (max-width: 460px) {
       .battle-report-console {
         width: 88%;
-        max-height: 31%;
+        max-height: 58%;
         padding: 7px 8px 6px;
+      }
+
+      .battle-report-summary {
+        grid-template-columns: 1fr;
+        gap: 2px;
       }
 
       .battle-report-grid {
@@ -3278,6 +3314,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           </div>
           <span class="battle-report-status" id="battleReportStatus">Nhar'Kaal overthrown</span>
         </div>
+        <div class="battle-report-summary" id="battleReportSummary">
+          <div class="battle-report-summary-row"><span>Hostiles neutralized</span><strong id="battleReportConfirmed">0</strong></div>
+          <div class="battle-report-summary-row"><span>Contact classes</span><strong id="battleReportClasses">0 archived</strong></div>
+          <div class="battle-report-summary-row"><span>Planetary ruler</span><strong>Nhar'Kaal defeated</strong></div>
+          <div class="battle-report-summary-row"><span>Liberation status</span><strong>Inhabitants freed</strong></div>
+        </div>
         <div class="battle-report-grid" id="battleReportGrid"></div>
         <div class="battle-report-footer">
           <span class="battle-report-total" id="battleReportTotal">Confirmed 0 · <strong>0 pts</strong></span>
@@ -3324,7 +3366,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.131 · Dragonfly Dune Surveyor · updated 2026-07-23 14:10 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.132 · Centered Battle Report · updated 2026-07-23 14:42 CEST</div>
   </main>
 
   <script>
@@ -3382,6 +3424,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const battleReportGrid = document.querySelector("#battleReportGrid");
       const battleReportTotal = document.querySelector("#battleReportTotal");
       const battleReportStatus = document.querySelector("#battleReportStatus");
+      const battleReportConfirmed = document.querySelector("#battleReportConfirmed");
+      const battleReportClasses = document.querySelector("#battleReportClasses");
       const battleReportParallax = document.querySelector("#battleReportParallax");
       const battleReportFar = document.querySelector("#battleReportFar");
       const battleReportAftermath = document.querySelector("#battleReportAftermath");
@@ -6651,6 +6695,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         battleReportEntries = Array.from(actOneBattleStats.values()).sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
         const confirmed = battleReportEntries.reduce((total, entry) => total + entry.count, 0);
         const points = battleReportEntries.reduce((total, entry) => total + entry.points, 0);
+        battleReportConfirmed.textContent = confirmed.toLocaleString("en-US");
+        battleReportClasses.textContent = `${battleReportEntries.length} archived`;
         battleReportTotal.innerHTML = `Confirmed ${confirmed} · <strong>${points.toLocaleString("en-US")} pts</strong>`;
         renderBattleReportScene(0);
         const sceneCount = Math.ceil(battleReportEntries.length / battleReportSceneSize);
