@@ -3573,6 +3573,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       objectAnimationSprites.hydraComet.src = "assets/objects/hydra-comet-64f-v2.webp";
       objectAnimationSprites.astraxPrismMine.src = "assets/objects/astrax-prism-mine-64f-v1.webp";
       objectAnimationSprites.mordrathFireball.src = "assets/objects/mordrath-helios-fireball-64f-v1.webp";
+      const hydraCometCoreSprite = new Image();
+      hydraCometCoreSprite.decoding = "async";
+      hydraCometCoreSprite.src = "assets/objects/hydra-comet-core-v3.webp";
 
       function objectAnimationReady(kind) {
         const image = objectAnimationSprites[kind];
@@ -4433,7 +4436,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
         { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 48 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 48, columns: 12, rows: 8 },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
-        { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Splitting hazard · 64 frames", sprite: "objectAnimation", objectKind: "hydraComet", image: objectAnimationSprites.hydraComet, frame: 0, columns: 8, rows: 8, animationFps: 12 },
+        { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Procedural 60 FPS tumble · plasma trail", sprite: "objectAnimation", objectKind: "hydraComet", image: hydraCometCoreSprite, frame: 0, columns: 1, rows: 1, animationFps: 60 },
         { name: "Astrax Prism Mine", id: "BOSS-A03-MINE-PRISM-01", category: "object", typeLabel: "Boss weapon · destructible mine · 64 frames", sprite: "objectAnimation", objectKind: "astraxPrismMine", image: objectAnimationSprites.astraxPrismMine, frame: 0, columns: 8, rows: 8, animationFps: 24 },
         { name: "Mordrath Helios Fireball", id: "BOSS-A04-FIREBALL-HELIOS-01", category: "object", typeLabel: "Boss weapon · destructible living fireball · 64 frames", sprite: "objectAnimation", objectKind: "mordrathFireball", image: objectAnimationSprites.mordrathFireball, frame: 0, columns: 8, rows: 8, animationFps: 24 },
         { name: "Nullspace Rift", id: "HAZARD-RIFT-NULLSPACE-01", category: "object", typeLabel: "Spatial hazard", sprite: "rift" },
@@ -7790,6 +7793,34 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         cometTimer = 8 + Math.random() * 12;
       }
 
+      function createCometVisualState(comet, inheritedTrail = []) {
+        comet.trail = inheritedTrail.map((point) => ({ x: point.x, y: point.y }));
+        comet.trailClock = 0;
+        comet.visualSeed = Math.random() * 1000;
+        comet.visualTime = 0;
+        return comet;
+      }
+
+      function updateCometTrails(dt) {
+        const sampleInterval = 1 / 30;
+        shell.dataset.hydraCometCount = String(comets.length);
+        shell.dataset.hydraCometPosition = comets.length
+          ? `${Math.round(comets[0].x)},${Math.round(comets[0].y)}`
+          : "";
+        comets.forEach((comet) => {
+          comet.visualTime = (comet.visualTime || 0) + dt;
+          comet.trailClock = (comet.trailClock || 0) + dt;
+          if (comet.trailClock < sampleInterval) return;
+          comet.trailClock %= sampleInterval;
+          comet.trail ||= [];
+          comet.trail.push({ x: comet.x, y: comet.y });
+          const maxSamples = Math.max(20, 48 - comet.level * 6);
+          if (comet.trail.length > maxSamples) {
+            comet.trail.splice(0, comet.trail.length - maxSamples);
+          }
+        });
+      }
+
       function spawnComet(force = false, parent = null) {
         if (!force && (boss || !isActiveRun() || !enemies.length || comets.length > 10)) return;
         if (!force && Math.random() > 0.62) {
@@ -7798,7 +7829,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
         if (parent) {
           const splitDir = parent.splitDir || 1;
-          comets.push({
+          const inheritedTrail = (parent.trail || []).slice(-14);
+          comets.push(createCometVisualState({
             x: parent.x,
             y: parent.y,
             vx: parent.vx * 0.84 + splitDir * (72 + Math.random() * 54),
@@ -7808,13 +7840,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             hp: 1,
             phase: Math.random() * Math.PI * 2,
             spin: (Math.random() > 0.5 ? 1 : -1) * (1.6 + Math.random() * 2.2)
-          });
+          }, inheritedTrail));
           return;
         }
         const dir = Math.random() > 0.5 ? 1 : -1;
         const fromTop = Math.random() > 0.45;
         const startY = fromTop ? -55 : 140 + Math.random() * 250;
-        comets.push({
+        comets.push(createCometVisualState({
           x: dir > 0 ? -80 : W + 80,
           y: startY,
           vx: dir * (150 + Math.random() * 70 + wave * 4),
@@ -7824,7 +7856,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           hp: 1,
           phase: Math.random() * Math.PI * 2,
           spin: (Math.random() > 0.5 ? 1 : -1) * (0.8 + Math.random() * 1.6)
-        });
+        }));
         cometTimer = 12 + Math.random() * 16;
       }
 
@@ -8865,6 +8897,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         syncPhysics(dt);
+        updateCometTrails(dt);
         rifts.forEach((rift) => {
           rift.life -= dt;
           rift.phase += dt * 2.2;
@@ -10948,42 +10981,183 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         drawPoly(boltShape, bonusUfo.x, bonusUfo.y + 31 + bob, 18, 32 + Math.sin(t * 7) * 6, 0, rgba(colors.cyan, 0.11));
       }
 
-      function drawComet(comet) {
-        const spriteAngle = Math.atan2(comet.vy, comet.vx) - Math.PI / 2;
-        if (objectAnimationReady("hydraComet")) {
-          const t = performance.now() / 1000;
-          const frame = Math.floor(t * 12 + comet.phase * 4.2 + comet.level * 13) % 64;
-          const size = comet.size * (2.72 - Math.min(comet.level, 4) * 0.08);
-          const filter = act === 1
-            ? "saturate(0.9) brightness(1.06)"
-            : act === 2
-              ? "saturate(1.25) contrast(1.08) brightness(1.05)"
-              : act === 3
-                ? "hue-rotate(-5deg) saturate(1.04) brightness(1.08)"
-                : "saturate(0.92) contrast(1.16) brightness(0.9)";
-          drawSpriteFrame(objectAnimationSprites.hydraComet, frame, 8, 8, comet.x, comet.y, size, size, spriteAngle + Math.sin(comet.phase * 0.7) * 0.04, "transparent", 0, 1, filter);
-          return;
+      function fillCometTailRibbon(points, baseWidth, colorStops, widthPower, flutter, seed) {
+        const ribbon = [];
+        const lastIndex = points.length - 1;
+        for (let i = 0; i <= lastIndex; i += 1) {
+          const previous = points[Math.max(0, i - 1)];
+          const next = points[Math.min(lastIndex, i + 1)];
+          const dx = next.x - previous.x;
+          const dy = next.y - previous.y;
+          const length = Math.hypot(dx, dy) || 1;
+          const progress = i / Math.max(1, lastIndex);
+          const edgeNoise = 1 + Math.sin(seed + i * 1.73) * flutter * progress;
+          const centerDrift = Math.sin(seed * 1.37 + i * 0.79) * baseWidth * flutter * 0.2 * progress;
+          const centerX = points[i].x - (dy / length) * centerDrift;
+          const centerY = points[i].y + (dx / length) * centerDrift;
+          const halfWidth = baseWidth * 0.5 * Math.pow(1 - progress, widthPower) * edgeNoise;
+          ribbon.push({
+            leftX: centerX - (dy / length) * halfWidth,
+            leftY: centerY + (dx / length) * halfWidth,
+            rightX: centerX + (dy / length) * halfWidth,
+            rightY: centerY - (dx / length) * halfWidth
+          });
         }
-        if (realisticSpritesReady) {
-          const width = comet.size * 2.35;
-          drawSpriteFrame(realisticSprites.meteor, 0, 1, 1, comet.x, comet.y, width, width * 1.54, spriteAngle + Math.sin(comet.phase * 0.7) * 0.04, "transparent", 0);
-          return;
+
+        const gradient = spriteCtx.createLinearGradient(
+          points[0].x,
+          points[0].y,
+          points[lastIndex].x,
+          points[lastIndex].y
+        );
+        colorStops.forEach(([stop, color]) => gradient.addColorStop(stop, color));
+        spriteCtx.beginPath();
+        spriteCtx.moveTo(ribbon[0].leftX, ribbon[0].leftY);
+        for (let i = 1; i < ribbon.length; i += 1) {
+          spriteCtx.lineTo(ribbon[i].leftX, ribbon[i].leftY);
         }
-        const angle = spriteAngle + Math.PI;
+        for (let i = ribbon.length - 1; i >= 0; i -= 1) {
+          spriteCtx.lineTo(ribbon[i].rightX, ribbon[i].rightY);
+        }
+        spriteCtx.closePath();
+        spriteCtx.fillStyle = gradient;
+        spriteCtx.fill();
+      }
+
+      function buildCometTailPoints(comet) {
+        const shakeX = renderShake.x;
+        const shakeY = renderShake.y;
+        const points = [{ x: comet.x + shakeX, y: comet.y + shakeY }];
+        const trail = comet.trail || [];
+        for (let i = trail.length - 1; i >= 0; i -= 1) {
+          const progress = 1 - i / Math.max(1, trail.length - 1);
+          const velocityLength = Math.hypot(comet.vx, comet.vy) || 1;
+          const normalX = -comet.vy / velocityLength;
+          const normalY = comet.vx / velocityLength;
+          const wake = Math.sin(i * 0.72 + (comet.visualTime || 0) * 5.5 + comet.visualSeed) * comet.size * 0.1 * progress;
+          points.push({
+            x: trail[i].x + shakeX + normalX * wake,
+            y: trail[i].y + shakeY + normalY * wake
+          });
+        }
+
         const speed = Math.hypot(comet.vx, comet.vy) || 1;
+        const desiredLength = comet.size * (comet.level === 0 ? 11.5 : 8.2);
+        let pathLength = 0;
+        for (let i = 1; i < points.length; i += 1) {
+          pathLength += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+        }
         const tailX = -comet.vx / speed;
         const tailY = -comet.vy / speed;
-        const tail = comet.size * (2.8 + comet.level * 0.32);
-        for (let i = 0; i < 9; i += 1) {
-          const k = i / 9;
-          const x = comet.x + tailX * tail * (k + 0.22) + Math.sin(comet.phase * 2 + i) * comet.size * 0.12;
-          const y = comet.y + tailY * tail * (k + 0.22) + Math.cos(comet.phase * 1.7 + i) * comet.size * 0.1;
-          const color = i < 3 ? colors.gold : i < 6 ? colors.orange : colors.red;
-          drawPoly(boltShape, x, y, comet.size * (0.26 - k * 0.025), comet.size * (1.15 - k * 0.12), angle, rgba(color, 0.34 - k * 0.045));
+        const normalX = -tailY;
+        const normalY = tailX;
+        const missingLength = Math.max(0, desiredLength - pathLength);
+        const anchor = points[points.length - 1];
+        if (missingLength > 2) {
+          const extraSegments = Math.max(2, Math.ceil(missingLength / Math.max(18, comet.size)));
+          for (let i = 1; i <= extraSegments; i += 1) {
+            const k = i / extraSegments;
+            const ripple = Math.sin(k * 8.2 + comet.visualSeed) * comet.size * 0.11 * k;
+            points.push({
+              x: anchor.x + tailX * missingLength * k + normalX * ripple,
+              y: anchor.y + tailY * missingLength * k + normalY * ripple
+            });
+          }
         }
-        drawPoly(bossEyeShape, comet.x, comet.y, comet.size * 0.86, comet.size * 0.62, comet.phase * 0.22, rgba(colors.orange, 0.92));
-        drawPoly(bossEyeShape, comet.x - comet.size * 0.16, comet.y - comet.size * 0.12, comet.size * 0.42, comet.size * 0.28, comet.phase * -0.18, rgba(colors.white, 0.5));
-        drawPoly(bossEyeShape, comet.x + comet.size * 0.2, comet.y + comet.size * 0.08, comet.size * 0.3, comet.size * 0.22, comet.phase * 0.34, rgba(colors.red, 0.56));
+        return points;
+      }
+
+      function drawCometTail(comet, points) {
+        const levelScale = Math.max(0.46, 1 - comet.level * 0.11);
+        const flicker = 0.94 + Math.sin((comet.visualTime || 0) * 25 + comet.visualSeed) * 0.06;
+        const softTail = comet.level === 0 && comets.length < 5;
+
+        spriteCtx.save();
+        spriteCtx.globalCompositeOperation = "source-over";
+        spriteCtx.filter = softTail ? "blur(3px)" : "none";
+        fillCometTailRibbon(points, comet.size * 1.42 * levelScale, [
+          [0, "rgba(38,20,17,0.42)"],
+          [0.3, "rgba(45,20,20,0.28)"],
+          [0.72, "rgba(28,20,25,0.12)"],
+          [1, "rgba(12,14,20,0)"]
+        ], 0.72, 0.16, comet.visualSeed + 2.1);
+
+        spriteCtx.globalCompositeOperation = "lighter";
+        spriteCtx.filter = softTail ? "blur(1.5px)" : "none";
+        fillCometTailRibbon(points, comet.size * 0.96 * levelScale * flicker, [
+          [0, "rgba(255,110,24,0.84)"],
+          [0.22, "rgba(236,49,11,0.62)"],
+          [0.58, "rgba(168,18,9,0.24)"],
+          [1, "rgba(66,5,8,0)"]
+        ], 0.82, 0.24, comet.visualSeed + 4.4);
+        spriteCtx.filter = "none";
+        fillCometTailRibbon(points, comet.size * 0.48 * levelScale * flicker, [
+          [0, "rgba(255,244,202,0.96)"],
+          [0.12, "rgba(255,188,60,0.9)"],
+          [0.45, "rgba(255,74,16,0.46)"],
+          [1, "rgba(132,10,8,0)"]
+        ], 0.95, 0.28, comet.visualSeed + 8.7);
+        const plasmaPoints = points.slice(0, Math.max(3, Math.ceil(points.length * 0.46)));
+        fillCometTailRibbon(plasmaPoints, Math.max(2, comet.size * 0.13 * levelScale), [
+          [0, "rgba(255,255,239,1)"],
+          [0.26, "rgba(255,230,141,0.82)"],
+          [1, "rgba(255,91,20,0)"]
+        ], 1.18, 0.18, comet.visualSeed + 12.8);
+
+        const particleCount = Math.max(8, Math.floor((24 - comet.level * 3) / Math.max(1, comets.length * 0.12)));
+        const speed = Math.hypot(comet.vx, comet.vy) || 1;
+        const normalX = -comet.vy / speed;
+        const normalY = comet.vx / speed;
+        const now = comet.visualTime || 0;
+        for (let i = 0; i < particleCount; i += 1) {
+          const pulse = (i * 0.61803398875 + now * (0.45 + (i % 4) * 0.07) + comet.visualSeed) % 1;
+          const pointIndex = Math.min(points.length - 2, 1 + Math.floor(pulse * (points.length - 2)));
+          const point = points[pointIndex];
+          const spread = (Math.sin(i * 91.73 + comet.visualSeed) * 0.5) * comet.size * (0.4 + pulse * 1.45);
+          const x = point.x + normalX * spread;
+          const y = point.y + normalY * spread;
+          const radius = Math.max(0.7, comet.size * (0.075 - pulse * 0.045) * levelScale);
+          spriteCtx.fillStyle = pulse < 0.35 ? "rgba(255,244,187,0.94)" : pulse < 0.72 ? "rgba(255,132,35,0.82)" : "rgba(238,48,15,0.52)";
+          spriteCtx.beginPath();
+          spriteCtx.arc(x, y, radius, 0, Math.PI * 2);
+          spriteCtx.fill();
+          if (i % 3 === 0) {
+            spriteCtx.strokeStyle = spriteCtx.fillStyle;
+            spriteCtx.lineWidth = Math.max(0.8, radius * 0.65);
+            spriteCtx.beginPath();
+            spriteCtx.moveTo(x, y);
+            spriteCtx.lineTo(x - comet.vx / speed * radius * 5.5, y - comet.vy / speed * radius * 5.5);
+            spriteCtx.stroke();
+          }
+        }
+        spriteCtx.restore();
+      }
+
+      function drawComet(comet) {
+        const points = buildCometTailPoints(comet);
+        drawCometTail(comet, points);
+
+        const pulse = 1 + Math.sin((comet.visualTime || 0) * 8.5 + comet.visualSeed) * 0.025;
+        const size = comet.size * (1.92 - Math.min(comet.level, 4) * 0.045) * pulse;
+        const tumbleAngle = comet.phase + Math.sin((comet.visualTime || 0) * 2.3 + comet.visualSeed) * 0.055;
+        const filter = act === 1
+          ? "saturate(0.94) contrast(1.08) brightness(1.04)"
+          : act === 2
+            ? "saturate(1.16) contrast(1.1) brightness(1.02)"
+            : act === 3
+              ? "hue-rotate(-4deg) saturate(1.03) contrast(1.1)"
+              : "saturate(0.96) contrast(1.14) brightness(0.94)";
+
+        if (hydraCometCoreSprite.complete && hydraCometCoreSprite.naturalWidth) {
+          drawSpriteFrame(hydraCometCoreSprite, 0, 1, 1, comet.x, comet.y, size, size, tumbleAngle, "transparent", 0, 1, filter);
+        } else if (realisticSpritesReady) {
+          drawSpriteFrame(realisticSprites.meteor, 0, 1, 1, comet.x, comet.y, size, size, tumbleAngle, "transparent", 0, 1, filter);
+        } else {
+          drawPoly(bossEyeShape, comet.x, comet.y, comet.size * 0.86, comet.size * 0.62, tumbleAngle, rgba(colors.orange, 0.92));
+          drawPoly(bossEyeShape, comet.x - comet.size * 0.16, comet.y - comet.size * 0.12, comet.size * 0.42, comet.size * 0.28, -tumbleAngle, rgba(colors.white, 0.5));
+        }
+        shell.dataset.hydraCometEffect = "procedural-60fps-long-plasma-trail-v3";
+        shell.dataset.hydraCometTrailSamples = String((comet.trail || []).length);
       }
 
       function drawRift(rift) {
