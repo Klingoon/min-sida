@@ -3204,7 +3204,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.119 · Refined Millenium Owl · updated 2026-07-23 11:23 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.120 · Stable Millenium Owl · updated 2026-07-23 11:34 CEST</div>
   </main>
 
   <script>
@@ -3377,7 +3377,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           realisticSpritesReady = loadedRealisticSprites === Object.keys(realisticSprites).length;
         }, { once: true });
       });
-      realisticSprites.player.src = "assets/player-millenium-owl-master-v2.png";
+      realisticSprites.player.src = "assets/player-millenium-owl-master-v3.png";
       realisticSprites.enemies.src = "assets/enemies-realistic.png";
       realisticSprites.bosses.src = "assets/bosses-realistic.png";
       realisticSprites.ufo.src = "assets/ufo-realistic.png";
@@ -4267,7 +4267,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         bonusShields: 0,
         shieldTime: 0,
         cooldown: 0,
-        invuln: 0
+        invuln: 0,
+        visualBank: 0
       };
 
       const matter = Phaser.Physics.Matter.Matter;
@@ -9155,7 +9156,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function drawRealisticPlayer(t) {
-        const bank = player.body ? clamp(player.body.velocity.x * 0.012, -0.08, 0.08) : 0;
+        const bankTarget = player.body ? clamp(player.body.velocity.x * 0.007, -0.045, 0.045) : 0;
+        player.visualBank += (bankTarget - player.visualBank) * 0.14;
+        const bank = Math.abs(player.visualBank) < 0.001 ? 0 : player.visualBank;
         const thrustFrame = Math.floor(t * 24) % 64;
         const thrustPulse = 0.86 + Math.sin(t * Math.PI * 2 * 0.75) * 0.06;
         const hurt = player.invuln > 0 ? clamp(player.invuln / 1.8, 0, 1) : 0;
