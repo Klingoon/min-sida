@@ -420,6 +420,109 @@
       opacity: 0.76;
     }
 
+    .parallax-backdrop.luyten-parallax {
+      background: #020b12;
+    }
+
+    .parallax-backdrop.luyten-parallax::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(128, 21, 18, 0.1), transparent 28%),
+        radial-gradient(circle at 50% 72%, transparent 22%, rgba(0, 8, 14, 0.3) 100%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .parallax-backdrop.luyten-parallax .parallax-layer {
+      inset: 0;
+      background-position: center top;
+      background-repeat: no-repeat;
+      background-size: 760px 15360px;
+      will-change: background-position, transform;
+    }
+
+    [data-underwater-fx="active"] .parallax-backdrop.luyten-parallax {
+      filter: url("#abyssalRefraction") saturate(var(--luyten-saturation, 1.08)) contrast(1.055);
+    }
+
+    .parallax-backdrop.luyten-parallax .parallax-layer.far {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-far-v7.jpg");
+    }
+
+    .parallax-backdrop.luyten-parallax .parallax-layer.mid {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-mid-v7.webp");
+      opacity: 0.72;
+    }
+
+    .parallax-backdrop.luyten-parallax .parallax-layer.near {
+      background-image: url("varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-near-v7.webp");
+      opacity: 0.84;
+    }
+
+    #underwaterFxLayer,
+    .underwater-lens {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 700ms ease;
+    }
+
+    #underwaterFxLayer.active,
+    .underwater-lens.active {
+      opacity: 1;
+    }
+
+    .underwater-lens {
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 48% 42%, transparent 18%, rgba(var(--luyten-water-rgb, 55, 151, 158), 0.045) 56%, rgba(0, 7, 13, 0.38) 112%),
+        linear-gradient(180deg, rgba(var(--luyten-light-rgb, 157, 230, 218), 0.035), transparent 31%, rgba(0, 9, 17, 0.1));
+      box-shadow:
+        inset 0 0 110px rgba(0, 6, 12, 0.33),
+        inset 0 -80px 120px rgba(0, 8, 15, 0.2);
+      animation: underwaterLensDrift 7s ease-in-out infinite alternate;
+    }
+
+    .underwater-lens::before,
+    .underwater-lens::after {
+      content: "";
+      position: absolute;
+      inset: -16%;
+      opacity: 0.34;
+      background:
+        radial-gradient(ellipse at 26% 12%, rgba(var(--luyten-light-rgb, 157, 230, 218), 0.085), transparent 42%),
+        radial-gradient(ellipse at 76% 18%, rgba(var(--luyten-light-rgb, 157, 230, 218), 0.052), transparent 36%);
+      mix-blend-mode: screen;
+      transform: translate3d(-1.2%, -0.5%, 0) rotate(-1.5deg);
+      animation: underwaterSurfaceDrift 11s linear infinite;
+    }
+
+    .underwater-lens::after {
+      inset: -7%;
+      opacity: 0.22;
+      background:
+        radial-gradient(ellipse at 42% 24%, rgba(var(--luyten-light-rgb, 157, 230, 218), 0.07), transparent 48%),
+        radial-gradient(ellipse at 84% 60%, rgba(var(--luyten-water-rgb, 55, 151, 158), 0.065), transparent 38%);
+      transform: translate3d(1.5%, 0, 0) rotate(2deg);
+      animation: underwaterSurfaceDrift 8.5s linear infinite reverse;
+    }
+
+    @keyframes underwaterLensDrift {
+      0% { transform: translate3d(-1.2px, -0.8px, 0) scale(1.003); }
+      48% { transform: translate3d(0.8px, 1.4px, 0) scale(1.006); }
+      100% { transform: translate3d(1.5px, -0.4px, 0) scale(1.004); }
+    }
+
+    @keyframes underwaterSurfaceDrift {
+      0% { background-position: 0 0; }
+      50% { background-position: 33px 21px; }
+      100% { background-position: 67px 0; }
+    }
+
     #spriteLayer {
       position: absolute;
       inset: 0;
@@ -2948,8 +3051,27 @@
       <div class="parallax-layer mid" id="canyonParallaxMid"></div>
       <div class="parallax-layer near" id="canyonParallaxNear"></div>
     </div>
+    <div class="parallax-backdrop luyten-parallax" id="luytenParallaxBackdrop" aria-hidden="true">
+      <div class="parallax-layer far" id="luytenParallaxFar"></div>
+      <div class="parallax-layer mid" id="luytenParallaxMid"></div>
+      <div class="parallax-layer near" id="luytenParallaxNear"></div>
+    </div>
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      <filter id="abyssalRefraction" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.024" numOctaves="1" seed="27" result="waterNoise">
+          <animate attributeName="baseFrequency" dur="7s" values="0.008 0.024;0.012 0.017;0.007 0.026;0.008 0.024" repeatCount="indefinite" />
+          <animate attributeName="seed" dur="14s" values="27;31;27" repeatCount="indefinite" />
+        </feTurbulence>
+        <feGaussianBlur in="waterNoise" stdDeviation="0.22" result="softWaterNoise" />
+        <feDisplacementMap in="SourceGraphic" in2="softWaterNoise" scale="5.2" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" dur="5.5s" values="4.4;6.3;5.1;4.4" repeatCount="indefinite" />
+        </feDisplacementMap>
+      </filter>
+    </svg>
     <canvas id="game" width="760" height="960"></canvas>
     <canvas id="spriteLayer" width="760" height="960" aria-hidden="true"></canvas>
+    <canvas id="underwaterFxLayer" width="760" height="960" aria-hidden="true"></canvas>
+    <div class="underwater-lens" id="underwaterLens" aria-hidden="true"></div>
     <div class="hud" aria-live="polite">
       <div class="hud-pill"><span class="dot"></span><span>Score&nbsp;<strong id="score">0</strong></span></div>
       <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
@@ -3059,7 +3181,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.103 · Regolith Articulated Rig · updated 2026-07-22 23:39 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.110 · Fluid Current · updated 2026-07-23 10:11 CEST</div>
   </main>
 
   <script>
@@ -3080,6 +3202,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
       const spriteCanvas = document.querySelector("#spriteLayer");
       const spriteCtx = spriteCanvas.getContext("2d", { alpha: true });
+      const underwaterFxCanvas = document.querySelector("#underwaterFxLayer");
+      const underwaterFxCtx = underwaterFxCanvas.getContext("2d", { alpha: true });
+      const underwaterLens = document.querySelector("#underwaterLens");
+      const UNDERWATER_RIPPLE_W = 152;
+      const UNDERWATER_RIPPLE_H = 192;
+      const underwaterRippleCanvas = document.createElement("canvas");
+      underwaterRippleCanvas.width = UNDERWATER_RIPPLE_W;
+      underwaterRippleCanvas.height = UNDERWATER_RIPPLE_H;
+      const underwaterRippleCtx = underwaterRippleCanvas.getContext("2d", { alpha: true });
+      const underwaterRipplePixels = underwaterRippleCtx.createImageData(UNDERWATER_RIPPLE_W, UNDERWATER_RIPPLE_H);
+      let underwaterRippleFrame = -1;
       const scoreEl = document.querySelector("#score");
       const hiScoreEl = document.querySelector("#hiScore");
       const waveEl = document.querySelector("#wave");
@@ -3192,6 +3325,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const canyonParallaxFar = document.querySelector("#canyonParallaxFar");
       const canyonParallaxMid = document.querySelector("#canyonParallaxMid");
       const canyonParallaxNear = document.querySelector("#canyonParallaxNear");
+      const luytenParallaxBackdrop = document.querySelector("#luytenParallaxBackdrop");
+      const luytenParallaxFar = document.querySelector("#luytenParallaxFar");
+      const luytenParallaxMid = document.querySelector("#luytenParallaxMid");
+      const luytenParallaxNear = document.querySelector("#luytenParallaxNear");
 
       const W = canvas.width;
       const H = canvas.height;
@@ -3418,6 +3555,173 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         speed: 74,
         imageUrl: "varldsrymden-anfaller/assets/backdrops/selene-canyon-odyssey-v2.jpg"
       };
+      const luytenScenes = [
+        { name: "Crimson Shelf", id: "BACKDROP-EXO-LUYTEN-B", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-01-crimson-shelf-v2.jpg" },
+        { name: "Drowned Processional", id: "BACKDROP-EXO-LUYTEN-B-SCENE-02", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-02-drowned-processional-v2.jpg" },
+        { name: "Thermocline Archives", id: "BACKDROP-EXO-LUYTEN-B-SCENE-03", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-03-thermocline-archives-v2.jpg" },
+        { name: "Leviathan Causeway", id: "BACKDROP-EXO-LUYTEN-B-SCENE-04", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-04-leviathan-causeway-v2.jpg" },
+        { name: "Hadal Transit Nexus", id: "BACKDROP-EXO-LUYTEN-B-SCENE-05", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-05-hadal-transit-nexus-v2.jpg" },
+        { name: "Crown Threshold", id: "BACKDROP-EXO-LUYTEN-B-SCENE-06", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-06-sunken-crown-v2.jpg" },
+        { name: "Coral Orrery Bend", id: "BACKDROP-EXO-LUYTEN-B-SCENE-07", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-07-coral-orrery-bend-v3.jpg" },
+        { name: "Silt Cathedral Switchback", id: "BACKDROP-EXO-LUYTEN-B-SCENE-08", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-08-silt-cathedral-switchback-v3.jpg" },
+        { name: "Archive of Glass Tides", id: "BACKDROP-EXO-LUYTEN-B-SCENE-09", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-09-archive-glass-tides-v3.jpg" },
+        { name: "Leviathan Aqueduct", id: "BACKDROP-EXO-LUYTEN-B-SCENE-10", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-10-leviathan-aqueduct-v3.jpg" },
+        { name: "Ember Vent Foundry", id: "BACKDROP-EXO-LUYTEN-B-SCENE-11", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-11-ember-vent-foundry-v3.jpg" },
+        { name: "Cyclopean Observatory", id: "BACKDROP-EXO-LUYTEN-B-SCENE-12", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-12-cyclopean-observatory-v3.jpg" },
+        { name: "Drowned Garden Vault", id: "BACKDROP-EXO-LUYTEN-B-SCENE-13", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-13-drowned-garden-vault-v3.jpg" },
+        { name: "Hadal Amphitheater", id: "BACKDROP-EXO-LUYTEN-B-SCENE-14", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-14-hadal-amphitheater-v3.jpg" },
+        { name: "Meridian Engine Trench", id: "BACKDROP-EXO-LUYTEN-B-SCENE-15", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-15-meridian-engine-trench-v3.jpg" },
+        { name: "Cradle of Tides", id: "BACKDROP-EXO-LUYTEN-B-SCENE-16", imageUrl: "varldsrymden-anfaller/assets/backdrops/luyten-b/scene-16-cradle-of-tides-v3.jpg" }
+      ];
+      const luytenRun = {
+        scroll: 0,
+        imageHeight: luytenScenes.length * H,
+        maxScroll: (luytenScenes.length - 1) * H,
+        speed: 72,
+        sceneIndex: 0
+      };
+      const luytenCurveProfile = [
+        0.08, -0.14, 0.18, 0.28,
+        -0.22, 0.16, 0.72, -0.86,
+        0.66, 0.78, -0.82, 0.7,
+        0.76, -0.9, 0.68, 0.54
+      ];
+      const luytenSceneStyles = [
+        { ambient: "#1b262f", tissue: "#b7493f", rim: "#ed8a73", pale: "#e8b6a6", light: "#ed8a73", water: "#2e2d36", shadow: "#030304", accent: "#b7493f", substrateLeft: "#141518", substrateRight: "#16191d", saturation: 0.98, lightX: 0.507, lightY: 0.404, detail: 0.55, morph: 0 },
+        { ambient: "#192e35", tissue: "#433833", rim: "#7a6446", pale: "#aa9679", light: "#7a6446", water: "#172428", shadow: "#050604", accent: "#433833", substrateLeft: "#191c19", substrateRight: "#191d1a", saturation: 0.86, lightX: 0.497, lightY: 0.456, detail: 0.75, morph: 2 },
+        { ambient: "#1b2123", tissue: "#123244", rim: "#978b83", pale: "#c3b9b2", light: "#978b83", water: "#142f3e", shadow: "#060504", accent: "#123244", substrateLeft: "#1a1918", substrateRight: "#1e2020", saturation: 0.92, lightX: 0.513, lightY: 0.446, detail: 0.89, morph: 3 },
+        { ambient: "#0f2a32", tissue: "#15444f", rim: "#58827e", pale: "#9ab7b1", light: "#58827e", water: "#21373b", shadow: "#040607", accent: "#15444f", substrateLeft: "#181e1e", substrateRight: "#131b1b", saturation: 0.93, lightX: 0.488, lightY: 0.44, detail: 0.76, morph: 1 },
+        { ambient: "#09191e", tissue: "#345c5e", rim: "#869c9e", pale: "#bdc9c9", light: "#869c9e", water: "#141f22", shadow: "#030506", accent: "#345c5e", substrateLeft: "#0f1212", substrateRight: "#121616", saturation: 0.82, lightX: 0.514, lightY: 0.463, detail: 0.7, morph: 3 },
+        { ambient: "#0d272a", tissue: "#5f5840", rim: "#d5c3a1", pale: "#eee1c6", light: "#d5c3a1", water: "#253532", shadow: "#03080a", accent: "#5f5840", substrateLeft: "#17201e", substrateRight: "#19201d", saturation: 0.91, lightX: 0.495, lightY: 0.418, detail: 0.93, morph: 2 },
+        { ambient: "#335659", tissue: "#2e6e74", rim: "#94908f", pale: "#c4c2bd", light: "#94908f", water: "#1b3d42", shadow: "#070d13", accent: "#2e6e74", substrateLeft: "#152226", substrateRight: "#192427", saturation: 0.95, lightX: 0.501, lightY: 0.464, detail: 0.83, morph: 1 },
+        { ambient: "#153e41", tissue: "#24666e", rim: "#748e8e", pale: "#aec0bc", light: "#748e8e", water: "#0f2325", shadow: "#04070a", accent: "#24666e", substrateLeft: "#101b1d", substrateRight: "#1d2526", saturation: 0.9, lightX: 0.518, lightY: 0.457, detail: 0.79, morph: 2 },
+        { ambient: "#467990", tissue: "#3a7795", rim: "#83b9ca", pale: "#b9d9e1", light: "#83b9ca", water: "#29576f", shadow: "#0b171e", accent: "#3a7795", substrateLeft: "#263c46", substrateRight: "#25404c", saturation: 1.02, lightX: 0.509, lightY: 0.445, detail: 1.0, morph: 3 },
+        { ambient: "#133b5d", tissue: "#1b7bcf", rim: "#1d80d8", pale: "#7eb7e2", light: "#1d80d8", water: "#10212d", shadow: "#111518", accent: "#1b7bcf", substrateLeft: "#122534", substrateRight: "#182027", saturation: 1.08, lightX: 0.482, lightY: 0.426, detail: 0.75, morph: 0 },
+        { ambient: "#26464c", tissue: "#bb782d", rim: "#e08733", pale: "#efc086", light: "#e08733", water: "#1e2e32", shadow: "#1c2224", accent: "#bb782d", substrateLeft: "#223539", substrateRight: "#3e3a33", saturation: 1.06, lightX: 0.495, lightY: 0.467, detail: 0.99, morph: 1 },
+        { ambient: "#1d4657", tissue: "#146482", rim: "#568994", pale: "#a1bdc2", light: "#568994", water: "#0f242f", shadow: "#03070c", accent: "#146482", substrateLeft: "#0e1a1f", substrateRight: "#0e232d", saturation: 0.96, lightX: 0.519, lightY: 0.466, detail: 0.79, morph: 3 },
+        { ambient: "#216270", tissue: "#3cb0c7", rim: "#4fc3d6", pale: "#a3dce4", light: "#4fc3d6", water: "#173e45", shadow: "#0e1a1a", accent: "#3cb0c7", substrateLeft: "#283832", substrateRight: "#22474b", saturation: 1.04, lightX: 0.51, lightY: 0.44, detail: 0.93, morph: 1 },
+        { ambient: "#1f3851", tissue: "#254165", rim: "#5773a4", pale: "#a4b0ca", light: "#5773a4", water: "#131922", shadow: "#040508", accent: "#254165", substrateLeft: "#0e1118", substrateRight: "#183047", saturation: 0.91, lightX: 0.599, lightY: 0.424, detail: 0.71, morph: 2 },
+        { ambient: "#2b474c", tissue: "#518b96", rim: "#62a5b0", pale: "#afd0d3", light: "#62a5b0", water: "#192e32", shadow: "#091012", accent: "#518b96", substrateLeft: "#141f1f", substrateRight: "#162223", saturation: 0.93, lightX: 0.516, lightY: 0.445, detail: 0.7, morph: 0 },
+        { ambient: "#295559", tissue: "#307e92", rim: "#81bcc8", pale: "#bedce0", light: "#81bcc8", water: "#173c3e", shadow: "#020404", accent: "#307e92", substrateLeft: "#141e1a", substrateRight: "#141d1a", saturation: 0.99, lightX: 0.5, lightY: 0.42, detail: 0.85, morph: 3 }
+      ];
+      const luytenSceneAnchors = [
+        [[58,62,-1],[728,166,1],[44,273,-1],[682,360,1],[87,456,-1],[700,549,1],[31,635,-1],[640,796,1],[200,833,-1]],
+        [[75,130,-1],[605,148,1],[93,245,-1],[739,354,1],[75,487,-1],[605,581,1],[161,705,-1],[652,798,1],[162,899,-1]],
+        [[91,104,-1],[724,218,1],[184,317,-1],[612,390,1],[152,491,-1],[703,537,1],[121,643,-1],[646,790,1],[36,891,-1]],
+        [[47,99,-1],[623,179,1],[184,307,-1],[730,407,1],[74,480,-1],[573,617,1],[191,638,-1],[606,812,1],[177,860,-1]],
+        [[69,123,-1],[726,165,1],[149,283,-1],[640,417,1],[42,487,-1],[561,566,1],[109,683,-1],[567,735,1],[88,898,-1]],
+        [[57,95,-1],[604,175,1],[57,247,-1],[700,349,1],[141,445,-1],[636,546,1],[103,689,-1],[590,777,1],[200,837,-1]],
+        [[156,101,-1],[575,179,1],[176,306,-1],[664,358,1],[169,471,-1],[623,542,1],[175,669,-1],[712,745,1],[202,852,-1]],
+        [[161,65,-1],[609,198,1],[158,295,-1],[599,383,1],[144,493,-1],[706,558,1],[130,698,-1],[681,745,1],[203,849,-1]],
+        [[60,124,-1],[615,160,1],[106,281,-1],[595,398,1],[59,470,-1],[713,557,1],[59,705,-1],[667,756,1],[64,886,-1]],
+        [[60,125,-1],[681,163,1],[37,310,-1],[636,385,1],[23,456,-1],[671,576,1],[166,715,-1],[718,798,1],[152,884,-1]],
+        [[202,100,-1],[679,151,1],[161,303,-1],[700,399,1],[69,462,-1],[672,545,1],[94,661,-1],[603,807,1],[34,909,-1]],
+        [[77,126,-1],[715,158,1],[175,247,-1],[629,418,1],[51,497,-1],[690,597,1],[138,708,-1],[720,746,1],[79,849,-1]],
+        [[69,65,-1],[619,202,1],[102,262,-1],[668,353,1],[147,463,-1],[663,617,1],[176,671,-1],[662,811,1],[171,861,-1]],
+        [[164,69,-1],[638,210,1],[184,281,-1],[673,350,1],[64,514,-1],[731,537,1],[196,644,-1],[582,808,1],[169,891,-1]],
+        [[198,130,-1],[713,207,1],[50,326,-1],[614,393,1],[47,468,-1],[572,561,1],[96,675,-1],[612,811,1],[179,836,-1]],
+        [[31,114,-1],[734,208,1],[111,305,-1],[663,367,1],[87,443,-1],[643,590,1],[127,676,-1],[605,797,1],[91,868,-1]]
+      ];
+      const luytenBiolumAnchors = [
+        [[219,124,-1],[699,296,1],[87,456,-1],[593,709,1],[111,798,-1],[609,918,1]],
+        [[605,148,1],[63,339,-1],[631,463,1],[69,676,-1],[652,798,1],[151,924,-1]],
+        [[91,104,-1],[568,283,1],[152,491,-1],[557,674,1],[178,844,-1],[569,911,1]],
+        [[655,128,1],[184,307,-1],[583,526,1],[191,638,-1],[683,855,1],[221,916,-1]],
+        [[199,156,-1],[616,344,1],[42,487,-1],[664,630,1],[90,872,-1],[615,865,1]],
+        [[649,118,1],[199,313,-1],[719,482,1],[104,701,-1],[581,790,1],[147,874,-1]],
+        [[145,184,-1],[664,358,1],[222,510,-1],[544,615,1],[187,821,-1],[541,885,1]],
+        [[609,198,1],[158,295,-1],[544,493,1],[220,612,-1],[623,812,1],[182,927,-1]],
+        [[60,124,-1],[541,360,1],[59,470,-1],[638,710,1],[97,864,-1],[714,879,1]],
+        [[584,156,1],[37,310,-1],[637,516,1],[153,709,-1],[722,833,1],[152,884,-1]],
+        [[202,100,-1],[721,354,1],[78,530,-1],[596,709,1],[94,858,-1],[540,864,1]],
+        [[715,158,1],[215,281,-1],[595,448,1],[216,611,-1],[645,866,1],[222,873,-1]],
+        [[181,159,-1],[668,353,1],[147,463,-1],[701,635,1],[171,781,-1],[673,921,1]],
+        [[678,171,1],[184,281,-1],[731,537,1],[196,644,-1],[582,808,1],[169,891,-1]],
+        [[209,144,-1],[703,299,1],[47,468,-1],[555,610,1],[140,786,-1],[535,911,1]],
+        [[562,100,1],[79,369,-1],[710,459,1],[213,623,-1],[588,820,1],[216,880,-1]]
+      ];
+      const luytenOrganisms = luytenScenes.flatMap((scene, sceneIndex) => {
+        const rand = seededRandom(0x4c59544e ^ (sceneIndex * 0x9e3779b9));
+        return luytenSceneAnchors[sceneIndex].map(([x, y, side], index) => {
+          return {
+            sceneIndex,
+            type: ["tube", "polyp", "fan", "siphon"][(index + sceneIndex) % 4],
+            x,
+            y,
+            size: 0.42 + rand() * 0.42 + luytenSceneStyles[sceneIndex].detail * 0.08,
+            phase: rand() * Math.PI * 2,
+            depth: 0.48 + rand() * 0.48,
+            lean: (rand() - 0.5) * 0.42,
+            side,
+            style: luytenSceneStyles[sceneIndex]
+          };
+        });
+      });
+      const luytenBiolumOrganisms = luytenScenes.flatMap((scene, sceneIndex) => {
+        const rand = seededRandom(0x42494f4c ^ (sceneIndex * 0x85ebca6b));
+        return luytenBiolumAnchors[sceneIndex]
+          .filter(([x, y]) => !luytenSceneAnchors[sceneIndex].some(([baseX, baseY]) => Math.hypot(x - baseX, y - baseY) < 34))
+          .map(([x, y, side], index) => ({
+          sceneIndex,
+          type: ["siphon", "fan", "polyp", "tube"][(index + sceneIndex * 2) % 4],
+          x,
+          y,
+          size: 0.34 + rand() * 0.34,
+          phase: rand() * Math.PI * 2,
+          depth: 0.52 + rand() * 0.42,
+          lean: (rand() - 0.5) * 0.34,
+          side,
+          style: luytenSceneStyles[sceneIndex],
+          biolum: true,
+          glowPhase: rand() * Math.PI * 2
+          }));
+      });
+      const luytenAllOrganisms = [...luytenOrganisms, ...luytenBiolumOrganisms];
+      const luytenPlankton = luytenScenes.flatMap((scene, sceneIndex) => {
+        const rand = seededRandom(0x504c414e ^ (sceneIndex * 0x45d9f3b));
+        return Array.from({ length: 26 }, () => ({
+          sceneIndex,
+          x: rand() * W,
+          y: rand() * H,
+          size: 0.45 + rand() * 2.1,
+          speed: 4 + rand() * 12,
+          phase: rand() * Math.PI * 2,
+          depth: 0.28 + rand() * 0.72,
+          kind: Math.floor(rand() * 3),
+          style: luytenSceneStyles[sceneIndex]
+        }));
+      });
+      const luytenBubbles = luytenScenes.flatMap((scene, sceneIndex) => {
+        const rand = seededRandom(0x42554242 ^ (sceneIndex * 0x27d4eb2d));
+        const vents = luytenSceneAnchors[sceneIndex].filter((anchor) => anchor[1] > 350);
+        return Array.from({ length: 30 }, (_, index) => {
+          const vent = vents[index % vents.length];
+          const hero = index % 8 === 0;
+          return {
+            sceneIndex,
+            emitterX: vent[0] + (rand() - 0.5) * 18,
+            emitterY: vent[1] + rand() * 18,
+            offset: rand() * 620,
+            travel: 300 + rand() * 330,
+            radius: hero ? 12 + rand() * 14 : 0.9 + Math.pow(rand(), 1.68) * 12.5,
+            speed: 22 + rand() * 48,
+            wobble: 2 + rand() * 12,
+            phase: rand() * Math.PI * 2,
+            depth: hero ? 0.76 + rand() * 0.24 : 0.24 + rand() * 0.7,
+            alpha: hero ? 0.46 + rand() * 0.18 : 0.18 + rand() * 0.28,
+            hero
+          };
+        });
+      });
+      const luytenOrganismsByScene = luytenScenes.map((_, sceneIndex) =>
+        luytenAllOrganisms.filter((organism) => organism.sceneIndex === sceneIndex)
+      );
+      const luytenPlanktonByScene = luytenScenes.map((_, sceneIndex) =>
+        luytenPlankton.filter((mote) => mote.sceneIndex === sceneIndex)
+      );
+      const luytenBubblesByScene = luytenScenes.map((_, sceneIndex) =>
+        luytenBubbles.filter((bubble) => bubble.sceneIndex === sceneIndex)
+      );
       const legacyCanyonLandmarks = [
         { progress: 0.01, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.954 },
         { progress: 0.11, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.857 },
@@ -3828,6 +4132,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ...stageBackdropCatalog.slice(0, 4),
         canyonBackdropCatalogItem,
         ...stageBackdropCatalog.slice(4),
+        ...luytenScenes.map((scene, index) => ({
+          name: `Luyten b · ${scene.name}`,
+          id: scene.id,
+          category: "backdrop",
+          typeLabel: `Underwater exoplanet expedition · Scene ${index + 1}/${luytenScenes.length} · four-layer parallax`,
+          stageNumber: 18,
+          shortcutLabel: stageShortcutLabel(18),
+          sprite: "backdrop",
+          imageUrl: scene.imageUrl
+        })),
         {
           name: "Elysium Recovery Site",
           id: "BACKDROP-FINALE-FATHER-FOUND",
@@ -4079,8 +4393,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         return [rgb[0], rgb[1], rgb[2], alpha];
       }
 
+      function cssRgba(hex, alpha = 1) {
+        const rgb = hexToRgb(hex).map((channel) => Math.round(channel * 255));
+        return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
+      }
+
       function isActiveRun() {
-        return state === "playing" || state === "demo";
+        return state === "playing" || state === "demo" || state === "luyten";
       }
 
       function seededRandom(seed) {
@@ -4179,6 +4498,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function setCanyonBackdrop() {
+        setUnderwaterFxActive(false);
         parallaxBackdrop.classList.remove("active");
         stageTwoParallaxBackdrop.classList.remove("active");
         stageThreeParallaxBackdrop.classList.remove("active");
@@ -4195,12 +4515,49 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         stageFourteenParallaxBackdrop.classList.remove("active");
         stageFifteenParallaxBackdrop.classList.remove("active");
         stageSixteenParallaxBackdrop.classList.remove("active");
+        luytenParallaxBackdrop.classList.remove("active");
         canyonParallaxBackdrop.classList.add("active");
         shell.dataset.parallaxMode = "selene-canyon-parallax";
         canvas.style.backgroundImage = "none";
         updateCanyonParallaxBackdrop();
         shell.dataset.stageBackdrop = "selene-canyon-run";
         selectSoundtrack(0);
+      }
+
+      function setUnderwaterFxActive(active) {
+        underwaterFxCanvas.classList.toggle("active", active);
+        underwaterLens.classList.toggle("active", active);
+        shell.dataset.underwaterFx = active ? "active" : "inactive";
+        if (!active) underwaterFxCtx.clearRect(0, 0, W, H);
+      }
+
+      function setLuytenBackdrop() {
+        [
+          parallaxBackdrop,
+          stageTwoParallaxBackdrop,
+          stageThreeParallaxBackdrop,
+          stageFourParallaxBackdrop,
+          stageFiveParallaxBackdrop,
+          stageSixParallaxBackdrop,
+          stageSevenParallaxBackdrop,
+          stageEightParallaxBackdrop,
+          stageNineParallaxBackdrop,
+          stageTenParallaxBackdrop,
+          stageElevenParallaxBackdrop,
+          stageTwelveParallaxBackdrop,
+          stageThirteenParallaxBackdrop,
+          stageFourteenParallaxBackdrop,
+          stageFifteenParallaxBackdrop,
+          stageSixteenParallaxBackdrop,
+          canyonParallaxBackdrop
+        ].forEach((backdrop) => backdrop.classList.remove("active"));
+        luytenParallaxBackdrop.classList.add("active");
+        setUnderwaterFxActive(true);
+        shell.dataset.parallaxMode = "luyten-b-abyssal-parallax";
+        shell.dataset.stageBackdrop = "luyten-b-underwater-expedition";
+        canvas.style.backgroundImage = "none";
+        updateLuytenParallaxBackdrop();
+        selectSoundtrack(2);
       }
 
       function parallaxAvailableForStage() {
@@ -4284,10 +4641,15 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           || stageFourteenParallaxBackdrop.classList.contains("active")
           || stageFifteenParallaxBackdrop.classList.contains("active")
           || stageSixteenParallaxBackdrop.classList.contains("active")
-          || canyonParallaxBackdrop.classList.contains("active");
+          || canyonParallaxBackdrop.classList.contains("active")
+          || luytenParallaxBackdrop.classList.contains("active");
       }
 
       function refreshParallaxBackdrop() {
+        if (state === "luyten" || state === "luytenBriefing") {
+          setLuytenBackdrop();
+          return;
+        }
         if (state === "canyon" || state === "canyonBriefing") {
           parallaxBackdrop.classList.remove("active");
           stageTwoParallaxBackdrop.classList.remove("active");
@@ -4305,11 +4667,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           stageFourteenParallaxBackdrop.classList.remove("active");
           stageFifteenParallaxBackdrop.classList.remove("active");
           stageSixteenParallaxBackdrop.classList.remove("active");
+          luytenParallaxBackdrop.classList.remove("active");
           canyonParallaxBackdrop.classList.add("active");
           shell.dataset.parallaxMode = "selene-canyon-parallax";
           return;
         }
         canyonParallaxBackdrop.classList.remove("active");
+        luytenParallaxBackdrop.classList.remove("active");
+        setUnderwaterFxActive(false);
         const stageOneActive = parallaxAvailableForStage();
         const stageTwoAvailable = stageTwoParallaxAvailable();
         const stageThreeAvailable = stageThreeParallaxAvailable();
@@ -4496,6 +4861,35 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         canyonParallaxNear.style.transform = `translate3d(${(-playerShift * 18).toFixed(2)}px, 0, 0)`;
       }
 
+      function luytenBackgroundOffset() {
+        return -(luytenRun.maxScroll - luytenRun.scroll);
+      }
+
+      function updateLuytenParallaxBackdrop() {
+        if (!luytenParallaxBackdrop.classList.contains("active")) return;
+        const offset = luytenBackgroundOffset();
+        const progress = luytenRun.scroll / luytenRun.maxScroll;
+        const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
+        luytenRun.sceneIndex = clamp(Math.floor((luytenRun.scroll + H * 0.48) / H), 0, luytenScenes.length - 1);
+        const sceneProgress = (luytenRun.scroll % H) / H;
+        const curveIndex = clamp(Math.floor(luytenRun.scroll / H), 0, luytenCurveProfile.length - 1);
+        const curveEnvelope = 0.5 - Math.cos(sceneProgress * Math.PI * 2) * 0.5;
+        const curve = luytenCurveProfile[curveIndex] * curveEnvelope;
+        luytenParallaxFar.style.backgroundPosition = `center ${(offset + progress * 12).toFixed(2)}px`;
+        luytenParallaxMid.style.backgroundPosition = `center ${offset.toFixed(2)}px`;
+        luytenParallaxNear.style.backgroundPosition = `center ${(offset - progress * 24).toFixed(2)}px`;
+        luytenParallaxFar.style.transform = `translate3d(${(-playerShift * 3 - curve * 5).toFixed(2)}px, 0, 0) scaleX(1.04)`;
+        luytenParallaxMid.style.transform = `translate3d(${(-playerShift * 11 - curve * 16).toFixed(2)}px, 0, 0) scaleX(1.1)`;
+        luytenParallaxNear.style.transform = `translate3d(${(-playerShift * 24 - curve * 34).toFixed(2)}px, 0, 0) scaleX(1.16)`;
+        const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
+        const waterRgb = hexToRgb(sceneStyle.water).map((channel) => Math.round(channel * 255)).join(", ");
+        const lightRgb = hexToRgb(sceneStyle.rim).map((channel) => Math.round(channel * 255)).join(", ");
+        shell.style.setProperty("--luyten-water-rgb", waterRgb);
+        shell.style.setProperty("--luyten-light-rgb", lightRgb);
+        shell.style.setProperty("--luyten-saturation", sceneStyle.saturation);
+        shell.dataset.luytenCurve = curve.toFixed(3);
+      }
+
       function activeCanyonLandmark() {
         const progress = canyonRun.scroll / canyonRun.maxScroll;
         return canyonLandmarks.find((landmark) => Math.abs(landmark.progress - progress) < 0.038) || null;
@@ -4505,6 +4899,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         canyonAliens.length = 0;
         canyonWeapons.length = 0;
         canyonBonuses.length = 0;
+        luytenRun.scroll = 0;
+        luytenRun.sceneIndex = 0;
+        delete shell.dataset.luytenProgress;
+        delete shell.dataset.luytenScene;
         canyonAlienSpecies.forEach((species, index) => {
           canyonAliens.push({
             species,
@@ -5501,13 +5899,18 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         scoreEl.textContent = score.toString();
         hiScoreEl.textContent = getHiScore().toString();
         const canyonStage = state === "canyon" || state === "canyonBriefing";
+        const luytenStage = state === "luyten" || state === "luytenBriefing";
         const actIndex = clamp(act - 1, 0, actNames.length - 1);
         const alienStyle = alienStyleForStage(act, alienRoundsCleared);
-        waveEl.textContent = canyonStage
+        waveEl.textContent = luytenStage
+          ? `DIVE ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
+          : canyonStage
           ? "MINIBOSS GAUNTLET"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
-        hudStageName.textContent = canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
-        hudEncounterName.textContent = canyonStage
+        hudStageName.textContent = luytenStage ? "Luyten b Abyssal Descent" : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
+        hudEncounterName.textContent = luytenStage
+          ? luytenScenes[luytenRun.sceneIndex].name
+          : canyonStage
           ? (activeCanyonAlien()?.species.name || activeCanyonLandmark()?.name || "Selene Wreck Gauntlet")
           : boss ? boss.name : alienStyle.displayName;
         shieldCountEl.textContent = player.bonusShields > 0 ? `∞ +${player.bonusShields}` : "∞";
@@ -5826,11 +6229,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         else openDevScreen();
       }
 
-      function showActTitle(actNumber, canyon = false) {
+      function showActTitle(actNumber, canyon = false, specialName = "") {
         if (actIntroTimer) clearTimeout(actIntroTimer);
-        actIntro.className = `act-intro ${canyon ? "theme-canyon" : `theme-${actNumber}`} visible`;
-        actKicker.textContent = canyon ? "Special flight stage" : `Act ${actNumber}`;
-        actName.textContent = canyon ? "Selene Canyon Odyssey" : actNames[actNumber - 1];
+        actIntro.className = `act-intro ${canyon || specialName ? "theme-canyon" : `theme-${actNumber}`} visible`;
+        actKicker.textContent = specialName ? "Exoplanet expedition" : canyon ? "Special flight stage" : `Act ${actNumber}`;
+        actName.textContent = specialName || (canyon ? "Selene Canyon Odyssey" : actNames[actNumber - 1]);
         shell.dataset.actTitle = actName.textContent;
         void actIntro.offsetWidth;
         actIntroTimer = setTimeout(() => {
@@ -6451,6 +6854,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           beginCanyonRun();
           return;
         }
+        if (state === "luytenBriefing") {
+          initAudio();
+          beginLuytenRun();
+          return;
+        }
         if (state === "transition") return;
         if (winScene.classList.contains("visible") && performance.now() < winSceneUnlockAt) return;
         clearAttractTimer();
@@ -6490,12 +6898,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const match = /^Digit([0-9])$/.exec(event.code);
         if (!match) return null;
         const digit = Number(match[1]);
-        if (event.shiftKey) return digit >= 1 && digit <= 7 ? 10 + digit : null;
+        if (event.shiftKey) return digit >= 1 && digit <= 8 ? 10 + digit : null;
         return digit === 0 ? 10 : digit;
       }
 
       function stageDescriptor(stageNumber) {
         if (stageNumber === 5) return { stageNumber, type: "canyon", act: 1, stageIndex: 4 };
+        if (stageNumber === 18) return { stageNumber, type: "luyten", act: 2, stageIndex: 4 };
         const timelineIndex = stageNumber <= 4 ? stageNumber - 1 : stageNumber - 2;
         const actIndex = Math.floor(timelineIndex / 4);
         const stageIndex = timelineIndex % 4;
@@ -6532,6 +6941,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           act = 1;
           wave = 4;
           beginCanyonRun();
+          return;
+        }
+        if (stage.type === "luyten") {
+          act = 2;
+          wave = 8;
+          beginLuytenRun();
           return;
         }
         act = stage.act;
@@ -6683,6 +7098,73 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setTimeout(() => startNextAct(fullAutoPlaythrough), 1250);
       }
 
+      function startLuytenBriefing() {
+        clearAttractTimer();
+        state = "luytenBriefing";
+        clearBossTimers();
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        comets.length = 0;
+        rifts.length = 0;
+        bonusUfo = null;
+        luytenRun.scroll = 0;
+        luytenRun.sceneIndex = 0;
+        setLuytenBackdrop();
+        winScene.classList.remove("visible", "finale", "intermission");
+        overlay.classList.remove("demo-mode");
+        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  CROSS SIXTEEN SUBMERGED CIVILIZATION ZONES\nROUTE  FOLLOW THE WINDING RAVINE THROUGH BENDS AND SWITCHBACKS\nDISCOVER  DROWNED TEMPLES, ARCHIVES AND TIDAL MACHINES\nBIOSPHERE  LIVING POLYPS, TUBE WORMS AND SIPHON COLONIES\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        startBtn.textContent = "Begin descent";
+        setConsolePane("info");
+        overlay.classList.add("visible");
+        updateHud();
+      }
+
+      function beginLuytenRun() {
+        clearAttractTimer();
+        state = "luyten";
+        clearBossTimers();
+        boss = null;
+        bossDefeated = false;
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        comets.length = 0;
+        rifts.length = 0;
+        bonusUfo = null;
+        luytenRun.scroll = 0;
+        luytenRun.sceneIndex = 0;
+        player.x = W / 2;
+        player.y = H - 140;
+        player.lives = Infinity;
+        player.invuln = 2.2;
+        player.shieldTime = 1.5;
+        resetPhysicsBody(player, player.x, player.y);
+        resetDirectTouchControls();
+        overlay.classList.remove("visible", "demo-mode");
+        startBtn.textContent = "Start";
+        setLuytenBackdrop();
+        showActTitle(act, false, "Luyten b Abyssal Descent");
+        updateHud();
+        play(146, 0.28, "sine", 0.045);
+        setTimeout(() => play(293, 0.34, "triangle", 0.035), 150);
+      }
+
+      function finishLuytenRun() {
+        if (state !== "luyten") return;
+        state = "transition";
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        score += 12000;
+        player.invuln = 2.2;
+        for (let i = 0; i < 9; i += 1) {
+          setTimeout(() => makeParticles(W * (0.18 + Math.random() * 0.64), H * (0.25 + Math.random() * 0.5), i % 2 ? "#67e0d3" : "#f0a65b", 24), i * 80);
+        }
+        play(392, 0.24, "triangle", 0.045);
+        setTimeout(() => play(587, 0.34, "sine", 0.04), 160);
+        setTimeout(() => startNextAct(fullAutoPlaythrough), 1450);
+      }
+
       function winGame(finale = false) {
         state = "won";
         overlay.classList.remove("demo-mode");
@@ -6775,6 +7257,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         } else if (act === 1 && (!demoMode || fullAutoPlaythrough)) {
           if (fullAutoPlaythrough) beginCanyonRun();
           else startCanyonBriefing();
+        } else if (act === 2 && (!demoMode || fullAutoPlaythrough)) {
+          if (fullAutoPlaythrough) beginLuytenRun();
+          else startLuytenBriefing();
         } else {
           startNextAct(demoMode);
         }
@@ -6988,11 +7473,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4, shotId });
         bullets.push({ x: player.x + 12, y: player.y - 24, vy: -720, r: 4, shotId });
         player.cooldown = 0.18;
-        if (state === "playing" || state === "canyon") laserSound();
+        if (state === "playing" || state === "canyon" || state === "luyten") laserSound();
       }
 
       function activateShield() {
-        if ((state !== "playing" && state !== "canyon") || player.shieldTime > 0) return;
+        if ((state !== "playing" && state !== "canyon" && state !== "luyten") || player.shieldTime > 0) return;
         player.shieldTime = 2.4;
         updateHud();
         play(880, 0.14, "triangle", 0.04);
@@ -7691,7 +8176,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function damagePlayer() {
-        if (player.invuln > 0 || (state !== "playing" && state !== "canyon")) return;
+        if (player.invuln > 0 || (state !== "playing" && state !== "canyon" && state !== "luyten")) return;
         if (player.shieldTime > 0) {
           shake = Math.max(shake, 8);
           makeParticles(player.x, player.y - 6, "#5ed7ff", 18);
@@ -7778,6 +8263,52 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (canyonRun.scroll >= canyonRun.maxScroll && canyonAliens.every((alien) => alien.dead)) finishCanyonRun();
       }
 
+      function stepLuyten(dt) {
+        player.cooldown = Math.max(0, player.cooldown - dt);
+        player.invuln = Math.max(0, player.invuln - dt);
+        player.shieldTime = Math.max(0, player.shieldTime - dt);
+        if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
+
+        if (fullAutoPlaythrough) {
+          playerInput = clamp((W / 2 + Math.sin(performance.now() / 820) * 172 - player.x) / 68, -1, 1);
+          playerInputY = clamp((H * 0.7 + Math.cos(performance.now() / 1250) * 80 - player.y) / 80, -0.72, 0.72);
+          player.shieldTime = Math.max(player.shieldTime, 0.2);
+          if (player.cooldown <= 0) shoot();
+        } else {
+          const left = keys.has("ArrowLeft") || keys.has("KeyA");
+          const right = keys.has("ArrowRight") || keys.has("KeyD");
+          const forward = keys.has("ArrowUp");
+          const backward = keys.has("ArrowDown");
+          playerInput = (right ? 1 : 0) - (left ? 1 : 0);
+          playerInputY = (backward ? 1 : 0) - (forward ? 1 : 0);
+          if (keys.has("Space") || keys.has("KeyW")) shoot();
+        }
+        syncPhysics(dt);
+        luytenRun.scroll = Math.min(luytenRun.maxScroll, luytenRun.scroll + luytenRun.speed * dt);
+        updateLuytenParallaxBackdrop();
+        shell.dataset.luytenProgress = Math.round(luytenRun.scroll / luytenRun.maxScroll * 100).toString();
+        shell.dataset.luytenScene = luytenScenes[luytenRun.sceneIndex].id;
+
+        for (let i = bullets.length - 1; i >= 0; i -= 1) {
+          if (bullets[i].y < -60 || bullets[i].x < -60 || bullets[i].x > W + 60) {
+            removePhysicsBody(bullets[i]);
+            bullets.splice(i, 1);
+          }
+        }
+        particles.forEach((particle) => {
+          particle.x += particle.vx * dt;
+          particle.y += particle.vy * dt;
+          particle.vx *= Math.pow(particle.drag || 0.98, dt * 60);
+          particle.vy *= Math.pow(particle.drag || 0.98, dt * 60);
+          particle.life -= dt;
+        });
+        for (let i = particles.length - 1; i >= 0; i -= 1) {
+          if (particles[i].life <= 0) particles.splice(i, 1);
+        }
+        updateHud();
+        if (luytenRun.scroll >= luytenRun.maxScroll) finishLuytenRun();
+      }
+
       function step(dt) {
         if (devScreenOpen) return;
         const activeRun = isActiveRun() || state === "canyon";
@@ -7785,7 +8316,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           startDemoMode();
           return;
         }
-        if ((state === "playing" || state === "canyon") && !muted && !melodyTimer) startMelody();
+        if ((state === "playing" || state === "canyon" || state === "luyten") && !muted && !melodyTimer) startMelody();
         stars.forEach((star) => {
           star.y += star.s * (42 + wave * 3) * dt;
           if (star.y > H) {
@@ -7839,6 +8370,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
         if (state === "canyon") {
           stepCanyon(dt);
+          shake = Math.max(0, shake - dt * 42);
+          return;
+        }
+        if (state === "luyten") {
+          stepLuyten(dt);
           shake = Math.max(0, shake - dt * 42);
           return;
         }
@@ -9155,6 +9691,487 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.restore();
       }
 
+      function drawLuytenOrganisms(t) {
+        if (state !== "luyten" && state !== "luytenBriefing") return;
+        const ctx = spriteCtx;
+        const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
+        const animationFrame = Math.floor(t * 24);
+        const firstVisibleScene = Math.max(0, luytenRun.sceneIndex - 1);
+        const lastVisibleScene = Math.min(luytenScenes.length - 1, luytenRun.sceneIndex + 1);
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let sceneIndex = firstVisibleScene; sceneIndex <= lastVisibleScene; sceneIndex += 1) {
+          luytenPlanktonByScene[sceneIndex].forEach((mote) => {
+          const sceneY = mote.y - mote.sceneIndex * H + luytenRun.scroll;
+          if (sceneY < -30 || sceneY > H + 30) return;
+          const framePhase = ((animationFrame + Math.floor(mote.phase * 7)) % 48) / 48 * Math.PI * 2;
+          const y = sceneY + Math.sin(framePhase * 0.5 + mote.phase) * 4;
+          const x = mote.x - playerShift * (3 + mote.depth * 8)
+            + Math.sin(framePhase + mote.phase + y * 0.006) * (3 + mote.depth * 8);
+          const pulse = 0.62 + Math.sin(framePhase * 2 + mote.phase) * 0.28;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(framePhase * (mote.kind === 2 ? 0.18 : 0.06) + mote.phase);
+          ctx.globalAlpha = (0.045 + pulse * 0.13) * mote.depth * (0.72 + mote.style.detail * 0.28);
+          ctx.strokeStyle = mote.kind === 1 ? mote.style.rim : mote.style.ambient;
+          ctx.fillStyle = mote.kind === 2 ? mote.style.pale : mote.style.tissue;
+          ctx.lineWidth = Math.max(0.45, mote.size * 0.42);
+          if (mote.kind === 0) {
+            ctx.beginPath();
+            ctx.ellipse(0, 0, mote.size * 0.55, mote.size * 1.8, Math.sin(framePhase) * 0.22, 0, Math.PI * 2);
+            ctx.stroke();
+          } else if (mote.kind === 1) {
+            ctx.beginPath();
+            ctx.moveTo(-mote.size * 1.5, 0);
+            ctx.quadraticCurveTo(0, Math.sin(framePhase) * mote.size, mote.size * 1.5, 0);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(0, 0, mote.size * 0.32, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            for (let arm = 0; arm < 3; arm += 1) {
+              ctx.rotate(Math.PI * 2 / 3);
+              ctx.beginPath();
+              ctx.moveTo(0, 0);
+              ctx.lineTo(mote.size * (1.1 + pulse * 0.4), 0);
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+          });
+        }
+
+        for (let sceneIndex = firstVisibleScene; sceneIndex <= lastVisibleScene; sceneIndex += 1) {
+          luytenOrganismsByScene[sceneIndex].forEach((organism) => {
+          const y = organism.y - organism.sceneIndex * H + luytenRun.scroll;
+          if (y < -130 || y > H + 130) return;
+          const x = organism.x - playerShift * (8 + organism.depth * 15);
+          const frame = (animationFrame + Math.floor(organism.phase * 19)) % 48;
+          const cycle = frame / 48 * Math.PI * 2;
+          const sway = (Math.sin(cycle) * 0.82 + Math.sin(cycle * 2 + organism.phase) * 0.18) * organism.side;
+          const pulse = 0.92 + Math.sin(cycle * 2 + organism.phase) * 0.08;
+          const size = organism.size;
+          const style = organism.style;
+          const biolumPulse = organism.biolum
+            ? 0.58 + Math.sin(cycle * 2 + organism.glowPhase) * 0.25 + Math.sin(cycle * 5 + organism.glowPhase) * 0.08
+            : 0;
+          const organismAlpha = (0.24 + organism.depth * 0.22) * (0.82 + style.detail * 0.18)
+            * (organism.biolum ? 0.82 + biolumPulse * 0.26 : 1);
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.scale(organism.side, 1);
+          ctx.globalAlpha = organismAlpha;
+
+          const anchor = ctx.createRadialGradient(0, 7 * size, 1, 0, 7 * size, 24 * size);
+          const substrate = organism.side < 0 ? style.substrateLeft : style.substrateRight;
+          anchor.addColorStop(0, cssRgba(substrate, 0.94));
+          anchor.addColorStop(0.52, cssRgba(style.ambient, 0.54));
+          anchor.addColorStop(1, cssRgba(substrate, 0));
+          ctx.fillStyle = anchor;
+          ctx.beginPath();
+          ctx.ellipse(0, 8 * size, 25 * size, 9 * size, organism.lean, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (organism.type === "tube") {
+            const height = (42 + style.morph * 4.5) * size;
+            const stem = ctx.createLinearGradient(0, 8 * size, 12 * sway, -height);
+            stem.addColorStop(0, style.shadow);
+            stem.addColorStop(0.35, style.tissue);
+            stem.addColorStop(0.82, style.pale);
+            stem.addColorStop(1, style.rim);
+            ctx.strokeStyle = stem;
+            ctx.lineWidth = (5.6 + style.morph * 0.72) * size;
+            ctx.beginPath();
+            ctx.moveTo(0, 12 * size);
+            ctx.bezierCurveTo(5 * sway, -height * 0.22, 10 * sway + organism.lean * 8, -height * 0.7, 13 * sway, -height);
+            ctx.stroke();
+            ctx.strokeStyle = cssRgba(style.shadow, 0.5);
+            ctx.lineWidth = 0.9 * size;
+            for (let ring = 0; ring < 4 + style.morph; ring += 1) {
+              const ry = 1 - ring * (height / (5 + style.morph));
+              ctx.beginPath();
+              ctx.arc(sway * ring * 2.2, ry, (4.2 - ring * 0.22) * size, Math.PI * 0.08, Math.PI * 0.92);
+              ctx.stroke();
+            }
+            ctx.strokeStyle = style.light;
+            ctx.lineWidth = 1.15 * size;
+            const tubeArms = 9 + style.morph * 2;
+            for (let arm = 0; arm < tubeArms; arm += 1) {
+              const angle = -Math.PI * 0.9 + arm * Math.PI * 1.8 / (tubeArms - 1) + sway * 0.035;
+              const curl = Math.sin(cycle + arm * 0.7) * 4 * size;
+              ctx.beginPath();
+              ctx.moveTo(14 * sway, -height);
+              ctx.bezierCurveTo(
+                14 * sway + Math.cos(angle) * 7 * size,
+                -height + Math.sin(angle) * 6 * size,
+                14 * sway + Math.cos(angle) * 15 * size + curl,
+                -height + Math.sin(angle) * 13 * size,
+                14 * sway + Math.cos(angle) * 22 * size * pulse + curl,
+                -height + Math.sin(angle) * 20 * size * pulse
+              );
+              ctx.stroke();
+            }
+          } else if (organism.type === "polyp") {
+            const bodyRadius = 15 + style.morph * 1.7;
+            const body = ctx.createRadialGradient(-4 * size, -5 * size, 1, 0, 0, bodyRadius * size);
+            body.addColorStop(0, style.light);
+            body.addColorStop(0.38, style.tissue);
+            body.addColorStop(1, style.shadow);
+            ctx.fillStyle = body;
+            ctx.beginPath();
+            ctx.moveTo(-9 * size, 8 * size);
+            ctx.bezierCurveTo(-15 * size * pulse, -4 * size, -11 * size + sway * 3, -20 * size, 0, -23 * size);
+            ctx.bezierCurveTo(11 * size + sway * 3, -20 * size, 15 * size * pulse, -4 * size, 9 * size, 8 * size);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = style.rim;
+            ctx.lineWidth = 1.3 * size;
+            const polypArms = 8 + style.morph * 2;
+            for (let arm = 0; arm < polypArms; arm += 1) {
+              const spread = (arm - (polypArms - 1) / 2) / ((polypArms - 1) / 2);
+              const curl = Math.sin(cycle + arm * 0.58) * 5 * size;
+              ctx.beginPath();
+              ctx.moveTo(spread * 5 * size, -18 * size);
+              ctx.bezierCurveTo(
+                spread * 12 * size,
+                -27 * size,
+                spread * 20 * size + curl,
+                -34 * size,
+                spread * 27 * size + curl,
+                -43 * size + Math.abs(spread) * 5 * size
+              );
+              ctx.stroke();
+            }
+          } else if (organism.type === "fan") {
+            ctx.strokeStyle = style.tissue;
+            ctx.lineWidth = 2.7 * size;
+            ctx.beginPath();
+            ctx.moveTo(0, 10 * size);
+            ctx.quadraticCurveTo(5 * sway, -16 * size, 11 * sway, -40 * size);
+            ctx.stroke();
+            const fanRadius = 5 + style.morph;
+            for (let ray = -fanRadius; ray <= fanRadius; ray += 1) {
+              const spread = ray * 4.6 * size;
+              const flutter = Math.sin(cycle + ray * 0.42) * 4.5 * size;
+              ctx.strokeStyle = ray % 2 ? style.rim : style.pale;
+              ctx.lineWidth = 0.78 * size;
+              ctx.beginPath();
+              ctx.moveTo(8 * sway, -29 * size);
+              ctx.bezierCurveTo(
+                spread * 0.28,
+                -42 * size,
+                spread * 0.72 + flutter,
+                -54 * size,
+                spread + sway * 7 + flutter,
+                -67 * size + Math.abs(ray) * 2.2
+              );
+              ctx.stroke();
+              if (ray % 2 === 0) {
+                ctx.strokeStyle = cssRgba(style.accent, 0.5);
+                for (let barb = 1; barb < 4; barb += 1) {
+                  const by = -36 * size - barb * 7 * size;
+                  ctx.beginPath();
+                  ctx.moveTo(spread * barb / 4, by);
+                  ctx.lineTo(spread * barb / 4 + Math.sign(ray || 1) * 6 * size, by - 4 * size);
+                  ctx.stroke();
+                }
+              }
+            }
+          } else if (organism.type === "siphon") {
+            ctx.strokeStyle = cssRgba(style.rim, 0.46);
+            ctx.lineWidth = 1.1 * size;
+            ctx.beginPath();
+            ctx.moveTo(0, 9 * size);
+            const siphonCells = 8 + style.morph;
+            for (let cell = 0; cell < siphonCells; cell += 1) {
+              const cy = -cell * 7.2 * size;
+              const cx = Math.sin(cycle + organism.phase + cell * 0.34) * (3 + cell * 0.52) * size;
+              ctx.lineTo(cx, cy);
+            }
+            ctx.stroke();
+            for (let cell = 0; cell < siphonCells; cell += 1) {
+              const cy = -cell * 7.2 * size;
+              const cx = Math.sin(cycle + organism.phase + cell * 0.34) * (3 + cell * 0.52) * size;
+              const cellPulse = 0.88 + Math.sin(cycle * 2 + cell * 0.9) * 0.12;
+              ctx.globalAlpha = organismAlpha * (0.62 + cell * 0.024);
+              const bead = ctx.createRadialGradient(cx - 2 * size, cy - 2 * size, 0, cx, cy, 7 * size);
+              bead.addColorStop(0, cssRgba(style.pale, 0.9));
+              bead.addColorStop(0.45, cssRgba(cell % 2 ? style.rim : style.tissue, 0.68));
+              bead.addColorStop(1, cssRgba(style.shadow, 0.08));
+              ctx.fillStyle = bead;
+              ctx.beginPath();
+              ctx.ellipse(cx, cy, (6.2 - cell * 0.16) * size * cellPulse, 4.6 * size, sway * 0.04, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          if (organism.biolum) {
+            ctx.globalCompositeOperation = "screen";
+            ctx.globalAlpha = organismAlpha * (0.34 + biolumPulse * 0.34);
+            ctx.strokeStyle = cssRgba(style.rim, 0.72);
+            ctx.fillStyle = cssRgba(style.pale, 0.88);
+            ctx.lineWidth = Math.max(0.45, 0.7 * size);
+            ctx.beginPath();
+            for (let node = 0; node < 5; node += 1) {
+              const nodeY = 1 - node * (8 + style.morph) * size;
+              const nodeX = Math.sin(cycle + organism.glowPhase + node * 0.74) * (2.2 + node * 0.65) * size;
+              if (node === 0) ctx.moveTo(nodeX, nodeY);
+              else ctx.lineTo(nodeX, nodeY);
+            }
+            ctx.stroke();
+            for (let node = 0; node < 5; node += 1) {
+              const nodeY = 1 - node * (8 + style.morph) * size;
+              const nodeX = Math.sin(cycle + organism.glowPhase + node * 0.74) * (2.2 + node * 0.65) * size;
+              const nodePulse = 0.72 + Math.sin(cycle * 3 + organism.glowPhase + node) * 0.28;
+              ctx.beginPath();
+              ctx.arc(nodeX, nodeY, (0.65 + nodePulse * 0.62) * size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+          });
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function drawUnderwaterRippleField(ctx, frame, frameTime, sceneStyle) {
+        if (underwaterRippleFrame !== frame) {
+          underwaterRippleFrame = frame;
+          const pixels = underwaterRipplePixels.data;
+          const tint = hexToRgb(sceneStyle.rim).map((channel) => Math.round(channel * 255));
+          let offset = 0;
+          for (let y = 0; y < UNDERWATER_RIPPLE_H; y += 1) {
+            for (let x = 0; x < UNDERWATER_RIPPLE_W; x += 1) {
+              const flowX = x + Math.sin(y * 0.071 - frameTime * 1.18) * 6.2;
+              const flowY = y + Math.sin(x * 0.049 + frameTime * 0.86) * 7.1;
+              const waveA = Math.sin(flowX * 0.151 + frameTime * 1.34);
+              const waveB = Math.cos(flowY * 0.126 - frameTime * 1.08);
+              const interference = Math.abs(waveA * waveB * 0.78 + Math.sin((x + y) * 0.071 + frameTime * 0.73) * 0.3);
+              const ridge = Math.pow(clamp((interference - 0.54) / 0.46, 0, 1), 2.7);
+              const depthFade = 0.38 + (1 - y / UNDERWATER_RIPPLE_H) * 0.62;
+              pixels[offset] = tint[0];
+              pixels[offset + 1] = tint[1];
+              pixels[offset + 2] = tint[2];
+              pixels[offset + 3] = Math.round(ridge * depthFade * (20 + sceneStyle.detail * 16));
+              offset += 4;
+            }
+          }
+          underwaterRippleCtx.putImageData(underwaterRipplePixels, 0, 0);
+        }
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        ctx.globalAlpha = 0.72;
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(underwaterRippleCanvas, -8, -8, W + 16, H + 16);
+        ctx.restore();
+      }
+
+      function drawUnderwaterEffects(t) {
+        const ctx = underwaterFxCtx;
+        ctx.clearRect(0, 0, W, H);
+        if (state !== "luyten" && state !== "luytenBriefing") return;
+
+        const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
+        const frame = Math.floor(t * 24);
+        const frameTime = frame / 24;
+        ctx.save();
+
+        const waterVeil = ctx.createLinearGradient(0, 0, 0, H);
+        waterVeil.addColorStop(0, cssRgba(sceneStyle.rim, 0.055));
+        waterVeil.addColorStop(0.42, cssRgba(sceneStyle.water, 0.035));
+        waterVeil.addColorStop(1, cssRgba(sceneStyle.shadow, 0.13));
+        ctx.fillStyle = waterVeil;
+        ctx.fillRect(0, 0, W, H);
+
+        if (luytenRun.scroll > 24) {
+          const seamY = luytenRun.scroll % H;
+          const seamFog = ctx.createLinearGradient(0, seamY - 190, 0, seamY + 190);
+          seamFog.addColorStop(0, cssRgba(sceneStyle.water, 0));
+          seamFog.addColorStop(0.32, cssRgba(sceneStyle.water, 0.05));
+          seamFog.addColorStop(0.5, cssRgba(sceneStyle.ambient, 0.13));
+          seamFog.addColorStop(0.68, cssRgba(sceneStyle.water, 0.05));
+          seamFog.addColorStop(1, cssRgba(sceneStyle.water, 0));
+          ctx.fillStyle = seamFog;
+          ctx.fillRect(0, seamY - 190, W, 380);
+        }
+
+        ctx.globalCompositeOperation = "screen";
+        ctx.lineCap = "round";
+
+        for (let shaft = 0; shaft < 4; shaft += 1) {
+          const originX = W * (0.14 + shaft * 0.23) + Math.sin(frameTime * 0.19 + shaft) * 28;
+          const spread = 62 + shaft * 13;
+          const shaftGradient = ctx.createLinearGradient(originX, -20, originX + 60, H * 0.86);
+          shaftGradient.addColorStop(0, cssRgba(sceneStyle.rim, 0.085));
+          shaftGradient.addColorStop(0.58, cssRgba(sceneStyle.rim, 0.018));
+          shaftGradient.addColorStop(1, cssRgba(sceneStyle.rim, 0));
+          ctx.fillStyle = shaftGradient;
+          ctx.beginPath();
+          ctx.moveTo(originX - 8, -20);
+          ctx.lineTo(originX + spread + Math.sin(frameTime * 0.23 + shaft) * 15, H);
+          ctx.lineTo(originX + spread * 2.1, H);
+          ctx.lineTo(originX + 11, -20);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        drawUnderwaterRippleField(ctx, frame, frameTime, sceneStyle);
+
+        ctx.shadowBlur = 0;
+        ctx.globalCompositeOperation = "source-over";
+        const firstBubbleScene = Math.max(0, luytenRun.sceneIndex - 1);
+        const lastBubbleScene = Math.min(luytenScenes.length - 1, luytenRun.sceneIndex + 1);
+        for (let sceneIndex = firstBubbleScene; sceneIndex <= lastBubbleScene; sceneIndex += 1) {
+          luytenBubblesByScene[sceneIndex].forEach((bubble, index) => {
+          const rise = (bubble.offset + frameTime * bubble.speed) % bubble.travel;
+          const emitterY = bubble.emitterY - bubble.sceneIndex * H + luytenRun.scroll;
+          const y = emitterY - rise;
+          if (y < -80 || y > H + 80) return;
+          const lifeFade = Math.sin(Math.PI * clamp(rise / bubble.travel, 0, 1));
+          const current = Math.sin(frameTime * 0.82 + bubble.phase + rise * 0.014) * bubble.wobble;
+          const x = bubble.emitterX
+            + current
+            + Math.sin(frameTime * 0.24 + bubble.phase * 1.7) * (3 + bubble.depth * 8);
+          const pressurePulse = 0.94 + Math.sin(frameTime * 2.5 + bubble.phase) * 0.06;
+          const radius = bubble.radius * pressurePulse * (0.66 + bubble.depth * 0.52);
+          const stretch = 1 + clamp(bubble.speed / 145, 0.06, 0.31);
+          const tilt = Math.sin(frameTime * 1.1 + bubble.phase) * 0.16;
+          const alpha = bubble.alpha * (0.42 + bubble.depth * 0.58) * lifeFade;
+          const irregularity = 0.035 + Math.sin(frameTime * 1.7 + bubble.phase) * 0.025;
+
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(tilt);
+          ctx.globalAlpha = alpha * 0.23;
+          ctx.strokeStyle = cssRgba(sceneStyle.rim, 0.4);
+          ctx.lineWidth = Math.max(0.35, radius * 0.045);
+          ctx.beginPath();
+          ctx.moveTo(0, radius * 1.4);
+          ctx.quadraticCurveTo(-current * 0.18, radius * (2.2 + bubble.depth), current * 0.08, radius * (3.5 + bubble.depth * 2));
+          ctx.stroke();
+          ctx.scale(1, stretch);
+          const bubbleGlass = ctx.createRadialGradient(
+            -radius * 0.28,
+            -radius * 0.34,
+            radius * 0.08,
+            0,
+            0,
+            radius
+          );
+          bubbleGlass.addColorStop(0, "rgba(255,255,255,0.72)");
+          bubbleGlass.addColorStop(0.16, cssRgba(sceneStyle.rim, 0.12));
+          bubbleGlass.addColorStop(0.54, cssRgba(sceneStyle.water, 0.035));
+          bubbleGlass.addColorStop(0.78, cssRgba(sceneStyle.shadow, 0.18));
+          bubbleGlass.addColorStop(0.92, cssRgba(sceneStyle.rim, 0.28));
+          bubbleGlass.addColorStop(1, "rgba(255,255,255,0.04)");
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = bubbleGlass;
+          ctx.beginPath();
+          ctx.moveTo(0, -radius);
+          ctx.bezierCurveTo(
+            radius * (0.58 + irregularity),
+            -radius * 0.98,
+            radius * (0.92 - irregularity),
+            -radius * 0.45,
+            radius * 0.86,
+            radius * 0.08
+          );
+          ctx.bezierCurveTo(
+            radius * (0.82 + irregularity),
+            radius * 0.68,
+            radius * 0.38,
+            radius * (1.02 - irregularity),
+            -radius * 0.05,
+            radius
+          );
+          ctx.bezierCurveTo(
+            -radius * (0.48 - irregularity),
+            radius * 0.96,
+            -radius * (0.92 + irregularity),
+            radius * 0.5,
+            -radius * 0.87,
+            -radius * 0.08
+          );
+          ctx.bezierCurveTo(
+            -radius * 0.83,
+            -radius * 0.58,
+            -radius * 0.52,
+            -radius * 0.94,
+            0,
+            -radius
+          );
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.globalCompositeOperation = "screen";
+          ctx.strokeStyle = cssRgba(sceneStyle.pale, 0.62);
+          ctx.lineWidth = Math.max(0.55, radius * 0.105);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, radius * 0.87, radius, 0, Math.PI * 1.04, Math.PI * 1.79);
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(sceneStyle.rim, 0.46);
+          ctx.lineWidth = Math.max(0.45, radius * 0.075);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, radius * 0.86, radius * 0.98, 0, -0.08, Math.PI * 0.56);
+          ctx.stroke();
+          if (radius > 4.2) {
+            ctx.fillStyle = "rgba(255,255,255,0.7)";
+            ctx.beginPath();
+            ctx.ellipse(-radius * 0.31, -radius * 0.42, radius * 0.11, radius * 0.19, -0.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = alpha * 0.45;
+            ctx.fillStyle = cssRgba(sceneStyle.light, 0.5);
+            ctx.beginPath();
+            ctx.arc(radius * 0.34, radius * 0.31, radius * 0.08, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          if (radius > 9) {
+            ctx.globalAlpha = alpha * 0.5;
+            ctx.strokeStyle = "rgba(255,255,255,0.66)";
+            ctx.lineWidth = 0.75;
+            for (let satellite = 0; satellite < 2; satellite += 1) {
+              const satelliteRadius = radius * (0.12 + satellite * 0.055);
+              ctx.beginPath();
+              ctx.arc(
+                -radius * (0.74 + satellite * 0.24),
+                radius * (0.48 + satellite * 0.5),
+                satelliteRadius,
+                0,
+                Math.PI * 2
+              );
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+          });
+        }
+
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        const lensX = W * (0.49 + Math.sin(frameTime * 0.17) * 0.018);
+        const lensY = H * (0.44 + Math.cos(frameTime * 0.14) * 0.018);
+        const lensGradient = ctx.createRadialGradient(lensX, lensY, H * 0.08, lensX, lensY, H * 0.72);
+        lensGradient.addColorStop(0, cssRgba(sceneStyle.rim, 0.045));
+        lensGradient.addColorStop(0.52, cssRgba(sceneStyle.water, 0.018));
+        lensGradient.addColorStop(0.82, cssRgba(sceneStyle.shadow, 0.09));
+        lensGradient.addColorStop(1, cssRgba(sceneStyle.shadow, 0.26));
+        ctx.fillStyle = lensGradient;
+        ctx.fillRect(0, 0, W, H);
+
+        const chromaticEdge = ctx.createLinearGradient(0, 0, W, 0);
+        chromaticEdge.addColorStop(0, "rgba(20, 109, 126, 0.075)");
+        chromaticEdge.addColorStop(0.075, "rgba(0,0,0,0)");
+        chromaticEdge.addColorStop(0.925, "rgba(0,0,0,0)");
+        chromaticEdge.addColorStop(1, cssRgba(sceneStyle.light, 0.055));
+        ctx.globalCompositeOperation = "screen";
+        ctx.fillStyle = chromaticEdge;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+      }
+
       function drawBonusUfo() {
         if (!bonusUfo) return;
         const t = performance.now() / 1000 + bonusUfo.phase;
@@ -9591,6 +10608,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           drawBolt(b, b.flame ? "#ff9a36" : b.regolith ? "#ffcc72" : "#ff5b78", b.flame ? 10 : b.regolith ? 16 : 13, b.flame ? 4 : b.regolith ? 5.5 : 5);
         });
 
+        drawLuytenOrganisms(nowSec);
         bossMines.forEach(drawAstraxMine);
         mordrathFireballs.forEach(drawMordrathFireball);
         canyonWeapons.forEach(drawCanyonWeapon);
@@ -9619,6 +10637,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           }
         });
         drawPoints(sparkPoints, true);
+        drawUnderwaterEffects(nowSec);
       }
 
       function pointerToGame(event) {
@@ -9649,7 +10668,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function handleGamePointerDown(event) {
         if (devScreenOpen) return;
-        if ((state !== "playing" && state !== "canyon") || introActive) return;
+        if ((state !== "playing" && state !== "canyon" && state !== "luyten") || introActive) return;
         const point = pointerToGame(event);
         const inShieldCorner = point.x <= W * 0.28 && point.y >= H * 0.72;
 
@@ -9783,7 +10802,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           keys.add(event.code);
           if (!event.repeat && (event.code === "Space" || event.code === "KeyW")) shoot();
         }
-        if (event.code === "Enter" && state !== "playing") startGame();
+        if (event.code === "Enter" && !isActiveRun() && state !== "canyon") startGame();
         if (event.code === "KeyM") {
           muted = !muted;
           muteBtn.textContent = muted ? "Sound off" : "Sound on";
@@ -9864,6 +10883,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       renderLeaderboard();
       renderLives();
       beginIntro();
+      let renderFpsFrames = 0;
+      let renderFpsStarted = performance.now();
       new Phaser.Game({
         type: Phaser.HEADLESS,
         width: W,
@@ -9883,6 +10904,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             last = now;
             step(dt);
             draw();
+            renderFpsFrames += 1;
+            const fpsElapsed = now - renderFpsStarted;
+            if (fpsElapsed >= 1000) {
+              shell.dataset.renderFps = (renderFpsFrames * 1000 / fpsElapsed).toFixed(1);
+              renderFpsFrames = 0;
+              renderFpsStarted = now;
+            }
           }
         }
       });
