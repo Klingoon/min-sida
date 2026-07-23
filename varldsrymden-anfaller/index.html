@@ -3204,7 +3204,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.122 · Crisp Millenium Owl · updated 2026-07-23 11:51 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.124 · Battleworn Millenium Owl · updated 2026-07-23 12:05 CEST</div>
   </main>
 
   <script>
@@ -3377,7 +3377,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           realisticSpritesReady = loadedRealisticSprites === Object.keys(realisticSprites).length;
         }, { once: true });
       });
-      realisticSprites.player.src = "assets/player-millenium-owl-gameplay-v5.png";
+      realisticSprites.player.src = "assets/player-millenium-owl-gameplay-v6-weathered.png";
       realisticSprites.enemies.src = "assets/enemies-realistic.png";
       realisticSprites.bosses.src = "assets/bosses-realistic.png";
       realisticSprites.ufo.src = "assets/ufo-realistic.png";
@@ -4233,7 +4233,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rows: species.animationRows,
           eye: species.accent
         })),
-        { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Crisp 240 px gameplay hull · outlined silhouette · 64-frame thruster rig", sprite: "player", frame: 0, columns: 1, rows: 1 },
+        { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Battleworn 240 px gameplay hull · outlined silhouette · 64-frame thruster rig", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
         { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 48 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 48, columns: 12, rows: 8 },
@@ -9183,23 +9183,23 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           spriteCtx.drawImage(
             playerThrusterSprite,
             sourceX, sourceY, sourceWidth, sourceHeight,
-            -48, 34, 96, 59
+            -44, 31, 88, 54
           );
           spriteCtx.filter = "none";
           spriteCtx.globalAlpha = 0.78 + thrustPulse * 0.12;
           spriteCtx.drawImage(
             playerThrusterSprite,
             sourceX, sourceY, sourceWidth, sourceHeight,
-            -46, 35, 92, 57
+            -42, 32, 84, 52
           );
 
-          const reflection = spriteCtx.createRadialGradient(0, 36, 2, 0, 36, 35);
+          const reflection = spriteCtx.createRadialGradient(0, 33, 2, 0, 33, 32);
           reflection.addColorStop(0, `rgba(206, 255, 255, ${0.12 + thrustPulse * 0.1})`);
           reflection.addColorStop(0.32, `rgba(51, 205, 255, ${0.08 + thrustPulse * 0.08})`);
           reflection.addColorStop(1, "rgba(4, 92, 255, 0)");
           spriteCtx.fillStyle = reflection;
           spriteCtx.beginPath();
-          spriteCtx.ellipse(0, 36, 36, 17, 0, 0, Math.PI * 2);
+          spriteCtx.ellipse(0, 33, 33, 16, 0, 0, Math.PI * 2);
           spriteCtx.fill();
         }
 
@@ -9209,7 +9209,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ? `brightness(${1 + hurt * 0.65}) saturate(${1 - hurt * 0.22})`
           : "none";
         spriteCtx.shadowBlur = 0;
-        spriteCtx.drawImage(realisticSprites.player, -48, -48, 96, 96);
+        spriteCtx.drawImage(realisticSprites.player, -44, -44, 88, 88);
         spriteCtx.restore();
       }
 
@@ -10758,7 +10758,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           pushPoint(glowPoints, rift.x, rift.y, rift.r * 3.2, colors.violet, 0.26 * pulse);
           pushPoint(glowPoints, rift.x, rift.y, rift.r * 2.1, colors.cyan, 0.2);
         });
-        pushPoint(glowPoints, player.x, player.y + 5, 84, colors.cyan, 0.2);
+        pushPoint(glowPoints, player.x, player.y + 5, 76, colors.cyan, 0.18);
         bullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, 52, colors.gold, 0.55));
         enemyBullets.forEach((b) => pushPoint(glowPoints, b.x, b.y, b.flame ? 36 : b.regolith ? 54 : 44, b.flame ? colors.orange : b.regolith ? colors.gold : colors.pink, b.flame ? 0.42 : b.regolith ? 0.58 : 0.5));
         bossMines.forEach((mine) => {
