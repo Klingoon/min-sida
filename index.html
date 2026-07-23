@@ -3059,7 +3059,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.102 · Regolith Native Frames · updated 2026-07-22 23:12 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.22.103 · Regolith Articulated Rig · updated 2026-07-22 23:39 CEST</div>
   </main>
 
   <script>
@@ -3458,10 +3458,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       });
       const regolithSarcophagusImage = new Image();
       regolithSarcophagusImage.decoding = "async";
-      regolithSarcophagusImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/regolith-sarcophagus-native-64f-v3.webp";
-      const regolithSarcophagusDestructionImage = new Image();
-      regolithSarcophagusDestructionImage.decoding = "async";
-      regolithSarcophagusDestructionImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/regolith-sarcophagus-destruction-native-64f-v3.webp";
+      regolithSarcophagusImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/regolith-sarcophagus-rig-master-v4.webp";
       const canyonBonusImage = new Image();
       canyonBonusImage.decoding = "async";
       canyonBonusImage.src = "varldsrymden-anfaller/assets/canyon-bonuses/selene-life-shield-96f-v2.webp";
@@ -3484,10 +3481,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         image: species.special === "regolith" ? regolithSarcophagusImage : canyonMinibossAtlases[species.atlas],
         imageUrl: species.special === "regolith" ? regolithSarcophagusImage.src : canyonMinibossAtlasUrls[species.atlas],
         frameOffset: species.special === "regolith" ? 0 : species.block * 12,
-        animationFrames: species.special === "regolith" ? 64 : 12,
-        animationColumns: species.special === "regolith" ? 8 : 6,
-        animationRows: species.special === "regolith" ? 8 : 6,
-        animationFps: species.special === "regolith" ? 18 : 9 + (encounterIndex % 3)
+        animationFrames: species.special === "regolith" ? 1 : 12,
+        animationColumns: species.special === "regolith" ? 1 : 6,
+        animationRows: species.special === "regolith" ? 1 : 6,
+        animationFps: species.special === "regolith" ? 60 : 9 + (encounterIndex % 3)
       }));
       const wavePatterns = ["classic", "sine", "figure8", "snake", "vwave", "carousel", "spiral", "ambush", "pinwheel"];
       const ingressPatterns = ["sine-stream", "split-swoop", "spiral-drop", "cross-weave", "comet-train", "double-helix", "fan-dive", "orbit-chain", "ribbon-flow"];
@@ -3876,7 +3873,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ...species,
           category: "alien",
           typeLabel: species.special === "regolith"
-            ? "Selene miniboss · Sector 1 · 64 native combat frames · no interpolation"
+            ? "Selene miniboss · Sector 1 · articulated 60 FPS rig · physical destruction"
             : `Selene miniboss · Sector ${index + 1} · 12 generated keyframes · interpolated motion`,
           sprite: "canyonAlien",
           frame: species.frameOffset,
@@ -3884,7 +3881,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rows: species.animationRows,
           eye: species.accent
         })),
-        { name: "Regolith Sarcophagus Destruction", id: "SELENE-MINIBOSS-01-REGOLITH-DESTRUCTION", category: "object", typeLabel: "64 native destruction frames · no interpolation", sprite: "canyonAlienDestruction", image: regolithSarcophagusDestructionImage, frame: 0, columns: 8, rows: 8, animationFrames: 64, animationFps: 20 },
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
@@ -4704,7 +4700,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           alien.phase += dt * (1.35 + alien.index * 0.025);
           alien.hurt = Math.max(0, alien.hurt - dt);
           alien.motionTime = Math.max(0, alien.motionTime - dt);
-          if (alien.motionTime <= 0 && alien.dying <= 0) alien.motionMode = "idle";
+          if (alien.motionTime <= 0 && alien.dying <= 0) {
+            alien.motionMode = "idle";
+            alien.motionDuration = 0;
+          }
           if (alien.dead) return;
           if (alien.dying > 0) {
             alien.dying -= dt;
@@ -5659,13 +5658,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           const localFrame = Math.floor(t * item.animationFps + item.encounterIndex * 1.7) % item.animationFrames;
           const animatedItem = { ...item, frame: item.frameOffset + localFrame };
           const previewSize = canvas === devDetailCanvas ? 260 : 154;
-          drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
-          return;
-        }
-
-        if (item.sprite === "canyonAlienDestruction") {
-          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % item.animationFrames };
-          const previewSize = canvas === devDetailCanvas ? 280 : 164;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
           return;
         }
@@ -8795,52 +8787,241 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
       }
 
+      const regolithTentacleBands = [
+        [-0.52, -0.26],
+        [-0.3, -0.08],
+        [-0.12, 0.12],
+        [0.08, 0.3],
+        [0.26, 0.52]
+      ];
+
+      function drawRegolithRigPiece(image, size, polygon, pivotX, pivotY, offsetX, offsetY, angle, scaleX = 1, scaleY = 1, alpha = 1) {
+        const sourceWidth = image.naturalWidth;
+        const sourceHeight = image.naturalHeight;
+        spriteCtx.save();
+        spriteCtx.globalAlpha *= alpha;
+        spriteCtx.translate((pivotX + offsetX) * size, (pivotY + offsetY) * size);
+        spriteCtx.rotate(angle);
+        spriteCtx.scale(scaleX, scaleY);
+        spriteCtx.translate(-pivotX * size, -pivotY * size);
+        spriteCtx.beginPath();
+        polygon.forEach(([x, y], index) => {
+          if (index === 0) spriteCtx.moveTo(x * size, y * size);
+          else spriteCtx.lineTo(x * size, y * size);
+        });
+        spriteCtx.closePath();
+        spriteCtx.clip();
+        spriteCtx.drawImage(
+          image,
+          0,
+          0,
+          sourceWidth,
+          sourceHeight,
+          -size / 2,
+          -size / 2,
+          size,
+          size
+        );
+        spriteCtx.restore();
+      }
+
+      function drawRegolithCore(t, intensity, destructionProgress = 0) {
+        const pulse = 1 + Math.sin(t * 5.4) * 0.08;
+        const radius = (17 + intensity * 8 + destructionProgress * 54) * pulse;
+        const glow = spriteCtx.createRadialGradient(0, 0, 1, 0, 0, radius);
+        glow.addColorStop(0, `rgba(255,255,235,${0.96 * intensity})`);
+        glow.addColorStop(0.2, `rgba(255,194,92,${0.9 * intensity})`);
+        glow.addColorStop(0.58, `rgba(255,112,38,${0.38 * intensity})`);
+        glow.addColorStop(1, "rgba(255,92,24,0)");
+        spriteCtx.save();
+        spriteCtx.globalCompositeOperation = "screen";
+        spriteCtx.fillStyle = glow;
+        spriteCtx.beginPath();
+        spriteCtx.arc(0, 0, radius, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.strokeStyle = `rgba(255,231,173,${0.46 * intensity})`;
+        spriteCtx.lineWidth = 1.5;
+        for (let ring = 0; ring < 3; ring += 1) {
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(0, 0, radius * (0.4 + ring * 0.19), radius * (0.25 + ring * 0.12), t * (0.36 + ring * 0.12) + ring, 0, Math.PI * 2);
+          spriteCtx.stroke();
+        }
+        spriteCtx.restore();
+      }
+
+      function drawRegolithLivingRig(alien, t, size) {
+        const modeProgress = alien.motionDuration > 0 ? clamp(1 - alien.motionTime / alien.motionDuration, 0, 1) : 0;
+        const actionEnvelope = alien.motionMode === "idle" ? 0 : Math.sin(modeProgress * Math.PI);
+        const volley = alien.motionMode === "volley" ? actionEnvelope : 0;
+        const mines = alien.motionMode === "mines" ? actionEnvelope : 0;
+        const hurt = alien.motionMode === "hurt" ? actionEnvelope : 0;
+        const breath = Math.sin(t * 1.86 + alien.index * 0.4);
+        const shellOpen = 0.018 + breath * 0.012 + volley * 0.075 + hurt * 0.035;
+        const recoil = volley * Math.sin(modeProgress * Math.PI * 4) * 0.018;
+        const hurtJolt = hurt * Math.sin(modeProgress * Math.PI * 8) * 0.012;
+
+        spriteCtx.save();
+        spriteCtx.translate(hurtJolt * size, -hurt * 0.008 * size);
+        spriteCtx.filter = hurt > 0.05 ? `brightness(${1 + hurt * 0.9}) saturate(${1 - hurt * 0.25})` : "contrast(1.07) saturate(1.05)";
+
+        regolithTentacleBands.forEach(([left, right], index) => {
+          const center = (left + right) / 2;
+          const direction = center < 0 ? -1 : center > 0 ? 1 : 0;
+          const sway = Math.sin(t * (1.65 + index * 0.09) + index * 1.17) * (0.028 + Math.abs(center) * 0.035);
+          const deploy = mines * direction * (0.045 + Math.abs(center) * 0.08);
+          drawRegolithRigPiece(
+            regolithSarcophagusImage,
+            size,
+            [[left, 0.1], [right, 0.1], [right + 0.035, 0.52], [left - 0.035, 0.52]],
+            center,
+            0.14,
+            direction * mines * 0.018,
+            mines * Math.abs(center) * 0.012,
+            sway + deploy,
+            1,
+            1 + breath * 0.008
+          );
+        });
+
+        drawRegolithRigPiece(
+          regolithSarcophagusImage,
+          size,
+          [[-0.52, -0.48], [-0.12, -0.48], [-0.1, 0.22], [-0.2, 0.34], [-0.52, 0.3]],
+          -0.14,
+          0.12,
+          -shellOpen * 0.34 - recoil,
+          0,
+          -shellOpen,
+          1,
+          1 + breath * 0.006
+        );
+        drawRegolithRigPiece(
+          regolithSarcophagusImage,
+          size,
+          [[0.12, -0.48], [0.52, -0.48], [0.52, 0.3], [0.2, 0.34], [0.1, 0.22]],
+          0.14,
+          0.12,
+          shellOpen * 0.34 + recoil,
+          0,
+          shellOpen,
+          1,
+          1 + breath * 0.006
+        );
+        drawRegolithRigPiece(
+          regolithSarcophagusImage,
+          size,
+          [[-0.27, -0.52], [0.27, -0.52], [0.31, 0.18], [0.2, 0.34], [-0.2, 0.34], [-0.31, 0.18]],
+          0,
+          0.02,
+          0,
+          -breath * 0.004,
+          0,
+          1 + breath * 0.008,
+          1 - breath * 0.006
+        );
+
+        drawRegolithCore(t, 0.72 + volley * 0.42 + mines * 0.22 + hurt * 0.5);
+        if (volley > 0.04) {
+          spriteCtx.save();
+          spriteCtx.globalCompositeOperation = "screen";
+          spriteCtx.strokeStyle = `rgba(255,198,105,${volley * 0.72})`;
+          spriteCtx.lineWidth = 2.2;
+          [-1, 1].forEach((side) => {
+            spriteCtx.beginPath();
+            spriteCtx.moveTo(side * size * 0.2, size * 0.04);
+            spriteCtx.lineTo(side * size * (0.39 + recoil), size * 0.07);
+            spriteCtx.stroke();
+          });
+          spriteCtx.restore();
+        }
+        spriteCtx.restore();
+      }
+
+      function drawRegolithDestructionRig(alien, t, size) {
+        const progress = clamp(alien.deathElapsed / alien.deathDuration, 0, 1);
+        const separation = 1 - Math.pow(1 - progress, 2.4);
+        const fragmentRings = [
+          { inner: 0, outer: 0.19, count: 6, phase: 0.18 },
+          { inner: 0.17, outer: 0.35, count: 10, phase: -0.09 },
+          { inner: 0.33, outer: 0.54, count: 14, phase: 0.07 },
+          { inner: 0.52, outer: 0.74, count: 18, phase: -0.03 }
+        ];
+        let globalIndex = 0;
+        fragmentRings.forEach((ring, ringIndex) => {
+          for (let index = 0; index < ring.count; index += 1) {
+            const angleStep = Math.PI * 2 / ring.count;
+            const startAngle = -Math.PI + ring.phase + index * angleStep - angleStep * 0.035;
+            const endAngle = startAngle + angleStep * 1.07;
+            const centerAngle = (startAngle + endAngle) / 2;
+            const stagger = ((globalIndex * 5 + ringIndex * 3) % 11) * 0.009;
+            const fragmentProgress = clamp((progress - stagger) / (1 - stagger), 0, 1);
+            const fragmentSeparation = 1 - Math.pow(1 - fragmentProgress, 2.2);
+            const mass = 0.76 + ((globalIndex * 7) % 9) * 0.045;
+            const distance = size * fragmentSeparation * (0.22 + ring.outer * 0.46) / mass;
+            const tangent = Math.sin(globalIndex * 4.73) * size * fragmentSeparation * 0.055;
+            const offsetX = (Math.cos(centerAngle) * distance - Math.sin(centerAngle) * tangent) / size;
+            const offsetY = (Math.sin(centerAngle) * distance + Math.cos(centerAngle) * tangent + fragmentProgress * fragmentProgress * size * (0.15 + ringIndex * 0.025)) / size;
+            const rotation = (globalIndex % 2 === 0 ? -1 : 1) * fragmentSeparation * (0.18 + ((globalIndex * 3) % 7) * 0.065);
+            const alpha = 1 - clamp((progress - 0.78) / 0.22, 0, 1);
+            const innerJitter = ring.inner * (0.96 + Math.sin(globalIndex * 2.17) * 0.025);
+            const outerJitter = ring.outer * (0.98 + Math.cos(globalIndex * 1.71) * 0.025);
+            drawRegolithRigPiece(
+              regolithSarcophagusImage,
+              size,
+              [
+                [Math.cos(startAngle) * innerJitter, Math.sin(startAngle) * innerJitter],
+                [Math.cos(startAngle) * outerJitter, Math.sin(startAngle) * outerJitter],
+                [Math.cos(endAngle) * outerJitter, Math.sin(endAngle) * outerJitter],
+                [Math.cos(endAngle) * innerJitter, Math.sin(endAngle) * innerJitter]
+              ],
+              Math.cos(centerAngle) * (ring.inner + ring.outer) * 0.25,
+              Math.sin(centerAngle) * (ring.inner + ring.outer) * 0.25,
+              offsetX,
+              offsetY,
+              rotation,
+              1 - fragmentProgress * (0.07 + ringIndex * 0.012),
+              1 - fragmentProgress * (0.07 + ringIndex * 0.012),
+              alpha
+            );
+            globalIndex += 1;
+          }
+        });
+
+        spriteCtx.save();
+        spriteCtx.globalCompositeOperation = "screen";
+        const flash = Math.sin(Math.min(1, progress * 1.18) * Math.PI);
+        drawRegolithCore(t, 0.9 + flash * 1.15, separation);
+        spriteCtx.strokeStyle = `rgba(255,205,119,${(1 - progress) * 0.72})`;
+        spriteCtx.lineWidth = 2 + progress * 4;
+        for (let ring = 0; ring < 3; ring += 1) {
+          const ringProgress = clamp(progress * 1.3 - ring * 0.1, 0, 1);
+          spriteCtx.globalAlpha = 1 - ringProgress;
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(0, 0, size * ringProgress * (0.5 + ring * 0.12), size * ringProgress * (0.3 + ring * 0.08), t * 0.18 + ring, 0, Math.PI * 2);
+          spriteCtx.stroke();
+        }
+        spriteCtx.restore();
+      }
+
       function drawCanyonAlien(alien, t) {
         if (state !== "canyon" || alien.dead || alien.y < -150 || alien.y > H + 150) return;
         const image = alien.species.image;
         if (!image.complete || !image.naturalWidth) return;
         if (alien.species.special === "regolith") {
           const dying = alien.dying > 0;
-          const nativeImage = dying ? regolithSarcophagusDestructionImage : regolithSarcophagusImage;
-          if (!nativeImage.complete || !nativeImage.naturalWidth) return;
-          let frame;
-          if (dying) {
-            const progress = clamp(alien.deathElapsed / alien.deathDuration, 0, 0.99999);
-            frame = Math.floor(progress * 64);
-          } else if (alien.motionMode === "volley") {
-            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
-            frame = 16 + Math.floor(progress * 16);
-          } else if (alien.motionMode === "mines") {
-            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
-            frame = 32 + Math.floor(progress * 16);
-          } else if (alien.motionMode === "hurt") {
-            const progress = clamp(1 - alien.motionTime / alien.motionDuration, 0, 0.99999);
-            frame = 48 + Math.floor(progress * 16);
-          } else {
-            frame = Math.floor(t * 18 + alien.index * 3) % 16;
-          }
-          const sourceWidth = nativeImage.naturalWidth / 8;
-          const sourceHeight = nativeImage.naturalHeight / 8;
-          const drawSize = dying ? alien.species.size * 1.42 : alien.species.size;
+          const drawSize = alien.species.size;
           const bob = dying ? 0 : Math.sin(t * 1.8 + alien.index) * 4;
           spriteCtx.save();
           spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
           spriteCtx.rotate(dying ? 0 : Math.sin(t * 0.82 + alien.index) * 0.018);
-          spriteCtx.filter = alien.hurt > 0 && !dying ? "brightness(1.55) saturate(0.82)" : "contrast(1.05) saturate(1.04)";
-          spriteCtx.drawImage(
-            nativeImage,
-            (frame % 8) * sourceWidth,
-            Math.floor(frame / 8) * sourceHeight,
-            sourceWidth,
-            sourceHeight,
-            -drawSize / 2,
-            -drawSize / 2,
-            drawSize,
-            drawSize
-          );
+          if (dying) drawRegolithDestructionRig(alien, t, drawSize * 1.16);
+          else drawRegolithLivingRig(alien, t, drawSize);
           spriteCtx.restore();
-          shell.dataset.regolithFrame = String(frame);
-          shell.dataset.regolithMotion = dying ? "destruction" : alien.motionMode;
+          shell.dataset.regolithAnimation = "articulated-60fps";
+          shell.dataset.regolithMotion = dying ? "physical-destruction" : alien.motionMode;
+          shell.dataset.regolithProgress = dying
+            ? (alien.deathElapsed / alien.deathDuration).toFixed(3)
+            : alien.motionDuration > 0 ? (1 - alien.motionTime / alien.motionDuration).toFixed(3) : "0.000";
 
           if (alien.engaged && !dying) {
             const barWidth = 236;
