@@ -2753,17 +2753,56 @@
       display: none;
     }
 
-    .battle-report-image {
+    .battle-report-parallax {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 50% 50%;
-      filter: saturate(0.92) contrast(1.05);
+      inset: -3%;
+      z-index: 0;
+      overflow: hidden;
+      background: #02080d;
+      pointer-events: none;
     }
 
-    .win-scene:not(.battle-report) > .battle-report-image,
+    .battle-report-layer {
+      position: absolute;
+      inset: -3%;
+      width: 106%;
+      height: 106%;
+      object-fit: cover;
+      object-position: center;
+      transform: translate3d(var(--report-x, 0), var(--report-y, 0), 0) scale(var(--report-scale, 1.04));
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    .battle-report-layer.far {
+      --report-scale: 1.035;
+      filter: saturate(0.92) contrast(1.07) brightness(0.9);
+    }
+
+    .battle-report-layer.aftermath {
+      --report-scale: 1.045;
+      filter: saturate(0.9) contrast(1.04);
+    }
+
+    .battle-report-layer.citizens {
+      --report-scale: 1.055;
+      filter: saturate(0.88) contrast(1.03);
+    }
+
+    .battle-report-atmosphere {
+      position: absolute;
+      inset: -8%;
+      opacity: 0.38;
+      background:
+        radial-gradient(ellipse at 50% 68%, transparent 0 38%, rgba(0, 7, 12, 0.28) 78%),
+        radial-gradient(circle at 13% 36%, rgba(107, 223, 239, 0.13), transparent 20%),
+        radial-gradient(circle at 83% 32%, rgba(91, 187, 216, 0.1), transparent 22%);
+      mix-blend-mode: screen;
+      transform: translate3d(var(--report-x, 0), var(--report-y, 0), 0);
+      will-change: transform;
+    }
+
+    .win-scene:not(.battle-report) > .battle-report-parallax,
     .win-scene:not(.battle-report) > .battle-report-console {
       display: none;
     }
@@ -2772,19 +2811,18 @@
       position: absolute;
       z-index: 2;
       right: 0;
-      bottom: clamp(14px, 2.8vh, 28px);
+      bottom: clamp(12px, 2.2vh, 22px);
       left: 0;
-      width: min(86%, 720px);
-      max-height: 34%;
+      width: min(74%, 650px);
+      max-height: 26%;
       margin-inline: auto;
-      padding: 10px clamp(12px, 2.4vw, 20px) 9px;
-      border-block: 1px solid rgba(152, 226, 244, 0.24);
+      padding: 8px clamp(10px, 2vw, 16px) 7px;
+      border-block: 1px solid rgba(152, 226, 244, 0.16);
       border-inline: 0;
       background:
-        linear-gradient(90deg, transparent, rgba(3, 12, 18, 0.22) 18% 82%, transparent),
-        rgba(2, 9, 14, 0.08);
-      box-shadow: 0 10px 36px rgba(0, 0, 0, 0.14);
-      backdrop-filter: blur(1.5px);
+        linear-gradient(90deg, transparent, rgba(2, 10, 15, 0.12) 18% 82%, transparent);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(0.7px);
       animation: battle-report-rise 760ms cubic-bezier(.16, .9, .24, 1) both;
       overflow: hidden;
     }
@@ -2806,30 +2844,33 @@
     }
 
     .battle-report-kicker {
-      color: rgba(129, 222, 239, 0.82);
-      font-size: clamp(8px, 1.45vw, 11px);
+      color: rgba(150, 229, 239, 0.72);
+      font-size: clamp(7px, 1.15vw, 9px);
+      letter-spacing: 0.16em;
     }
 
     .battle-report-console h2 {
-      margin: 3px 0 0;
-      color: #e7f1ed;
-      font: 500 clamp(16px, 3vw, 25px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      margin: 2px 0 0;
+      color: rgba(231, 241, 237, 0.88);
+      font: 400 clamp(13px, 2.2vw, 19px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      text-shadow: 0 0 16px rgba(91, 213, 235, 0.42);
+      text-shadow: 0 0 14px rgba(91, 213, 235, 0.28);
     }
 
     .battle-report-status {
-      color: #ffc47e;
-      font-size: clamp(8px, 1.5vw, 11px);
+      color: rgba(255, 202, 132, 0.78);
+      font-size: clamp(7px, 1.15vw, 9px);
+      letter-spacing: 0.1em;
       text-align: right;
     }
 
     .battle-report-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px 12px;
-      min-height: 56px;
-      margin: 8px 0 7px;
+      gap: 5px 10px;
+      min-height: 44px;
+      margin: 5px 0;
     }
 
     .battle-report-grid.scene-in .battle-report-row {
@@ -2842,12 +2883,12 @@
 
     .battle-report-row {
       display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-columns: 36px minmax(0, 1fr);
       align-items: center;
       min-width: 0;
-      min-height: 56px;
-      border-left: 1px solid rgba(92, 211, 234, 0.38);
-      background: linear-gradient(90deg, rgba(61, 154, 177, 0.09), transparent 82%);
+      min-height: 44px;
+      border-left: 1px solid rgba(92, 211, 234, 0.24);
+      background: linear-gradient(90deg, rgba(61, 154, 177, 0.055), transparent 82%);
     }
 
     .battle-report-row.empty {
@@ -2857,9 +2898,10 @@
     }
 
     .battle-report-row canvas {
-      width: 42px;
-      height: 42px;
+      width: 34px;
+      height: 34px;
       object-fit: contain;
+      opacity: 0.84;
     }
 
     .battle-report-creature {
@@ -2870,8 +2912,8 @@
     .battle-report-creature strong {
       display: block;
       overflow: hidden;
-      color: #dfecea;
-      font: 600 clamp(7px, 1.25vw, 10px)/1.08 "Void Circuit", "Arial Narrow", sans-serif;
+      color: rgba(223, 236, 234, 0.82);
+      font: 500 clamp(7px, 1.05vw, 9px)/1.08 "Void Circuit", "Arial Narrow", sans-serif;
       text-overflow: ellipsis;
       text-transform: uppercase;
       white-space: nowrap;
@@ -2880,13 +2922,14 @@
     .battle-report-creature span {
       display: block;
       margin-top: 4px;
-      color: #88c9d7;
-      font: 700 clamp(7px, 1.2vw, 9px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(136, 201, 215, 0.74);
+      font: 600 clamp(7px, 1vw, 8px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
     .battle-report-total {
-      color: rgba(221, 235, 231, 0.72);
-      font-size: clamp(8px, 1.35vw, 10px);
+      color: rgba(221, 235, 231, 0.62);
+      font-size: clamp(7px, 1.1vw, 9px);
+      letter-spacing: 0.07em;
     }
 
     .battle-report-total strong {
@@ -2894,8 +2937,9 @@
     }
 
     .battle-report-continue {
-      color: #e7f5ef;
-      font-size: clamp(9px, 1.7vw, 13px);
+      color: rgba(231, 245, 239, 0.88);
+      font-size: clamp(8px, 1.35vw, 11px);
+      letter-spacing: 0.08em;
       opacity: 0;
       text-align: right;
       text-shadow: 0 0 12px rgba(96, 222, 241, 0.85);
@@ -2922,11 +2966,24 @@
       to { opacity: 1; transform: translateY(0); filter: blur(0); }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .battle-report-layer,
+      .battle-report-atmosphere {
+        transform: none !important;
+      }
+
+      .battle-report-console,
+      .battle-report-grid.scene-in .battle-report-row,
+      .battle-report-console.ready .battle-report-continue {
+        animation: none;
+      }
+    }
+
     @media (max-width: 460px) {
       .battle-report-console {
-        width: 92%;
-        max-height: 38%;
-        padding: 9px 10px 8px;
+        width: 88%;
+        max-height: 31%;
+        padding: 7px 8px 6px;
       }
 
       .battle-report-grid {
@@ -2934,12 +2991,12 @@
       }
 
       .battle-report-row {
-        grid-template-columns: 38px minmax(0, 1fr);
+        grid-template-columns: 32px minmax(0, 1fr);
       }
 
       .battle-report-row canvas {
-        width: 36px;
-        height: 36px;
+        width: 30px;
+        height: 30px;
       }
 
       .console-tabs {
@@ -3149,19 +3206,24 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
     </section>
 
     <section class="win-scene" id="winScene" aria-live="assertive">
-      <img class="battle-report-image" src="varldsrymden-anfaller/assets/intermissions/act-1-battle-report-v3.png" alt="Max and Milton seated together with their owl inside the Millenium Owl cockpit after defeating Nhar'Kaal">
+      <div class="battle-report-parallax" id="battleReportParallax" role="img" aria-label="The liberated iceworld after Act 1, with Nhar'Kaal and the alien armies defeated while the freed inhabitants reclaim their planet">
+        <img class="battle-report-layer far" id="battleReportFar" src="varldsrymden-anfaller/assets/intermissions/act-1-liberation-far-v1.webp" alt="">
+        <img class="battle-report-layer aftermath" id="battleReportAftermath" src="varldsrymden-anfaller/assets/intermissions/act-1-liberation-aftermath-v1.webp" alt="">
+        <img class="battle-report-layer citizens" id="battleReportCitizens" src="varldsrymden-anfaller/assets/intermissions/act-1-liberation-citizens-v1.webp" alt="">
+        <div class="battle-report-atmosphere" id="battleReportAtmosphere"></div>
+      </div>
       <div class="battle-report-console" id="battleReportConsole" aria-hidden="true">
         <div class="battle-report-header">
           <div>
-            <span class="battle-report-kicker">Act 1 · Mission archive</span>
+            <span class="battle-report-kicker">Act 1 · Iceworld liberated</span>
             <h2>Battle report</h2>
           </div>
-          <span class="battle-report-status" id="battleReportStatus">Contact archive</span>
+          <span class="battle-report-status" id="battleReportStatus">Nhar'Kaal overthrown</span>
         </div>
         <div class="battle-report-grid" id="battleReportGrid"></div>
         <div class="battle-report-footer">
           <span class="battle-report-total" id="battleReportTotal">Confirmed 0 · <strong>0 pts</strong></span>
-          <span class="battle-report-continue" id="battleReportContinue">Press any key to continute</span>
+          <span class="battle-report-continue" id="battleReportContinue">Press any key to continue</span>
         </div>
       </div>
       <div class="win-card">
@@ -3204,7 +3266,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.125 · Veteran Millenium Owl · updated 2026-07-23 12:14 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.126 · Act 1 Liberation · updated 2026-07-23 12:43 CEST</div>
   </main>
 
   <script>
@@ -3262,6 +3324,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const battleReportGrid = document.querySelector("#battleReportGrid");
       const battleReportTotal = document.querySelector("#battleReportTotal");
       const battleReportStatus = document.querySelector("#battleReportStatus");
+      const battleReportParallax = document.querySelector("#battleReportParallax");
+      const battleReportFar = document.querySelector("#battleReportFar");
+      const battleReportAftermath = document.querySelector("#battleReportAftermath");
+      const battleReportCitizens = document.querySelector("#battleReportCitizens");
+      const battleReportAtmosphere = document.querySelector("#battleReportAtmosphere");
       const leaderboardEl = document.querySelector("#leaderboard");
       const winLeaderboardEl = document.querySelector("#winLeaderboard");
       const winRestartBtn = document.querySelector("#winRestartBtn");
@@ -3553,6 +3620,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let battleReportSceneIndex = 0;
       const battleReportSceneSize = 2;
       const battleReportSceneMs = 1800;
+      let battleReportParallaxFrame = 0;
+      let battleReportPointerX = 0;
+      let battleReportPointerY = 0;
+      let battleReportMotionX = 0;
+      let battleReportMotionY = 0;
       const actOneBattleStats = new Map();
       const roundsBeforeBoss = 3;
       const totalActs = 4;
@@ -6438,8 +6510,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           battleReportGrid.append(empty);
         }
         battleReportStatus.textContent = battleReportEntries.length
-          ? `Contact archive ${battleReportSceneIndex + 1} / ${sceneCount}`
-          : "Nhar'Kaal defeated";
+          ? `Liberation archive ${battleReportSceneIndex + 1} / ${sceneCount}`
+          : "Nhar'Kaal overthrown";
         requestAnimationFrame(() => battleReportGrid.classList.add("scene-in"));
       }
 
@@ -6457,6 +6529,44 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
       }
 
+      function setBattleReportLayerOffset(element, x, y) {
+        element.style.setProperty("--report-x", `${x.toFixed(2)}px`);
+        element.style.setProperty("--report-y", `${y.toFixed(2)}px`);
+      }
+
+      function animateBattleReportParallax(time) {
+        if (!winScene.classList.contains("battle-report")) {
+          battleReportParallaxFrame = 0;
+          return;
+        }
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const driftX = reducedMotion ? 0 : Math.sin(time * 0.00018) * 0.32;
+        const driftY = reducedMotion ? 0 : Math.cos(time * 0.00014) * 0.2;
+        const targetX = battleReportPointerX + driftX;
+        const targetY = battleReportPointerY + driftY;
+        battleReportMotionX += (targetX - battleReportMotionX) * 0.035;
+        battleReportMotionY += (targetY - battleReportMotionY) * 0.035;
+        setBattleReportLayerOffset(battleReportFar, battleReportMotionX * -3, battleReportMotionY * -2);
+        setBattleReportLayerOffset(battleReportAftermath, battleReportMotionX * 7, battleReportMotionY * 4);
+        setBattleReportLayerOffset(battleReportCitizens, battleReportMotionX * 14, battleReportMotionY * 8);
+        setBattleReportLayerOffset(battleReportAtmosphere, battleReportMotionX * 19, battleReportMotionY * 11);
+        battleReportParallaxFrame = requestAnimationFrame(animateBattleReportParallax);
+      }
+
+      function startBattleReportParallax() {
+        if (battleReportParallaxFrame) cancelAnimationFrame(battleReportParallaxFrame);
+        battleReportMotionX = 0;
+        battleReportMotionY = 0;
+        battleReportParallaxFrame = requestAnimationFrame(animateBattleReportParallax);
+      }
+
+      function stopBattleReportParallax() {
+        if (battleReportParallaxFrame) cancelAnimationFrame(battleReportParallaxFrame);
+        battleReportParallaxFrame = 0;
+        battleReportPointerX = 0;
+        battleReportPointerY = 0;
+      }
+
       function clearBattleReportTimer() {
         if (battleReportUnlockTimer) clearTimeout(battleReportUnlockTimer);
         if (battleReportSceneTimer) clearInterval(battleReportSceneTimer);
@@ -6466,6 +6576,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function hideBattleReport() {
         clearBattleReportTimer();
+        stopBattleReportParallax();
         battleReportReady = false;
         battleReportConsole.classList.remove("ready");
         battleReportConsole.setAttribute("aria-hidden", "true");
@@ -6478,6 +6589,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         winScene.classList.remove("finale");
         winScene.classList.add("visible", "intermission", "battle-report");
         battleReportConsole.setAttribute("aria-hidden", "false");
+        startBattleReportParallax();
         winSceneUnlockAt = performance.now() + battleReportUnlockMs;
         battleReportUnlockTimer = setTimeout(() => {
           battleReportUnlockTimer = null;
@@ -11028,6 +11140,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         event.preventDefault();
         event.stopPropagation();
         continueFromBattleReport();
+      });
+      winScene.addEventListener("pointermove", (event) => {
+        if (!winScene.classList.contains("battle-report")) return;
+        const bounds = battleReportParallax.getBoundingClientRect();
+        battleReportPointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+        battleReportPointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+      });
+      winScene.addEventListener("pointerleave", () => {
+        battleReportPointerX = 0;
+        battleReportPointerY = 0;
       });
       introAudioBtn.addEventListener("pointerdown", (event) => {
         event.stopPropagation();
