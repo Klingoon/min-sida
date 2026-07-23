@@ -2866,10 +2866,10 @@
       right: 0;
       bottom: auto;
       left: 0;
-      width: min(72%, 650px);
-      max-height: 52%;
+      width: min(82%, 760px);
+      max-height: 64%;
       margin-inline: auto;
-      padding: 8px clamp(10px, 2vw, 16px) 7px;
+      padding: 12px clamp(14px, 2.4vw, 22px) 11px;
       translate: 0 -50%;
       border-block: 1px solid rgba(152, 226, 244, 0.16);
       border-inline: 0;
@@ -2884,9 +2884,9 @@
     .battle-report-summary {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 3px 18px;
-      margin: 6px 0 4px;
-      padding-block: 5px;
+      gap: 5px 22px;
+      margin: 9px 0 7px;
+      padding-block: 7px;
       border-block: 1px solid rgba(149, 223, 239, 0.08);
     }
 
@@ -2896,7 +2896,7 @@
       gap: 10px;
       min-width: 0;
       color: rgba(136, 201, 215, 0.68);
-      font: 500 clamp(7px, 1vw, 8px)/1.2 "Void Circuit", "Arial Narrow", sans-serif;
+      font: 500 clamp(9px, 1.25vw, 11px)/1.25 "Void Circuit", "Arial Narrow", sans-serif;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
@@ -2928,14 +2928,14 @@
 
     .battle-report-kicker {
       color: rgba(150, 229, 239, 0.72);
-      font-size: clamp(7px, 1.15vw, 9px);
+      font-size: clamp(9px, 1.35vw, 11px);
       letter-spacing: 0.16em;
     }
 
     .battle-report-console h2 {
       margin: 2px 0 0;
       color: rgba(231, 241, 237, 0.88);
-      font: 400 clamp(13px, 2.2vw, 19px)/1 "Void Circuit", "Arial Narrow", sans-serif;
+      font: 400 clamp(18px, 2.8vw, 25px)/1 "Void Circuit", "Arial Narrow", sans-serif;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-shadow: 0 0 14px rgba(91, 213, 235, 0.28);
@@ -2943,7 +2943,7 @@
 
     .battle-report-status {
       color: rgba(255, 202, 132, 0.78);
-      font-size: clamp(7px, 1.15vw, 9px);
+      font-size: clamp(9px, 1.35vw, 11px);
       letter-spacing: 0.1em;
       text-align: right;
     }
@@ -2951,9 +2951,9 @@
     .battle-report-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 5px 10px;
-      min-height: 44px;
-      margin: 5px 0;
+      gap: 8px 14px;
+      min-height: 70px;
+      margin: 8px 0 10px;
     }
 
     .battle-report-grid.scene-in .battle-report-row {
@@ -2966,10 +2966,10 @@
 
     .battle-report-row {
       display: grid;
-      grid-template-columns: 36px minmax(0, 1fr);
+      grid-template-columns: 60px minmax(0, 1fr);
       align-items: center;
       min-width: 0;
-      min-height: 44px;
+      min-height: 70px;
       border-left: 1px solid rgba(92, 211, 234, 0.24);
       background: linear-gradient(90deg, rgba(61, 154, 177, 0.055), transparent 82%);
     }
@@ -2981,22 +2981,22 @@
     }
 
     .battle-report-row canvas {
-      width: 34px;
-      height: 34px;
+      width: 58px;
+      height: 58px;
       object-fit: contain;
-      opacity: 0.84;
+      opacity: 0.96;
     }
 
     .battle-report-creature {
       min-width: 0;
-      padding: 5px 5px 5px 0;
+      padding: 8px 7px 8px 0;
     }
 
     .battle-report-creature strong {
       display: block;
       overflow: hidden;
       color: rgba(223, 236, 234, 0.82);
-      font: 500 clamp(7px, 1.05vw, 9px)/1.08 "Void Circuit", "Arial Narrow", sans-serif;
+      font: 500 clamp(10px, 1.4vw, 13px)/1.12 "Void Circuit", "Arial Narrow", sans-serif;
       text-overflow: ellipsis;
       text-transform: uppercase;
       white-space: nowrap;
@@ -3004,14 +3004,14 @@
 
     .battle-report-creature span {
       display: block;
-      margin-top: 4px;
+      margin-top: 6px;
       color: rgba(136, 201, 215, 0.74);
-      font: 600 clamp(7px, 1vw, 8px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      font: 600 clamp(9px, 1.22vw, 11px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
     .battle-report-total {
       color: rgba(221, 235, 231, 0.62);
-      font-size: clamp(7px, 1.1vw, 9px);
+      font-size: clamp(9px, 1.3vw, 11px);
       letter-spacing: 0.07em;
     }
 
@@ -3020,12 +3020,16 @@
     }
 
     .battle-report-continue {
-      color: rgba(231, 245, 239, 0.88);
-      font-size: clamp(8px, 1.35vw, 11px);
-      letter-spacing: 0.08em;
+      padding: 7px 10px 6px;
+      border: 1px solid rgba(116, 229, 246, 0.48);
+      background: rgba(2, 18, 25, 0.52);
+      color: #f4ffff;
+      font-size: clamp(12px, 1.8vw, 17px);
+      letter-spacing: 0.12em;
       opacity: 0;
       text-align: right;
-      text-shadow: 0 0 12px rgba(96, 222, 241, 0.85);
+      box-shadow: inset 0 0 14px rgba(76, 213, 238, 0.12), 0 0 18px rgba(64, 205, 233, 0.18);
+      text-shadow: 0 0 7px #dfffff, 0 0 18px rgba(96, 222, 241, 0.95);
       transition: opacity 420ms ease;
     }
 
@@ -3040,8 +3044,18 @@
     }
 
     @keyframes battle-report-prompt {
-      from { opacity: 0.58; }
-      to { opacity: 1; }
+      from {
+        opacity: 0.68;
+        border-color: rgba(116, 229, 246, 0.34);
+        filter: brightness(0.92);
+        transform: scale(0.985);
+      }
+      to {
+        opacity: 1;
+        border-color: rgba(194, 249, 255, 0.88);
+        filter: brightness(1.16);
+        transform: scale(1);
+      }
     }
 
     @keyframes battle-report-contact-in {
@@ -3064,9 +3078,9 @@
 
     @media (max-width: 460px) {
       .battle-report-console {
-        width: 88%;
-        max-height: 58%;
-        padding: 7px 8px 6px;
+        width: 92%;
+        max-height: 68%;
+        padding: 9px 10px 8px;
       }
 
       .battle-report-summary {
@@ -3079,12 +3093,23 @@
       }
 
       .battle-report-row {
-        grid-template-columns: 32px minmax(0, 1fr);
+        grid-template-columns: 50px minmax(0, 1fr);
+        min-height: 58px;
       }
 
       .battle-report-row canvas {
-        width: 30px;
-        height: 30px;
+        width: 48px;
+        height: 48px;
+      }
+
+      .battle-report-footer {
+        align-items: center;
+        gap: 8px;
+      }
+
+      .battle-report-continue {
+        padding: 6px 8px 5px;
+        font-size: 11px;
       }
 
       .console-tabs {
@@ -3323,7 +3348,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         <div class="battle-report-grid" id="battleReportGrid"></div>
         <div class="battle-report-footer">
           <span class="battle-report-total" id="battleReportTotal">Confirmed 0 · <strong>0 pts</strong></span>
-          <span class="battle-report-continue" id="battleReportContinue">Press any key to continue</span>
+          <span class="battle-report-continue" id="battleReportContinue">Press Enter / tap to continue</span>
         </div>
       </div>
       <div class="win-card">
