@@ -3204,7 +3204,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.117 · Restored Galaxy · updated 2026-07-23 10:50 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.23.118 · Millenium Owl 64F · updated 2026-07-23 11:04 CEST</div>
   </main>
 
   <script>
@@ -3377,11 +3377,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           realisticSpritesReady = loadedRealisticSprites === Object.keys(realisticSprites).length;
         }, { once: true });
       });
-      realisticSprites.player.src = "assets/player-realistic.png";
+      realisticSprites.player.src = "assets/player-millenium-owl-master-v1.png";
       realisticSprites.enemies.src = "assets/enemies-realistic.png";
       realisticSprites.bosses.src = "assets/bosses-realistic.png";
       realisticSprites.ufo.src = "assets/ufo-realistic.png";
       realisticSprites.meteor.src = "assets/meteor-realistic.png";
+      const playerThrusterSprite = new Image();
+      playerThrusterSprite.decoding = "async";
+      playerThrusterSprite.src = "assets/player-millenium-owl-thrusters-64f-v1.webp";
       const objectAnimationSprites = {
         helixRaider: new Image(),
         hydraComet: new Image(),
@@ -4230,7 +4233,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rows: species.animationRows,
           eye: species.accent
         })),
-        { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Player ship", sprite: "player", frame: 0, columns: 1, rows: 1 },
+        { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Detailed player ship · stable hull · 64-frame thruster rig", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
         { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 48 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 48, columns: 12, rows: 8 },
@@ -4331,7 +4334,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
         if (directDragPointerId !== null && directDragTarget) {
           const targetX = clamp(directDragTarget.x + directDragOffset.x, 54, W - 54);
-          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 72);
+          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 112);
           const follow = Math.min(1, dt * 22);
           matter.Body.setPosition(player.body, {
             x: player.body.position.x + (targetX - player.body.position.x) * follow,
@@ -4371,7 +4374,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         matter.Engine.update(physicsEngine, Math.min(16, dt * 1000));
 
         const boundedX = clamp(player.body.position.x, 54, W - 54);
-        const boundedY = clamp(player.body.position.y, 120, H - 72);
+        const boundedY = clamp(player.body.position.y, 120, H - 112);
         if (boundedX !== player.body.position.x || boundedY !== player.body.position.y) {
           matter.Body.setPosition(player.body, { x: boundedX, y: boundedY });
           matter.Body.setVelocity(player.body, { x: 0, y: 0 });
@@ -6189,17 +6192,25 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           return;
         }
 
-        if (item.sprite === "player") {
-          const flame = ctx.createLinearGradient(150, 108, 150, 174);
-          flame.addColorStop(0, "rgba(255,245,190,0.9)");
-          flame.addColorStop(0.35, "rgba(94,215,255,0.7)");
-          flame.addColorStop(1, "rgba(94,215,255,0)");
-          ctx.fillStyle = flame;
-          ctx.beginPath();
-          ctx.moveTo(135, 104);
-          ctx.lineTo(150, 169 + Math.sin(t * 9) * 8);
-          ctx.lineTo(165, 104);
-          ctx.fill();
+        if (item.sprite === "player" && playerThrusterSprite.complete && playerThrusterSprite.naturalWidth) {
+          const thrustFrame = Math.floor(t * 30) % 64;
+          const frameWidth = playerThrusterSprite.naturalWidth / 8;
+          const frameHeight = playerThrusterSprite.naturalHeight / 8;
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.92;
+          ctx.drawImage(
+            playerThrusterSprite,
+            (thrustFrame % 8) * frameWidth,
+            Math.floor(thrustFrame / 8) * frameHeight,
+            frameWidth,
+            frameHeight,
+            91,
+            112,
+            118,
+            74
+          );
+          ctx.restore();
         }
 
         if (item.sprite === "meteor") {
@@ -8393,7 +8404,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const safeDt = Math.max(0.001, dt);
         if (directDragPointerId !== null && directDragTarget) {
           const targetX = clamp(directDragTarget.x + directDragOffset.x, 54, W - 54);
-          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 72);
+          const targetY = clamp(directDragTarget.y + directDragOffset.y, 120, H - 112);
           const follow = 1 - Math.exp(-24 * dt);
           const nextX = player.x + (targetX - player.x) * follow;
           const nextY = player.y + (targetY - player.y) * follow;
@@ -8410,7 +8421,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         const boundedX = clamp(player.x, 54, W - 54);
-        const boundedY = clamp(player.y, 120, H - 72);
+        const boundedY = clamp(player.y, 120, H - 112);
         if (boundedX !== player.x) luytenPlayerVx = 0;
         if (boundedY !== player.y) luytenPlayerVy = 0;
         player.x = boundedX;
@@ -9145,11 +9156,78 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawRealisticPlayer(t) {
         const bank = player.body ? clamp(player.body.velocity.x * 0.012, -0.08, 0.08) : 0;
-        [-18, 0, 18].forEach((offset, index) => {
-          const flicker = 24 + Math.sin(t * (19 + index * 1.7) + index) * 8 + Math.sin(t * 43 + index) * 3;
-          drawEngineFlame(player.x + offset + renderShake.x, player.y + 41 + renderShake.y, index === 1 ? 13 : 10, flicker, t * (8 + index * 0.7) + index);
-        });
-        drawSpriteFrame(realisticSprites.player, 0, 1, 1, player.x, player.y, 112, 112, bank, "#5ed7ff", 20);
+        const thrustFrame = Math.floor(t * 30) % 64;
+        const thrustPulse = 0.82
+          + Math.sin(t * Math.PI * 2 * 0.9375) * 0.1
+          + Math.sin(t * Math.PI * 2 * 2.8125) * 0.05;
+        const hurt = player.invuln > 0 ? clamp(player.invuln / 1.8, 0, 1) : 0;
+
+        spriteCtx.save();
+        spriteCtx.translate(player.x + renderShake.x, player.y + renderShake.y);
+        spriteCtx.rotate(bank);
+
+        if (playerThrusterSprite.complete && playerThrusterSprite.naturalWidth) {
+          const sourceWidth = playerThrusterSprite.naturalWidth / 8;
+          const sourceHeight = playerThrusterSprite.naturalHeight / 8;
+          const sourceX = (thrustFrame % 8) * sourceWidth;
+          const sourceY = Math.floor(thrustFrame / 8) * sourceHeight;
+
+          spriteCtx.globalCompositeOperation = "lighter";
+          spriteCtx.globalAlpha = 0.2 + thrustPulse * 0.14;
+          spriteCtx.filter = "blur(4px)";
+          spriteCtx.drawImage(
+            playerThrusterSprite,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            -63, 42, 126, 80
+          );
+          spriteCtx.filter = "none";
+          spriteCtx.globalAlpha = 0.82 + thrustPulse * 0.16;
+          spriteCtx.drawImage(
+            playerThrusterSprite,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            -60, 43, 120, 76
+          );
+
+          const reflection = spriteCtx.createRadialGradient(0, 43, 2, 0, 43, 48);
+          reflection.addColorStop(0, `rgba(206, 255, 255, ${0.24 + thrustPulse * 0.18})`);
+          reflection.addColorStop(0.32, `rgba(51, 205, 255, ${0.18 + thrustPulse * 0.12})`);
+          reflection.addColorStop(1, "rgba(4, 92, 255, 0)");
+          spriteCtx.fillStyle = reflection;
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(0, 43, 50, 27, 0, 0, Math.PI * 2);
+          spriteCtx.fill();
+        }
+
+        spriteCtx.globalCompositeOperation = "source-over";
+        spriteCtx.globalAlpha = 1;
+        spriteCtx.filter = hurt > 0.05
+          ? `brightness(${1 + hurt * 0.65}) saturate(${1 - hurt * 0.22})`
+          : "contrast(1.08) saturate(1.04)";
+        spriteCtx.shadowColor = "rgba(60, 198, 255, 0.42)";
+        spriteCtx.shadowBlur = 8 + thrustPulse * 4;
+        spriteCtx.drawImage(realisticSprites.player, -62, -62, 124, 124);
+        spriteCtx.shadowBlur = 0;
+
+        if (playerThrusterSprite.complete && playerThrusterSprite.naturalWidth) {
+          spriteCtx.filter = "none";
+          spriteCtx.globalCompositeOperation = "lighter";
+          [-20, 0, 20].forEach((engineX, index) => {
+            const enginePulse = clamp(
+              thrustPulse + Math.sin(t * 7.5 + index * 1.9) * 0.08,
+              0.62,
+              1.12
+            );
+            const nozzleGlow = spriteCtx.createRadialGradient(engineX, 49, 0, engineX, 49, 8.5);
+            nozzleGlow.addColorStop(0, `rgba(255, 255, 255, ${0.72 + enginePulse * 0.18})`);
+            nozzleGlow.addColorStop(0.3, `rgba(112, 239, 255, ${0.48 + enginePulse * 0.2})`);
+            nozzleGlow.addColorStop(1, "rgba(0, 112, 255, 0)");
+            spriteCtx.fillStyle = nozzleGlow;
+            spriteCtx.beginPath();
+            spriteCtx.ellipse(engineX, 49, 8, 5.5, 0, 0, Math.PI * 2);
+            spriteCtx.fill();
+          });
+        }
+        spriteCtx.restore();
       }
 
       function drawRealisticEnemy(enemy, angle) {
