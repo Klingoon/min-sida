@@ -3391,7 +3391,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.133 · Heliopause and Gravemaw Rebuilt · updated 2026-07-24 08:46 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.134 · Seven Selene Minibosses Rebuilt · updated 2026-07-24 09:45 CEST</div>
   </main>
 
   <script>
@@ -4056,6 +4056,40 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const gravemawAnnulusImage = new Image();
       gravemawAnnulusImage.decoding = "async";
       gravemawAnnulusImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/gravemaw-annulus-rig-master-v2.png";
+      const umbraReliquaryImage = new Image();
+      umbraReliquaryImage.decoding = "async";
+      umbraReliquaryImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/umbra-reliquary-rig-master-v2.png";
+      const trussborneMatriarchImage = new Image();
+      trussborneMatriarchImage.decoding = "async";
+      trussborneMatriarchImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/trussborne-matriarch-rig-master-v2.png";
+      const apertureSeraphImage = new Image();
+      apertureSeraphImage.decoding = "async";
+      apertureSeraphImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/aperture-seraph-rig-master-v2.png";
+      const paleDreamEaterImage = new Image();
+      paleDreamEaterImage.decoding = "async";
+      paleDreamEaterImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/pale-dream-eater-rig-master-v2.png";
+      const monolithChoirImage = new Image();
+      monolithChoirImage.decoding = "async";
+      monolithChoirImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/monolith-choir-rig-master-v2.png";
+      const parallaxOracleImage = new Image();
+      parallaxOracleImage.decoding = "async";
+      parallaxOracleImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/parallax-oracle-rig-master-v2.png";
+      const kesslerBroodqueenImage = new Image();
+      kesslerBroodqueenImage.decoding = "async";
+      kesslerBroodqueenImage.src = "varldsrymden-anfaller/assets/canyon-minibosses/kessler-broodqueen-rig-master-v2.png";
+      const canyonRigImages = {
+        regolith: regolithSarcophagusImage,
+        dragonfly: duneSurveyorDragonflyImage,
+        cantor: heliopauseCantorImage,
+        gravemaw: gravemawAnnulusImage,
+        umbra: umbraReliquaryImage,
+        truss: trussborneMatriarchImage,
+        seraph: apertureSeraphImage,
+        dream: paleDreamEaterImage,
+        choir: monolithChoirImage,
+        oracle: parallaxOracleImage,
+        broodqueen: kesslerBroodqueenImage
+      };
       const canyonBonusImage = new Image();
       canyonBonusImage.decoding = "async";
       canyonBonusImage.src = "varldsrymden-anfaller/assets/canyon-bonuses/selene-life-shield-96f-v2.webp";
@@ -4064,31 +4098,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { name: "Dune Surveyor Prime", id: "SELENE-MINIBOSS-02-DUNE-SURVEYOR", progress: 0.110 * canyonLegacyProgressScale, size: 212, hp: 30, accent: "#f5a15d", atlas: 0, block: 1, attack: "weave", weapon: "disc", special: "dragonfly" },
         { name: "Heliopause Cantor", id: "SELENE-MINIBOSS-03-HELIOPAUSE-CANTOR", progress: 0.215 * canyonLegacyProgressScale, size: 218, hp: 34, accent: "#63dcff", atlas: 0, block: 2, attack: "spiral", weapon: "disc", special: "cantor" },
         { name: "Gravemaw Annulus", id: "SELENE-MINIBOSS-04-GRAVEMAW-ANNULUS", progress: 0.321 * canyonLegacyProgressScale, size: 226, hp: 38, accent: "#aa82ff", atlas: 1, block: 0, attack: "rings", weapon: "mine", special: "gravemaw" },
-        { name: "Umbra Reliquary", id: "SELENE-MINIBOSS-05-UMBRA-RELIQUARY", progress: 0.411 * canyonLegacyProgressScale, size: 198, hp: 31, accent: "#c06dff", atlas: 1, block: 1, attack: "fan", weapon: "blade" },
-        { name: "Trussborne Matriarch", id: "SELENE-MINIBOSS-06-TRUSSBORNE-MATRIARCH", progress: 0.522 * canyonLegacyProgressScale, size: 212, hp: 33, accent: "#ffb65c", atlas: 1, block: 2, attack: "weave", weapon: "lance" },
-        { name: "Aperture Seraph", id: "SELENE-MINIBOSS-07-APERTURE-SERAPH", progress: 0.604 * canyonLegacyProgressScale, size: 206, hp: 34, accent: "#7adfff", atlas: 2, block: 0, attack: "spiral", weapon: "disc" },
+        { name: "Umbra Reliquary", id: "SELENE-MINIBOSS-05-UMBRA-RELIQUARY", progress: 0.411 * canyonLegacyProgressScale, size: 276, hp: 35, accent: "#c06dff", atlas: 1, block: 1, attack: "fan", weapon: "blade", special: "umbra" },
+        { name: "Trussborne Matriarch", id: "SELENE-MINIBOSS-06-TRUSSBORNE-MATRIARCH", progress: 0.522 * canyonLegacyProgressScale, size: 292, hp: 37, accent: "#ffb65c", atlas: 1, block: 2, attack: "weave", weapon: "lance", special: "truss" },
+        { name: "Aperture Seraph", id: "SELENE-MINIBOSS-07-APERTURE-SERAPH", progress: 0.604 * canyonLegacyProgressScale, size: 286, hp: 38, accent: "#7adfff", atlas: 2, block: 0, attack: "spiral", weapon: "disc", special: "seraph" },
         { name: "Cosmonaut Ossuary", id: "SELENE-MINIBOSS-08-COSMONAUT-OSSUARY", progress: 0.726 * canyonLegacyProgressScale, size: 204, hp: 36, accent: "#ff9850", atlas: 2, block: 1, attack: "rings", weapon: "claw" },
-        { name: "Pale Dream Eater", id: "SELENE-MINIBOSS-09-PALE-DREAM-EATER", progress: 0.814 * canyonLegacyProgressScale, size: 202, hp: 37, accent: "#c9a4ff", atlas: 2, block: 2, attack: "fan", weapon: "mine" },
-        { name: "Monolith Choir", id: "SELENE-MINIBOSS-10-MONOLITH-CHOIR", progress: 0.899 * canyonLegacyProgressScale, size: 210, hp: 39, accent: "#c786ff", atlas: 3, block: 0, attack: "weave", weapon: "blade" },
-        { name: "Parallax Oracle", id: "SELENE-MINIBOSS-11-PARALLAX-ORACLE", progress: 0.970 * canyonLegacyProgressScale, size: 216, hp: 41, accent: "#e4f8ff", atlas: 3, block: 1, attack: "spiral", weapon: "disc" },
-        { name: "Kessler Broodqueen", id: "SELENE-MINIBOSS-12-KESSLER-BROODQUEEN", progress: 0.952, size: 220, hp: 44, accent: "#68dfff", atlas: 3, block: 2, attack: "rings", weapon: "lance" }
+        { name: "Pale Dream Eater", id: "SELENE-MINIBOSS-09-PALE-DREAM-EATER", progress: 0.814 * canyonLegacyProgressScale, size: 278, hp: 41, accent: "#c9a4ff", atlas: 2, block: 2, attack: "fan", weapon: "mine", special: "dream" },
+        { name: "Monolith Choir", id: "SELENE-MINIBOSS-10-MONOLITH-CHOIR", progress: 0.899 * canyonLegacyProgressScale, size: 264, hp: 43, accent: "#c786ff", atlas: 3, block: 0, attack: "weave", weapon: "blade", special: "choir" },
+        { name: "Parallax Oracle", id: "SELENE-MINIBOSS-11-PARALLAX-ORACLE", progress: 0.970 * canyonLegacyProgressScale, size: 292, hp: 45, accent: "#e4f8ff", atlas: 3, block: 1, attack: "spiral", weapon: "disc", special: "oracle" },
+        { name: "Kessler Broodqueen", id: "SELENE-MINIBOSS-12-KESSLER-BROODQUEEN", progress: 0.952, size: 304, hp: 48, accent: "#68dfff", atlas: 3, block: 2, attack: "rings", weapon: "lance", special: "broodqueen" }
       ].sort((a, b) => a.progress - b.progress).map((species, encounterIndex) => ({
         ...species,
         encounterIndex,
-        image: species.special === "regolith"
-          ? regolithSarcophagusImage
-          : species.special === "dragonfly"
-            ? duneSurveyorDragonflyImage
-            : species.special === "cantor"
-              ? heliopauseCantorImage
-              : species.special === "gravemaw" ? gravemawAnnulusImage : canyonMinibossAtlases[species.atlas],
-        imageUrl: species.special === "regolith"
-          ? regolithSarcophagusImage.src
-          : species.special === "dragonfly"
-            ? duneSurveyorDragonflyImage.src
-            : species.special === "cantor"
-              ? heliopauseCantorImage.src
-              : species.special === "gravemaw" ? gravemawAnnulusImage.src : canyonMinibossAtlasUrls[species.atlas],
+        image: canyonRigImages[species.special] || canyonMinibossAtlases[species.atlas],
+        imageUrl: canyonRigImages[species.special]?.src || canyonMinibossAtlasUrls[species.atlas],
         frameOffset: species.special ? 0 : species.block * 12,
         animationFrames: species.special ? 1 : 12,
         animationColumns: species.special ? 1 : 6,
@@ -4499,6 +4521,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 ? "Selene miniboss · Sector 3 · articulated 60 FPS cantor rig · staged membrane destruction"
                 : species.special === "gravemaw"
                   ? "Selene miniboss · Sector 4 · articulated 60 FPS annulus rig · radial implosion"
+                  : species.special
+                    ? `Selene miniboss · Sector ${index + 1} · articulated 60 FPS ${species.special} rig · staged physical destruction`
               : `Selene miniboss · Sector ${index + 1} · 12 generated keyframes · interpolated motion`,
           sprite: "canyonAlien",
           frame: species.frameOffset,
@@ -5252,7 +5276,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 ? 2.8
                 : species.special === "cantor"
                   ? 3.05
-                  : species.special === "gravemaw" ? 3.35 : 1.05,
+                  : species.special === "gravemaw"
+                    ? 3.35
+                    : ({
+                        umbra: 3.15,
+                        truss: 3.05,
+                        seraph: 3.25,
+                        dream: 3.4,
+                        choir: 3.55,
+                        oracle: 3.35,
+                        broodqueen: 3.7
+                      }[species.special] || 1.05),
             deathElapsed: 0,
             deathBurstNext: 0,
             motionMode: "idle",
@@ -5268,7 +5302,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function isArticulatedCanyonSpecies(species) {
-        return ["regolith", "dragonfly", "cantor", "gravemaw"].includes(species.special);
+        return Boolean(species.special);
       }
 
       function spawnCanyonBonus(alien) {
@@ -5329,7 +5363,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
         if (isArticulatedCanyonSpecies(alien.species)) {
           alien.motionMode = "mines";
-          alien.motionDuration = alien.species.special === "gravemaw" ? 0.92 : alien.species.special === "cantor" ? 0.78 : 0.7;
+          alien.motionDuration = alien.species.special === "gravemaw"
+            ? 0.92
+            : alien.species.special === "cantor"
+              ? 0.78
+              : ["oracle", "choir", "dream"].includes(alien.species.special) ? 0.9 : 0.72;
           alien.motionTime = alien.motionDuration;
         }
         const count = 3 + (alien.index % 3);
@@ -5421,6 +5459,54 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
               speed: 142 + (i % 3) * 18,
               turnRate: (i - (count - 1) / 2) * 0.025
             });
+          }
+        } else if (isArticulatedCanyonSpecies(alien.species)) {
+          alien.motionMode = "volley";
+          alien.motionDuration = ["choir", "oracle", "dream"].includes(alien.species.special) ? 0.92 : 0.68;
+          alien.motionTime = alien.motionDuration;
+          const special = alien.species.special;
+          const pattern = alien.attackSequence % 3;
+          alien.attackSequence += 1;
+          const baseCount = healthPhase ? 8 : 6;
+          if (special === "seraph" || special === "oracle") {
+            const count = baseCount + (special === "oracle" ? 1 : 0);
+            for (let i = 0; i < count; i += 1) {
+              const offset = (i - (count - 1) / 2) * 0.145;
+              shots.push({
+                angle: pattern === 1 ? Math.PI / 2 + offset : aimed + offset,
+                speed: 158 + (i % 2) * 26,
+                turnRate: (i % 2 ? 1 : -1) * (0.13 + pattern * 0.035)
+              });
+            }
+          } else if (special === "broodqueen" || special === "truss") {
+            const count = baseCount + 1;
+            for (let i = 0; i < count; i += 1) {
+              const offset = (i - (count - 1) / 2) * 0.17;
+              shots.push({
+                angle: aimed + offset + Math.sin(alien.phase + i * 0.8) * 0.07,
+                speed: 166 + Math.abs(offset) * 42,
+                turnRate: -offset * 0.24
+              });
+            }
+          } else if (special === "choir") {
+            const count = baseCount + 2;
+            for (let i = 0; i < count; i += 1) {
+              shots.push({
+                angle: Math.PI * 0.2 + i * (Math.PI * 0.6 / Math.max(1, count - 1)),
+                speed: 142 + (i % 3) * 19,
+                turnRate: Math.sin(i * 2.1) * 0.16
+              });
+            }
+          } else {
+            const count = baseCount;
+            for (let i = 0; i < count; i += 1) {
+              const offset = (i - (count - 1) / 2) * (special === "dream" ? 0.2 : 0.16);
+              shots.push({
+                angle: aimed + offset,
+                speed: special === "dream" ? 146 + (i % 2) * 20 : 164,
+                turnRate: special === "umbra" ? -offset * 0.3 : (i % 2 ? 0.12 : -0.12)
+              });
+            }
           }
         } else if (alien.species.attack === "fan") {
           const count = 4 + healthPhase * 2;
@@ -5526,6 +5612,20 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 explosionSound(0.44 + burstIndex * 0.04);
                 alien.deathBurstNext += interval;
               }
+            } else if (isArticulatedCanyonSpecies(alien.species)) {
+              const interval = alien.species.special === "broodqueen" ? 0.28 : 0.34;
+              while (alien.deathElapsed >= alien.deathBurstNext && alien.deathBurstNext < alien.deathDuration - 0.12) {
+                const burstIndex = Math.floor(alien.deathBurstNext / interval);
+                const angle = alien.phase * 0.5 + burstIndex * 2.39996;
+                const radius = alien.species.size * (0.1 + (burstIndex % 5) * 0.055);
+                const burstX = alien.x + Math.cos(angle) * radius;
+                const burstY = alien.y + Math.sin(angle) * radius * 0.56;
+                const paleFlash = ["dream", "seraph", "oracle"].includes(alien.species.special) && burstIndex % 3 === 0;
+                makeParticles(burstX, burstY, paleFlash ? "#f2fbff" : alien.species.accent, 16 + (burstIndex % 4) * 4);
+                shake = Math.max(shake, 12 + burstIndex * 1.65);
+                explosionSound(0.46 + burstIndex * 0.038);
+                alien.deathBurstNext += interval;
+              }
             } else {
               alien.y += dt * 46;
             }
@@ -5556,6 +5656,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 makeParticles(alien.x, alien.y, "#9d62ff", 52);
                 shake = Math.max(shake, 50);
                 explosionSound(1.58);
+              } else if (isArticulatedCanyonSpecies(alien.species)) {
+                const secondary = ["truss", "broodqueen"].includes(alien.species.special) ? "#ffb75f" : "#f1f7ff";
+                makeParticles(alien.x, alien.y, secondary, 72);
+                makeParticles(alien.x, alien.y, alien.species.accent, 58);
+                shake = Math.max(shake, alien.species.special === "broodqueen" ? 56 : 48);
+                explosionSound(alien.species.special === "broodqueen" ? 1.68 : 1.52);
               }
             }
             return;
@@ -5602,6 +5708,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             const tempo = healthRatio < 0.4 ? 1.22 : 1;
             alien.x = W / 2 + Math.sin(alien.phase * 0.46 * tempo) * 132 + Math.sin(alien.phase * 1.32) * 22;
             alien.y = 190 + Math.cos(alien.phase * 0.68 * tempo) * 25 + Math.sin(alien.phase * 1.94) * 8;
+          } else if (isArticulatedCanyonSpecies(alien.species)) {
+            const healthRatio = alien.hp / alien.maxHp;
+            const tempo = healthRatio < 0.4 ? 1.28 : healthRatio < 0.7 ? 1.12 : 1;
+            const heavy = ["choir", "oracle", "broodqueen"].includes(alien.species.special);
+            const lateral = alien.species.special === "seraph" ? 174 : heavy ? 128 : 152;
+            alien.x = W / 2
+              + Math.sin(alien.phase * (heavy ? 0.44 : 0.58) * tempo) * lateral
+              + Math.sin(alien.phase * (heavy ? 1.24 : 1.72)) * (heavy ? 22 : 29);
+            alien.y = 184
+              + Math.cos(alien.phase * (heavy ? 0.72 : 0.92) * tempo) * (heavy ? 24 : 31)
+              + Math.sin(alien.phase * 2.16) * 7;
           } else {
             alien.x = W / 2
               + Math.sin(alien.phase * (motion === 2 ? 0.72 : 0.54)) * (motion === 1 ? 168 : 124)
@@ -10653,6 +10770,256 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         drawDragonflyGlow(0, 0, size * (0.06 + eruption * 0.66), flash * 0.96, "#ffffff", "#8d4aff");
       }
 
+      const advancedCanyonRigConfigs = {
+        umbra: {
+          image: umbraReliquaryImage,
+          prefix: "umbraReliquary",
+          profile: "tentacles",
+          strips: 13,
+          speed: 2.08,
+          amplitude: 0.017,
+          coreY: -0.03,
+          coreRadius: 0.055,
+          inner: "#f7eaff",
+          outer: "#9547ff",
+          deathLabel: "reliquary-disassembly"
+        },
+        truss: {
+          image: trussborneMatriarchImage,
+          prefix: "trussborneMatriarch",
+          profile: "wings",
+          strips: 12,
+          speed: 2.72,
+          amplitude: 0.014,
+          coreY: 0.015,
+          coreRadius: 0.045,
+          inner: "#fff3c7",
+          outer: "#ff8a38",
+          deathLabel: "truss-and-wing-breakup"
+        },
+        seraph: {
+          image: apertureSeraphImage,
+          prefix: "apertureSeraph",
+          profile: "wings",
+          strips: 13,
+          speed: 2.46,
+          amplitude: 0.018,
+          coreY: -0.045,
+          coreRadius: 0.065,
+          inner: "#f3fdff",
+          outer: "#48cfff",
+          deathLabel: "aperture-collapse"
+        },
+        dream: {
+          image: paleDreamEaterImage,
+          prefix: "paleDreamEater",
+          profile: "membrane",
+          strips: 14,
+          speed: 1.84,
+          amplitude: 0.021,
+          coreY: -0.035,
+          coreRadius: 0.06,
+          inner: "#ffffff",
+          outer: "#a06aff",
+          deathLabel: "glass-membrane-dissolution"
+        },
+        choir: {
+          image: monolithChoirImage,
+          prefix: "monolithChoir",
+          profile: "cloak",
+          strips: 12,
+          speed: 1.52,
+          amplitude: 0.015,
+          coreY: 0.02,
+          coreRadius: 0.052,
+          inner: "#fff5ff",
+          outer: "#914cff",
+          deathLabel: "monolith-shard-ascension"
+        },
+        oracle: {
+          image: parallaxOracleImage,
+          prefix: "parallaxOracle",
+          profile: "dishes",
+          strips: 13,
+          speed: 1.68,
+          amplitude: 0.012,
+          coreY: 0.005,
+          coreRadius: 0.07,
+          inner: "#ffffff",
+          outer: "#8a7dff",
+          deathLabel: "observatory-decoherence"
+        },
+        broodqueen: {
+          image: kesslerBroodqueenImage,
+          prefix: "kesslerBroodqueen",
+          profile: "segments",
+          strips: 15,
+          speed: 2.34,
+          amplitude: 0.016,
+          coreY: 0.025,
+          coreRadius: 0.045,
+          inner: "#e9ffff",
+          outer: "#33d6ff",
+          deathLabel: "brood-segment-rupture"
+        }
+      };
+
+      function canyonMasterBounds(image) {
+        const aspect = image.naturalWidth / Math.max(1, image.naturalHeight);
+        if (aspect >= 1) {
+          return { xMin: -0.5, xMax: 0.5, yMin: -0.5 / aspect, yMax: 0.5 / aspect, width: 1, height: 1 / aspect };
+        }
+        return { xMin: -aspect / 2, xMax: aspect / 2, yMin: -0.5, yMax: 0.5, width: aspect, height: 1 };
+      }
+
+      function drawCanyonMasterPiece(image, size, polygon, pivotX, pivotY, offsetX, offsetY, angle, scaleX = 1, scaleY = 1, alpha = 1) {
+        const bounds = canyonMasterBounds(image);
+        spriteCtx.save();
+        spriteCtx.globalAlpha *= alpha;
+        spriteCtx.translate((pivotX + offsetX) * size, (pivotY + offsetY) * size);
+        spriteCtx.rotate(angle);
+        spriteCtx.scale(scaleX, scaleY);
+        spriteCtx.translate(-pivotX * size, -pivotY * size);
+        spriteCtx.beginPath();
+        polygon.forEach(([x, y], index) => {
+          if (index === 0) spriteCtx.moveTo(x * size, y * size);
+          else spriteCtx.lineTo(x * size, y * size);
+        });
+        spriteCtx.closePath();
+        spriteCtx.clip();
+        spriteCtx.drawImage(
+          image,
+          0,
+          0,
+          image.naturalWidth,
+          image.naturalHeight,
+          bounds.xMin * size,
+          bounds.yMin * size,
+          bounds.width * size,
+          bounds.height * size
+        );
+        spriteCtx.restore();
+      }
+
+      function advancedRigStripState(config, index, count, t, action, dyingProgress = 0) {
+        const centerNorm = count <= 1 ? 0 : index / (count - 1) * 2 - 1;
+        const wave = Math.sin(t * config.speed - index * 0.61);
+        const counterWave = Math.cos(t * (config.speed * 0.71) + index * 0.83);
+        let angle = wave * config.amplitude;
+        let offsetX = 0;
+        let offsetY = counterWave * 0.0035;
+        let scaleY = 1 + wave * 0.005;
+
+        if (config.profile === "tentacles") {
+          angle *= 1 + Math.abs(centerNorm) * 1.7;
+          offsetY += Math.sin(t * 1.44 + index) * 0.007;
+          offsetX += action.deploy * centerNorm * 0.022;
+        } else if (config.profile === "wings") {
+          const wing = Math.pow(Math.abs(centerNorm), 1.35);
+          angle += Math.sign(centerNorm || 1) * wing * (Math.sin(t * 3.15) * 0.026 + action.volley * 0.055);
+          offsetY -= wing * Math.sin(t * 3.15) * 0.008;
+        } else if (config.profile === "membrane") {
+          angle *= 1.45;
+          offsetY += Math.sin(t * 1.25 - index * 0.72) * 0.009;
+          scaleY += Math.sin(t * 1.6 + index * 0.4) * 0.012 + action.volley * 0.025;
+        } else if (config.profile === "cloak") {
+          angle *= 1 + Math.max(0, centerNorm * centerNorm * 1.8);
+          offsetY += Math.sin(t * 1.08 + index * 0.54) * 0.006;
+          offsetX += action.deploy * centerNorm * 0.014;
+        } else if (config.profile === "dishes") {
+          const outer = Math.pow(Math.abs(centerNorm), 1.55);
+          angle += Math.sign(centerNorm || 1) * outer * (Math.sin(t * 1.2 + index * 0.18) * 0.022 + action.volley * 0.038);
+          offsetY -= outer * action.volley * 0.009;
+        } else if (config.profile === "segments") {
+          const travelling = Math.sin(t * 2.42 - index * 0.76);
+          angle += travelling * 0.022;
+          offsetY += travelling * 0.009;
+          offsetX += Math.cos(t * 1.7 - index * 0.62) * 0.004;
+        }
+
+        angle += action.hurt * Math.sin(action.progress * Math.PI * 10 + index) * 0.016;
+        offsetY -= action.volley * (0.004 + Math.abs(centerNorm) * 0.004);
+        if (dyingProgress > 0) {
+          const separation = 1 - Math.pow(1 - dyingProgress, 2.15);
+          offsetX += centerNorm * separation * (0.28 + (index % 3) * 0.035);
+          offsetY += (index % 2 ? 1 : -1) * separation * 0.08 + dyingProgress * dyingProgress * 0.16;
+          angle += (index % 2 ? 1 : -1) * separation * (0.28 + index * 0.026);
+          scaleY *= 1 - separation * 0.12;
+        }
+        return { angle, offsetX, offsetY, scaleY };
+      }
+
+      function drawAdvancedCanyonLivingRig(alien, t, size, config) {
+        const image = config.image;
+        const bounds = canyonMasterBounds(image);
+        const action = rigActionState(alien);
+        const healthRatio = clamp(alien.hp / alien.maxHp, 0, 1);
+        const panic = healthRatio < 0.4 ? 1.22 : 1;
+        const overlap = 0.006;
+        spriteCtx.save();
+        spriteCtx.filter = action.hurt > 0.04
+          ? `brightness(${1 + action.hurt * 1.08}) saturate(${1 - action.hurt * 0.24})`
+          : "contrast(1.06) saturate(1.05)";
+        for (let index = 0; index < config.strips; index += 1) {
+          const left = bounds.xMin + bounds.width * index / config.strips - overlap;
+          const right = bounds.xMin + bounds.width * (index + 1) / config.strips + overlap;
+          const center = (left + right) / 2;
+          const motion = advancedRigStripState(config, index, config.strips, t * panic, action);
+          drawCanyonMasterPiece(
+            image,
+            size,
+            [[left, bounds.yMin - overlap], [right, bounds.yMin - overlap], [right, bounds.yMax + overlap], [left, bounds.yMax + overlap]],
+            center,
+            0,
+            motion.offsetX,
+            motion.offsetY,
+            motion.angle,
+            1,
+            motion.scaleY
+          );
+        }
+        drawDragonflyGlow(
+          0,
+          config.coreY * size,
+          size * (config.coreRadius + action.volley * 0.04 + action.deploy * 0.02),
+          0.56 + action.volley * 0.32,
+          config.inner,
+          config.outer
+        );
+        spriteCtx.restore();
+      }
+
+      function drawAdvancedCanyonDestructionRig(alien, t, size, config) {
+        const image = config.image;
+        const bounds = canyonMasterBounds(image);
+        const progress = clamp(alien.deathElapsed / alien.deathDuration, 0, 1);
+        const fade = 1 - clamp((progress - 0.8) / 0.2, 0, 1);
+        const overlap = 0.005;
+        for (let index = 0; index < config.strips; index += 1) {
+          const delay = index * 0.012;
+          const stripProgress = clamp((progress - delay) / (1 - delay), 0, 1);
+          const left = bounds.xMin + bounds.width * index / config.strips - overlap;
+          const right = bounds.xMin + bounds.width * (index + 1) / config.strips + overlap;
+          const center = (left + right) / 2;
+          const motion = advancedRigStripState(config, index, config.strips, t, { progress: 0, volley: 0, deploy: 0, hurt: 0 }, stripProgress);
+          drawCanyonMasterPiece(
+            image,
+            size,
+            [[left, bounds.yMin - overlap], [right, bounds.yMin - overlap], [right, bounds.yMax + overlap], [left, bounds.yMax + overlap]],
+            center,
+            0,
+            motion.offsetX,
+            motion.offsetY,
+            motion.angle,
+            1 - stripProgress * 0.08,
+            motion.scaleY,
+            fade
+          );
+        }
+        const flash = Math.sin(clamp((progress - 0.05) / 0.86, 0, 1) * Math.PI);
+        drawDragonflyGlow(0, config.coreY * size, size * (0.06 + progress * 0.62), flash * 0.92, config.inner, config.outer);
+      }
+
       function drawArticulatedCanyonBar(alien) {
         if (!alien.engaged || alien.dying > 0) return;
         const barWidth = 236;
@@ -10675,6 +11042,26 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (state !== "canyon" || alien.dead || alien.y < -150 || alien.y > H + 150) return;
         const image = alien.species.image;
         if (!image.complete || !image.naturalWidth) return;
+        const advancedConfig = advancedCanyonRigConfigs[alien.species.special];
+        if (advancedConfig) {
+          const dying = alien.dying > 0;
+          const drawSize = alien.species.size;
+          const heavy = ["choir", "oracle", "broodqueen"].includes(alien.species.special);
+          const bob = dying ? 0 : Math.sin(t * (heavy ? 1.46 : 2.08) + alien.index) * (heavy ? 3.5 : 5);
+          spriteCtx.save();
+          spriteCtx.translate(alien.x + renderShake.x, alien.y + bob + renderShake.y);
+          spriteCtx.rotate(dying ? 0 : Math.sin(t * (heavy ? 0.54 : 0.84) + alien.index) * (heavy ? 0.014 : 0.022));
+          if (dying) drawAdvancedCanyonDestructionRig(alien, t, drawSize * 1.13, advancedConfig);
+          else drawAdvancedCanyonLivingRig(alien, t, drawSize, advancedConfig);
+          spriteCtx.restore();
+          shell.dataset[`${advancedConfig.prefix}Animation`] = "articulated-60fps";
+          shell.dataset[`${advancedConfig.prefix}Motion`] = dying ? advancedConfig.deathLabel : alien.motionMode;
+          shell.dataset[`${advancedConfig.prefix}Progress`] = dying
+            ? (alien.deathElapsed / alien.deathDuration).toFixed(3)
+            : alien.motionDuration > 0 ? (1 - alien.motionTime / alien.motionDuration).toFixed(3) : "0.000";
+          drawArticulatedCanyonBar(alien);
+          return;
+        }
         if (alien.species.special === "cantor" || alien.species.special === "gravemaw") {
           const dying = alien.dying > 0;
           const drawSize = alien.species.size;
