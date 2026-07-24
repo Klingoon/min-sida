@@ -3391,7 +3391,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.134 · Seven Selene Minibosses Rebuilt · updated 2026-07-24 09:45 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.135 · Cosmonaut Ossuary Reborn · updated 2026-07-24 10:03 CEST</div>
   </main>
 
   <script>
@@ -4065,6 +4065,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const apertureSeraphImage = new Image();
       apertureSeraphImage.decoding = "async";
       apertureSeraphImage.src = "assets/canyon-minibosses/aperture-seraph-rig-master-v2.png";
+      const cosmonautOssuaryImage = new Image();
+      cosmonautOssuaryImage.decoding = "async";
+      cosmonautOssuaryImage.src = "assets/canyon-minibosses/cosmonaut-ossuary-rig-master-v2.png";
       const paleDreamEaterImage = new Image();
       paleDreamEaterImage.decoding = "async";
       paleDreamEaterImage.src = "assets/canyon-minibosses/pale-dream-eater-rig-master-v2.png";
@@ -4085,6 +4088,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         umbra: umbraReliquaryImage,
         truss: trussborneMatriarchImage,
         seraph: apertureSeraphImage,
+        ossuary: cosmonautOssuaryImage,
         dream: paleDreamEaterImage,
         choir: monolithChoirImage,
         oracle: parallaxOracleImage,
@@ -4101,7 +4105,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { name: "Umbra Reliquary", id: "SELENE-MINIBOSS-05-UMBRA-RELIQUARY", progress: 0.411 * canyonLegacyProgressScale, size: 276, hp: 35, accent: "#c06dff", atlas: 1, block: 1, attack: "fan", weapon: "blade", special: "umbra" },
         { name: "Trussborne Matriarch", id: "SELENE-MINIBOSS-06-TRUSSBORNE-MATRIARCH", progress: 0.522 * canyonLegacyProgressScale, size: 292, hp: 37, accent: "#ffb65c", atlas: 1, block: 2, attack: "weave", weapon: "lance", special: "truss" },
         { name: "Aperture Seraph", id: "SELENE-MINIBOSS-07-APERTURE-SERAPH", progress: 0.604 * canyonLegacyProgressScale, size: 286, hp: 38, accent: "#7adfff", atlas: 2, block: 0, attack: "spiral", weapon: "disc", special: "seraph" },
-        { name: "Cosmonaut Ossuary", id: "SELENE-MINIBOSS-08-COSMONAUT-OSSUARY", progress: 0.726 * canyonLegacyProgressScale, size: 204, hp: 36, accent: "#ff9850", atlas: 2, block: 1, attack: "rings", weapon: "claw" },
+        { name: "Cosmonaut Ossuary", id: "SELENE-MINIBOSS-08-COSMONAUT-OSSUARY", progress: 0.726 * canyonLegacyProgressScale, size: 290, hp: 40, accent: "#ff9850", atlas: 2, block: 1, attack: "rings", weapon: "claw", special: "ossuary" },
         { name: "Pale Dream Eater", id: "SELENE-MINIBOSS-09-PALE-DREAM-EATER", progress: 0.814 * canyonLegacyProgressScale, size: 278, hp: 41, accent: "#c9a4ff", atlas: 2, block: 2, attack: "fan", weapon: "mine", special: "dream" },
         { name: "Monolith Choir", id: "SELENE-MINIBOSS-10-MONOLITH-CHOIR", progress: 0.899 * canyonLegacyProgressScale, size: 264, hp: 43, accent: "#c786ff", atlas: 3, block: 0, attack: "weave", weapon: "blade", special: "choir" },
         { name: "Parallax Oracle", id: "SELENE-MINIBOSS-11-PARALLAX-ORACLE", progress: 0.970 * canyonLegacyProgressScale, size: 292, hp: 45, accent: "#e4f8ff", atlas: 3, block: 1, attack: "spiral", weapon: "disc", special: "oracle" },
@@ -5282,6 +5286,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                         umbra: 3.15,
                         truss: 3.05,
                         seraph: 3.25,
+                        ossuary: 3.5,
                         dream: 3.4,
                         choir: 3.55,
                         oracle: 3.35,
@@ -5495,6 +5500,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
                 angle: Math.PI * 0.2 + i * (Math.PI * 0.6 / Math.max(1, count - 1)),
                 speed: 142 + (i % 3) * 19,
                 turnRate: Math.sin(i * 2.1) * 0.16
+              });
+            }
+          } else if (special === "ossuary") {
+            const count = baseCount + 1;
+            for (let i = 0; i < count; i += 1) {
+              const offset = (i - (count - 1) / 2) * 0.165;
+              shots.push({
+                angle: pattern === 2 ? Math.PI / 2 + offset : aimed + offset,
+                speed: 154 + (i % 3) * 22,
+                turnRate: (i % 2 ? 1 : -1) * (0.11 + Math.abs(offset) * 0.16)
               });
             }
           } else {
@@ -10810,6 +10825,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           outer: "#48cfff",
           deathLabel: "aperture-collapse"
         },
+        ossuary: {
+          image: cosmonautOssuaryImage,
+          prefix: "cosmonautOssuary",
+          profile: "limbs",
+          strips: 15,
+          speed: 2.18,
+          amplitude: 0.016,
+          coreY: -0.015,
+          coreRadius: 0.06,
+          inner: "#fff3cc",
+          outer: "#ff842f",
+          deathLabel: "suit-bone-disarticulation"
+        },
         dream: {
           image: paleDreamEaterImage,
           prefix: "paleDreamEater",
@@ -10935,6 +10963,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           angle += travelling * 0.022;
           offsetY += travelling * 0.009;
           offsetX += Math.cos(t * 1.7 - index * 0.62) * 0.004;
+        } else if (config.profile === "limbs") {
+          const reach = Math.pow(Math.abs(centerNorm), 1.32);
+          const gait = Math.sin(t * 2.36 - index * 0.48);
+          angle += Math.sign(centerNorm || 1) * reach * (gait * 0.034 + action.volley * 0.048);
+          offsetY += reach * gait * 0.01;
+          offsetX += action.deploy * centerNorm * 0.018;
         }
 
         angle += action.hurt * Math.sin(action.progress * Math.PI * 10 + index) * 0.016;
