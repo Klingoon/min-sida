@@ -700,6 +700,22 @@
     .intro-sequence[data-position="5"] { left: 50%; bottom: 11%; transform: translateX(-50%); }
     .intro-sequence[data-position="6"] { right: 8%; bottom: 13%; }
     .intro-sequence[data-position="7"] { left: 50%; bottom: 34%; transform: translateX(-50%); }
+    .intro-sequence[data-position="8"] {
+      left: 50%;
+      bottom: 13%;
+      width: min(920px, 86vw);
+      transform: translateX(-50%);
+    }
+
+    .intro-phrase.credit {
+      display: block;
+      font-size: clamp(10px, 1.15vw, 15px);
+      line-height: 1.55;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-wrap: balance;
+      white-space: normal;
+    }
 
     .intro-splash.ship-only .intro-sequence {
       width: min(var(--cinematic-width, 680px), 58vw);
@@ -713,6 +729,13 @@
     .intro-splash.ship-only .intro-sequence[data-position="5"] { left: auto; right: 5%; bottom: 19%; transform: none; }
     .intro-splash.ship-only .intro-sequence[data-position="6"] { left: 5%; right: auto; bottom: 11%; transform: none; }
     .intro-splash.ship-only .intro-sequence[data-position="7"] { left: 50%; right: auto; bottom: 34%; transform: translateX(-50%); }
+    .intro-splash.ship-only .intro-sequence[data-position="8"] {
+      left: 50%;
+      right: auto;
+      bottom: 13%;
+      width: min(920px, 86vw);
+      transform: translateX(-50%);
+    }
 
     .intro-splash.ship-only .intro-phrase {
       font-size: clamp(11px, 1.25vw, 17px);
@@ -2188,6 +2211,16 @@
       .intro-sequence[data-position="5"] { bottom: 10%; }
       .intro-sequence[data-position="6"] { right: 7%; bottom: 12%; }
       .intro-sequence[data-position="7"] { bottom: 31%; }
+      .intro-splash.ship-only .intro-sequence[data-position="8"] {
+        bottom: 14%;
+        width: 88vw;
+      }
+
+      .intro-phrase.credit {
+        font-size: clamp(9px, 2.7vw, 12px);
+        line-height: 1.5;
+        letter-spacing: 0.1em;
+      }
 
       .intro-splash.ship-only .intro-sequence {
         left: 50% !important;
@@ -3391,7 +3424,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.140 · Galactic Heroes Opening · updated 2026-07-24 22:06 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.141 · Cinematic Credits · updated 2026-07-24 22:28 CEST</div>
   </main>
 
   <script>
@@ -3777,7 +3810,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         "Improvise",
         "Adapt",
         "Overcome",
-        "Pro Bono Publico - free to play for everyone"
+        "Pro Bono Publico - free to play for everyone",
+        "Gamedesign & Logic programming ChatGPT, behind the wheels The Wizard of Oz: M.Kling and Special game advisor Milton W"
       ];
       let alienRoundsCleared = 0;
       let bossDefeated = false;
@@ -7172,7 +7206,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const text = introPhrases[index];
         introSequence.dataset.position = String(index);
         introSequence.style.setProperty("--cinematic-width", `${Math.min(720, Math.max(180, text.length * 16))}px`);
-        renderCinematicLetters(introPhrase, text);
+        const isCredit = index === introPhrases.length - 1;
+        introPhrase.classList.toggle("credit", isCredit);
+        if (isCredit) {
+          introPhrase.textContent = text;
+          introPhrase.setAttribute("aria-label", text);
+        } else {
+          renderCinematicLetters(introPhrase, text);
+        }
       }
 
       function cycleIntroPhrase() {
