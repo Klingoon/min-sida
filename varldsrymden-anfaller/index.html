@@ -3424,7 +3424,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.142 · Battle-Worn Galactic Finale · updated 2026-07-24 23:11 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.24.143 · Luyten Abyssal Guardians · updated 2026-07-24 23:34 CEST</div>
   </main>
 
   <script>
@@ -3699,6 +3699,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const canyonAliens = [];
       const canyonWeapons = [];
       const canyonBonuses = [];
+      const luytenFauna = [];
+      const luytenWeapons = [];
+      const luytenBonuses = [];
       const particles = [];
       const debris = [];
       const shockwaves = [];
@@ -3922,6 +3925,29 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { ambient: "#2b474c", tissue: "#518b96", rim: "#62a5b0", pale: "#afd0d3", light: "#62a5b0", water: "#192e32", shadow: "#091012", accent: "#518b96", substrateLeft: "#141f1f", substrateRight: "#162223", saturation: 0.93, lightX: 0.516, lightY: 0.445, detail: 0.7, morph: 0 },
         { ambient: "#295559", tissue: "#307e92", rim: "#81bcc8", pale: "#bedce0", light: "#81bcc8", water: "#173c3e", shadow: "#020404", accent: "#307e92", substrateLeft: "#141e1a", substrateRight: "#141d1a", saturation: 0.99, lightX: 0.5, lightY: 0.42, detail: 0.85, morph: 3 }
       ];
+      const luytenFaunaBlueprints = [
+        { name: "Crimson Pentarch", id: "LUYTEN-FAUNA-01-CRIMSON-PENTARCH", form: "star", earth: "starfish", hp: 13, size: 126, attack: "radial", weapon: "urchin", formation: "orbit", reward: "life" },
+        { name: "Processional Hydra", id: "LUYTEN-FAUNA-02-PROCESSIONAL-HYDRA", form: "hydra", earth: "freshwater hydra", hp: 14, size: 132, attack: "weave", weapon: "bud", formation: "sine", reward: "shield" },
+        { name: "Thermocline Medusa", id: "LUYTEN-FAUNA-03-THERMOCLINE-MEDUSA", form: "jelly", earth: "lion's mane jellyfish", hp: 15, size: 136, attack: "curtain", weapon: "nematocyst", formation: "curtain", reward: "life" },
+        { name: "Causeway Ribbonwyrm", id: "LUYTEN-FAUNA-04-CAUSEWAY-RIBBONWYRM", form: "serpent", earth: "sea snake", hp: 15, size: 148, attack: "serpentine", weapon: "scale", formation: "helix", reward: "shield" },
+        { name: "Hadal Mantis Regent", id: "LUYTEN-FAUNA-05-HADAL-MANTIS-REGENT", form: "mantis", earth: "mantis shrimp", hp: 16, size: 128, attack: "pincer", weapon: "claw", formation: "chevron", reward: "life" },
+        { name: "Crown Nautiloid", id: "LUYTEN-FAUNA-06-CROWN-NAUTILOID", form: "nautilus", earth: "nautilus", hp: 16, size: 136, attack: "spiral", weapon: "shell", formation: "spiral", reward: "shield" },
+        { name: "Orrery Lanternmaw", id: "LUYTEN-FAUNA-07-ORRERY-LANTERNMAW", form: "angler", earth: "anglerfish", hp: 17, size: 140, attack: "lure", weapon: "lantern", formation: "pendulum", reward: "life" },
+        { name: "Cathedral Leafdragon", id: "LUYTEN-FAUNA-08-CATHEDRAL-LEAFDRAGON", form: "dragon", earth: "leafy sea dragon", hp: 17, size: 144, attack: "frond", weapon: "spore", formation: "double-sine", reward: "shield" },
+        { name: "Glass-Tide Ophiuroid", id: "LUYTEN-FAUNA-09-GLASS-TIDE-OPHIUROID", form: "brittle", earth: "brittle star", hp: 18, size: 144, attack: "radial", weapon: "shard", formation: "rose", reward: "life" },
+        { name: "Aqueduct Siphon Crown", id: "LUYTEN-FAUNA-10-AQUEDUCT-SIPHON-CROWN", form: "siphon", earth: "siphonophore", hp: 18, size: 150, attack: "chain", weapon: "cell", formation: "chain", reward: "shield" },
+        { name: "Ember-Vent Crucible Crab", id: "LUYTEN-FAUNA-11-CRUCIBLE-CRAB", form: "crab", earth: "hydrothermal vent crab", hp: 19, size: 138, attack: "pincer", weapon: "ember", formation: "chevron", reward: "life" },
+        { name: "Cyclopean Trilobite", id: "LUYTEN-FAUNA-12-CYCLOPEAN-TRILOBITE", form: "isopod", earth: "giant isopod", hp: 20, size: 146, attack: "armor", weapon: "plate", formation: "wall", reward: "shield" },
+        { name: "Garden-Vault Pycnogonid", id: "LUYTEN-FAUNA-13-GARDEN-PYCNOGONID", form: "spider", earth: "sea spider", hp: 19, size: 148, attack: "lance", weapon: "egg", formation: "galaga", reward: "life" },
+        { name: "Hadal Vampyroteuthis", id: "LUYTEN-FAUNA-14-HADAL-VAMPYROTEUTHIS", form: "squid", earth: "vampire squid", hp: 21, size: 154, attack: "cloak", weapon: "ink", formation: "crescent", reward: "shield" },
+        { name: "Meridian Oarfang", id: "LUYTEN-FAUNA-15-MERIDIAN-OARFANG", form: "oarfish", earth: "oarfish", hp: 21, size: 158, attack: "serpentine", weapon: "fin", formation: "helix", reward: "life" },
+        { name: "Cradle Thorn-Corona", id: "LUYTEN-FAUNA-16-THORN-CORONA", form: "crown", earth: "crown-of-thorns starfish", hp: 24, size: 164, attack: "corona", weapon: "thorn", formation: "concentric", reward: "shield" }
+      ].map((species, sceneIndex) => ({
+        ...species,
+        sceneIndex,
+        style: luytenSceneStyles[sceneIndex],
+        accent: luytenSceneStyles[sceneIndex].rim
+      }));
       const luytenSceneAnchors = [
         [[58,62,-1],[728,166,1],[44,273,-1],[682,360,1],[87,456,-1],[700,549,1],[31,635,-1],[640,796,1],[200,833,-1]],
         [[75,130,-1],[605,148,1],[93,245,-1],[739,354,1],[75,487,-1],[605,581,1],[161,705,-1],[652,798,1],[162,899,-1]],
@@ -4040,6 +4066,165 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const luytenBubblesByScene = luytenScenes.map((_, sceneIndex) =>
         luytenBubbles.filter((bubble) => bubble.sceneIndex === sceneIndex)
       );
+
+      function resetLuytenFauna() {
+        luytenFauna.length = 0;
+        luytenWeapons.length = 0;
+        luytenBonuses.length = 0;
+        luytenFaunaBlueprints.forEach((species, index) => {
+          luytenFauna.push({
+            species,
+            index,
+            hp: species.hp,
+            maxHp: species.hp,
+            x: W / 2,
+            y: -180,
+            phase: index * 0.81,
+            engaged: false,
+            dead: false,
+            dying: 0,
+            deathElapsed: 0,
+            deathDuration: 2.15 + index * 0.035,
+            burstAt: 0,
+            hurt: 0,
+            attackCooldown: 1.4,
+            weaponCooldown: 3.25,
+            attackSequence: 0,
+            weaponSequence: 0,
+            rewardSpawned: false
+          });
+        });
+      }
+
+      function activeLuytenFauna() {
+        return luytenFauna.find((creature) => creature.engaged && !creature.dead && creature.dying <= 0) || null;
+      }
+
+      function spawnLuytenReward(creature) {
+        if (creature.rewardSpawned) return;
+        creature.rewardSpawned = true;
+        luytenBonuses.push({
+          type: creature.species.reward,
+          x: creature.x,
+          y: creature.y,
+          age: 0,
+          life: 15,
+          phase: creature.phase,
+          vy: 42,
+          source: creature.species.id,
+          style: creature.species.style
+        });
+        shell.dataset.luytenReward = `${creature.species.id}:${creature.species.reward}`;
+      }
+
+      function spawnLuytenWeaponFormation(creature) {
+        const species = creature.species;
+        const count = 4 + creature.index % 4;
+        const center = (count - 1) / 2;
+        const pattern = species.formation;
+        creature.weaponSequence += 1;
+        for (let slot = 0; slot < count; slot += 1) {
+          luytenWeapons.push({
+            owner: creature.index,
+            type: species.weapon,
+            pattern,
+            slot,
+            count,
+            x: creature.x,
+            y: creature.y + species.size * 0.22,
+            originX: creature.x,
+            originY: creature.y + species.size * 0.22,
+            vx: (slot - center) * 18,
+            vy: 74 + creature.index * 1.8,
+            t: -slot * 0.09,
+            phase: creature.phase + slot * 0.82,
+            r: 11 + (creature.index % 3) * 2,
+            hp: 2 + (creature.index > 9 ? 1 : 0),
+            maxHp: 2 + (creature.index > 9 ? 1 : 0),
+            accent: species.accent,
+            pale: species.style.pale
+          });
+        }
+        play(128 + creature.index * 9, 0.18, "triangle", 0.032);
+      }
+
+      function fireLuytenPattern(creature) {
+        if (enemyBullets.length >= 28) return;
+        const dx = player.x - creature.x;
+        const dy = player.y - creature.y;
+        const aimed = Math.atan2(dy, dx);
+        const pattern = creature.attackSequence++ % 3;
+        const attack = creature.species.attack;
+        const shots = [];
+        const baseCount = 4 + (creature.index % 3);
+
+        if (attack === "radial" || attack === "corona") {
+          const count = attack === "corona" ? 9 : 7;
+          for (let index = 0; index < count; index += 1) {
+            const offset = (index - (count - 1) / 2) * (attack === "corona" ? 0.13 : 0.17);
+            shots.push({ angle: aimed + offset, speed: 128 + (index % 2) * 20, turnRate: index % 2 ? 0.12 : -0.12 });
+          }
+        } else if (attack === "curtain" || attack === "chain") {
+          for (let index = 0; index < baseCount + 2; index += 1) {
+            const offset = (index - (baseCount + 1) / 2) * 0.19;
+            shots.push({ angle: Math.PI / 2 + offset, speed: 112 + (index % 3) * 18, turnRate: Math.sin(index * 1.7) * 0.09 });
+          }
+        } else if (attack === "serpentine" || attack === "weave" || attack === "frond") {
+          for (let index = 0; index < baseCount + 1; index += 1) {
+            const offset = Math.sin(creature.phase * 1.4 + index * 1.25) * 0.42;
+            shots.push({ angle: aimed + offset, speed: 124 + index * 8, turnRate: index % 2 ? 0.18 : -0.18 });
+          }
+        } else if (attack === "pincer" || attack === "lance") {
+          [-0.34, -0.17, 0, 0.17, 0.34].forEach((offset, index) => {
+            shots.push({ angle: aimed + offset, speed: index === 2 ? 172 : 142, turnRate: -offset * 0.22 });
+          });
+        } else if (attack === "spiral" || attack === "cloak") {
+          for (let index = 0; index < 7; index += 1) {
+            const offset = (index - 3) * 0.16 + pattern * 0.07;
+            shots.push({ angle: aimed + offset, speed: 122 + Math.abs(index - 3) * 11, turnRate: index % 2 ? 0.2 : -0.2 });
+          }
+        } else {
+          for (let index = 0; index < baseCount; index += 1) {
+            const offset = (index - (baseCount - 1) / 2) * 0.18;
+            shots.push({ angle: aimed + offset, speed: 138 + (index % 2) * 18, turnRate: 0 });
+          }
+        }
+
+        shots.slice(0, Math.max(0, 28 - enemyBullets.length)).forEach((shot) => {
+          enemyBullets.push({
+            x: creature.x,
+            y: creature.y + creature.species.size * 0.18,
+            vx: Math.cos(shot.angle) * shot.speed,
+            vy: Math.sin(shot.angle) * shot.speed,
+            turnRate: shot.turnRate,
+            r: 5,
+            luyten: true,
+            tint: creature.species.accent
+          });
+        });
+        play(218 + creature.index * 7, 0.1, "sine", 0.025);
+      }
+
+      function collectLuytenBonus(index) {
+        const bonus = luytenBonuses[index];
+        if (bonus.type === "life") {
+          player.bonusLives += 1;
+          player.invuln = Math.max(player.invuln, 5);
+          score += 4200;
+          makeParticles(bonus.x, bonus.y, "#ffd987", 62);
+          play(659, 0.14, "triangle", 0.05);
+          setTimeout(() => play(1047, 0.22, "sine", 0.04), 100);
+        } else {
+          player.bonusShields += 1;
+          player.shieldTime = Math.max(player.shieldTime, 14);
+          score += 3600;
+          makeParticles(bonus.x, bonus.y, "#70e8ff", 62);
+          play(523, 0.18, "sine", 0.05);
+          setTimeout(() => play(880, 0.24, "sine", 0.042), 110);
+        }
+        luytenBonuses.splice(index, 1);
+        updateHud();
+      }
       const legacyCanyonLandmarks = [
         { progress: 0.01, name: "Apollo Command Capsule Wreck", id: "RELIC-SELENE-APOLLO-CM", focalY: 0.954 },
         { progress: 0.11, name: "Mars Exploration Rover Wreck", id: "RELIC-SELENE-MARS-ROVER", focalY: 0.857 },
@@ -4568,10 +4753,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rows: species.animationRows,
           eye: species.accent
         })),
+        ...luytenFaunaBlueprints.map((species) => ({
+          ...species,
+          category: "alien",
+          typeLabel: `Luyten b guardian · Scene ${species.sceneIndex + 1}/16 · articulated 60 FPS ${species.earth}-derived alien · ${species.formation} weapon formation`,
+          sprite: "luytenFauna",
+          eye: species.accent
+        })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Veteran 240 px gameplay hull · heavy weathering · 64-frame thruster rig", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
         { name: "Selene Aegis Capacitor", id: "BONUS-SELENE-SHIELD-CORE-01", category: "object", typeLabel: "Animated shield artifact · 48 frames", sprite: "canyonBonus", bonusType: "shield", image: canyonBonusImage, frame: 48, columns: 12, rows: 8 },
+        { name: "Luyten Life Pearl", id: "BONUS-LUYTEN-LIFE-PEARL-01", category: "object", typeLabel: "Articulated extra-life artifact · 60 FPS tidal rings", sprite: "luytenBonus", bonusType: "life" },
+        { name: "Luyten Aegis Pearl", id: "BONUS-LUYTEN-SHIELD-PEARL-01", category: "object", typeLabel: "Articulated shield artifact · 60 FPS tidal rings", sprite: "luytenBonus", bonusType: "shield" },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Procedural 60 FPS tumble · plasma trail", sprite: "objectAnimation", objectKind: "hydraComet", image: hydraCometCoreSprite, frame: 0, columns: 1, rows: 1, animationFps: 60 },
         { name: "Astrax Prism Mine", id: "BOSS-A03-MINE-PRISM-01", category: "object", typeLabel: "Boss weapon · destructible mine · 64 frames", sprite: "objectAnimation", objectKind: "astraxPrismMine", image: objectAnimationSprites.astraxPrismMine, frame: 0, columns: 8, rows: 8, animationFps: 24 },
@@ -6555,7 +6749,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         const stageLabel = luytenStage ? "Luyten b Abyssal Descent" : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
         const encounterLabel = luytenStage
-          ? luytenScenes[luytenRun.sceneIndex].name
+          ? (activeLuytenFauna()?.species.name || luytenScenes[luytenRun.sceneIndex].name)
           : canyonStage
           ? (activeCanyonAlien()?.species.name || activeCanyonLandmark()?.name || "Selene Wreck Gauntlet")
           : boss ? boss.name : alienStyle.displayName;
@@ -6719,6 +6913,50 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           const animatedItem = { ...item, frame: (item.bonusType === "shield" ? 48 : 0) + localFrame };
           const previewSize = canvas === devDetailCanvas ? 210 : 128;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, true);
+          return;
+        }
+
+        if (item.sprite === "luytenFauna") {
+          const previewCreature = {
+            species: item,
+            phase: item.sceneIndex * 0.81,
+            hurt: 0,
+            dying: 0,
+            deathElapsed: 0,
+            deathDuration: 2.4
+          };
+          ctx.save();
+          ctx.translate(150, 94);
+          const detailScale = canvas === devDetailCanvas ? 1.52 : 1;
+          ctx.scale(detailScale, detailScale);
+          drawLuytenCreatureBody(previewCreature, t, ctx, true);
+          ctx.restore();
+          return;
+        }
+
+        if (item.sprite === "luytenBonus") {
+          ctx.save();
+          ctx.translate(150, 90);
+          const radius = canvas === devDetailCanvas ? 48 : 32;
+          const primary = item.bonusType === "shield" ? "#68e5ff" : "#ffd67d";
+          const secondary = item.bonusType === "shield" ? "#214f89" : "#b84d54";
+          const pearl = ctx.createRadialGradient(-radius * 0.3, -radius * 0.34, 1, 0, 0, radius);
+          pearl.addColorStop(0, "#fff");
+          pearl.addColorStop(0.24, primary);
+          pearl.addColorStop(0.68, secondary);
+          pearl.addColorStop(1, "rgba(1,7,12,.18)");
+          ctx.fillStyle = pearl;
+          ctx.beginPath();
+          ctx.arc(0, 0, radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = cssRgba(primary, 0.72);
+          ctx.lineWidth = 2;
+          for (let ring = 0; ring < 3; ring += 1) {
+            ctx.beginPath();
+            ctx.ellipse(0, 0, radius * (1.2 + ring * 0.22), radius * (0.48 + ring * 0.13), ring * Math.PI / 3 + t * (ring % 2 ? -0.7 : 0.7), 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.restore();
           return;
         }
 
@@ -7858,7 +8096,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  CROSS SIXTEEN SUBMERGED CIVILIZATION ZONES\nROUTE  FOLLOW THE WINDING RAVINE THROUGH BENDS AND SWITCHBACKS\nDISCOVER  DROWNED TEMPLES, ARCHIVES AND TIDAL MACHINES\nBIOSPHERE  LIVING POLYPS, TUBE WORMS AND SIPHON COLONIES\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  CROSS SIXTEEN SUBMERGED CIVILIZATION ZONES\nENCOUNTERS  DEFEAT ONE NATIVE ABYSSAL GUARDIAN IN EVERY ZONE\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nBIOSPHERE  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA FORMS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Begin descent";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -7879,6 +8117,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         bonusUfo = null;
         luytenRun.scroll = 0;
         luytenRun.sceneIndex = 0;
+        resetLuytenFauna();
         player.x = W / 2;
         player.y = H - 140;
         player.lives = Infinity;
@@ -7904,6 +8143,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         state = "transition";
         bullets.length = 0;
         enemyBullets.length = 0;
+        luytenWeapons.length = 0;
+        luytenBonuses.length = 0;
         score += 12000;
         player.invuln = 2.2;
         for (let i = 0; i < 9; i += 1) {
@@ -9041,6 +9282,204 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (canyonRun.scroll >= canyonRun.maxScroll && canyonAliens.every((alien) => alien.dead)) finishCanyonRun();
       }
 
+      function updateLuytenCombat(dt) {
+        const now = performance.now() / 1000;
+        luytenFauna.forEach((creature) => {
+          creature.phase += dt * (1.18 + creature.index * 0.018);
+          creature.hurt = Math.max(0, creature.hurt - dt);
+          if (creature.dead) return;
+
+          if (creature.dying > 0) {
+            creature.dying -= dt;
+            creature.deathElapsed += dt;
+            while (creature.deathElapsed >= creature.burstAt && creature.burstAt < creature.deathDuration - 0.12) {
+              const burstIndex = Math.floor(creature.burstAt / 0.27);
+              const angle = creature.phase + burstIndex * 2.39996;
+              const radius = creature.species.size * (0.08 + (burstIndex % 5) * 0.055);
+              makeParticles(
+                creature.x + Math.cos(angle) * radius,
+                creature.y + Math.sin(angle) * radius * 0.62,
+                burstIndex % 3 === 0 ? creature.species.style.pale : creature.species.accent,
+                13 + (burstIndex % 4) * 4
+              );
+              shake = Math.max(shake, 8 + burstIndex * 1.15);
+              explosionSound(0.38 + burstIndex * 0.035);
+              creature.burstAt += 0.27;
+            }
+            if (creature.dying <= 0) {
+              creature.dead = true;
+              spawnLuytenReward(creature);
+              makeParticles(creature.x, creature.y, creature.species.style.pale, 84);
+              makeParticles(creature.x, creature.y, creature.species.accent, 64);
+              shockwaves.push({
+                x: creature.x,
+                y: creature.y,
+                radius: 18,
+                life: 1.15,
+                max: 1.15,
+                speed: 185,
+                rgb: hexToRgb(creature.species.accent),
+                twist: creature.phase
+              });
+              shake = Math.max(shake, 42);
+              explosionSound(1.45);
+            }
+            return;
+          }
+
+          if (!creature.engaged) {
+            creature.y = 184 - creature.species.sceneIndex * H + luytenRun.scroll;
+            creature.x = W / 2 + Math.sin(now * 0.56 + creature.index) * 74;
+            if (creature.y >= 150 && !activeLuytenFauna()) {
+              creature.engaged = true;
+              creature.y = 184;
+              creature.attackCooldown = 1.25;
+              creature.weaponCooldown = 2.8;
+              enemyBullets.length = 0;
+              shell.dataset.luytenEncounter = creature.species.id;
+              shake = Math.max(shake, 9);
+              play(84 + creature.index * 5, 0.38, "sine", 0.045);
+            }
+            return;
+          }
+
+          const healthRatio = creature.hp / creature.maxHp;
+          const tempo = healthRatio < 0.38 ? 1.28 : healthRatio < 0.7 ? 1.1 : 1;
+          const wide = ["serpent", "dragon", "oarfish", "spider"].includes(creature.species.form);
+          creature.x = W / 2
+            + Math.sin(creature.phase * 0.56 * tempo) * (wide ? 158 : 132)
+            + Math.sin(creature.phase * 1.72) * (wide ? 34 : 22);
+          creature.y = 186
+            + Math.cos(creature.phase * 0.82 * tempo) * 27
+            + Math.sin(creature.phase * 2.18) * 7;
+          creature.attackCooldown -= dt;
+          creature.weaponCooldown -= dt;
+          if (creature.attackCooldown <= 0) {
+            fireLuytenPattern(creature);
+            creature.attackCooldown = Math.max(1.05, 1.72 - creature.index * 0.025 - (healthRatio < 0.45 ? 0.22 : 0));
+          }
+          if (creature.weaponCooldown <= 0) {
+            spawnLuytenWeaponFormation(creature);
+            creature.weaponCooldown = Math.max(3.25, 4.65 - creature.index * 0.045 - (healthRatio < 0.45 ? 0.48 : 0));
+          }
+        });
+
+        luytenWeapons.forEach((weapon) => {
+          weapon.t += dt;
+          if (weapon.t < 0) return;
+          const center = (weapon.count - 1) / 2;
+          const spread = weapon.slot - center;
+          const bloom = Math.min(1, weapon.t * 1.45);
+          if (weapon.pattern === "orbit" || weapon.pattern === "concentric" || weapon.pattern === "rose") {
+            const angle = weapon.phase + weapon.t * (weapon.pattern === "rose" ? 1.4 : 0.88);
+            const radius = (58 + Math.abs(spread) * 23) * bloom;
+            weapon.x = weapon.originX + Math.cos(angle) * radius;
+            weapon.y = weapon.originY + weapon.t * 66 + Math.sin(angle) * radius * 0.48;
+          } else if (weapon.pattern === "sine" || weapon.pattern === "double-sine" || weapon.pattern === "helix") {
+            weapon.x = weapon.originX + spread * 30 + Math.sin(weapon.t * (2.2 + Math.abs(spread) * 0.08) + weapon.phase) * (48 + Math.abs(spread) * 7);
+            weapon.y = weapon.originY + weapon.t * 76 + Math.abs(spread) * 13;
+          } else if (weapon.pattern === "curtain" || weapon.pattern === "wall") {
+            weapon.x = weapon.originX + spread * (weapon.pattern === "wall" ? 68 : 54);
+            weapon.y = weapon.originY + weapon.t * 70 + (weapon.slot % 2) * 34;
+          } else if (weapon.pattern === "chain") {
+            weapon.x = weapon.originX + Math.sin(weapon.t * 1.9 + weapon.slot * 0.72) * 98;
+            weapon.y = weapon.originY + weapon.t * 72 + weapon.slot * 25;
+          } else if (weapon.pattern === "chevron" || weapon.pattern === "galaga" || weapon.pattern === "crescent") {
+            const arc = Math.abs(spread) * (weapon.pattern === "crescent" ? 17 : 25);
+            weapon.x = weapon.originX + spread * 45 + Math.sin(weapon.t * 2 + weapon.phase) * 9;
+            weapon.y = weapon.originY + weapon.t * 79 + arc;
+          } else if (weapon.pattern === "spiral" || weapon.pattern === "pendulum") {
+            weapon.x = weapon.originX + Math.sin(weapon.t * 1.7 + weapon.slot * 0.84) * (75 + weapon.slot * 7);
+            weapon.y = weapon.originY + weapon.t * 73 + Math.cos(weapon.t * 1.25 + weapon.phase) * 24;
+          }
+        });
+
+        luytenBonuses.forEach((bonus) => {
+          bonus.age += dt;
+          bonus.life -= dt;
+          bonus.phase += dt * 1.45;
+          bonus.y += bonus.vy * dt;
+          bonus.x += Math.sin(bonus.phase * 1.8) * 22 * dt;
+        });
+
+        for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+          const bullet = bullets[bulletIndex];
+          const weaponIndex = luytenWeapons.findIndex((weapon) =>
+            weapon.t >= 0 && Math.hypot(bullet.x - weapon.x, bullet.y - weapon.y) < weapon.r + 8
+          );
+          if (weaponIndex >= 0) {
+            const weapon = luytenWeapons[weaponIndex];
+            weapon.hp -= 1;
+            removePhysicsBody(bullet);
+            bullets.splice(bulletIndex, 1);
+            makeParticles(bullet.x, bullet.y, weapon.accent, weapon.hp > 0 ? 8 : 30);
+            if (weapon.hp <= 0) {
+              score += 320;
+              luytenWeapons.splice(weaponIndex, 1);
+              explosionSound(0.52);
+            }
+            continue;
+          }
+          const creature = activeLuytenFauna();
+          if (!creature || Math.hypot(bullet.x - creature.x, bullet.y - creature.y) >= creature.species.size * 0.38) continue;
+          removePhysicsBody(bullet);
+          bullets.splice(bulletIndex, 1);
+          creature.hp -= 1;
+          creature.hurt = 0.16;
+          score += 45;
+          makeParticles(bullet.x, bullet.y, creature.species.accent, creature.hp > 0 ? 11 : 76);
+          play(creature.hp > 0 ? 192 : 88, creature.hp > 0 ? 0.07 : 0.32, "triangle", creature.hp > 0 ? 0.028 : 0.07);
+          if (creature.hp <= 0) {
+            creature.engaged = false;
+            creature.dying = creature.deathDuration;
+            creature.deathElapsed = 0;
+            creature.burstAt = 0;
+            score += 5600 + creature.index * 420;
+            enemyBullets.length = 0;
+            for (let index = luytenWeapons.length - 1; index >= 0; index -= 1) {
+              if (luytenWeapons[index].owner === creature.index) luytenWeapons.splice(index, 1);
+            }
+            shell.dataset.luytenFaunaDefeated = creature.species.id;
+          }
+        }
+
+        for (let index = enemyBullets.length - 1; index >= 0; index -= 1) {
+          const bullet = enemyBullets[index];
+          const angle = Math.atan2(bullet.vy, bullet.vx) + (bullet.turnRate || 0) * dt;
+          const speed = Math.hypot(bullet.vx, bullet.vy);
+          bullet.vx = Math.cos(angle) * speed;
+          bullet.vy = Math.sin(angle) * speed;
+          bullet.x += bullet.vx * dt;
+          bullet.y += bullet.vy * dt;
+          if (bullet.y > H + 45 || bullet.y < -45 || bullet.x < -45 || bullet.x > W + 45) {
+            enemyBullets.splice(index, 1);
+          } else if (Math.hypot(player.x - bullet.x, player.y - bullet.y) < 32 + bullet.r) {
+            enemyBullets.splice(index, 1);
+            damagePlayer();
+          }
+        }
+        for (let index = luytenWeapons.length - 1; index >= 0; index -= 1) {
+          const weapon = luytenWeapons[index];
+          if (weapon.y > H + 60 || weapon.x < -80 || weapon.x > W + 80) {
+            luytenWeapons.splice(index, 1);
+          } else if (weapon.t >= 0 && Math.hypot(player.x - weapon.x, player.y - weapon.y) < 31 + weapon.r) {
+            makeParticles(weapon.x, weapon.y, weapon.accent, 32);
+            luytenWeapons.splice(index, 1);
+            damagePlayer();
+          }
+        }
+        for (let index = luytenBonuses.length - 1; index >= 0; index -= 1) {
+          const bonus = luytenBonuses[index];
+          if (bonus.life <= 0 || bonus.y > H + 80) luytenBonuses.splice(index, 1);
+          else if (Math.hypot(player.x - bonus.x, player.y - bonus.y) < 58) collectLuytenBonus(index);
+        }
+
+        const collisionCreature = activeLuytenFauna();
+        if (collisionCreature && Math.hypot(player.x - collisionCreature.x, player.y - collisionCreature.y) < collisionCreature.species.size * 0.33 + 30) {
+          damagePlayer();
+        }
+      }
+
       function stepLuyten(dt) {
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
@@ -9062,7 +9501,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           if (keys.has("Space") || keys.has("KeyW")) shoot();
         }
         updateLuytenKinematics(dt);
-        luytenRun.scroll = Math.min(luytenRun.maxScroll, luytenRun.scroll + luytenRun.speed * dt);
+        updateLuytenCombat(dt);
+        const encounterLocked = Boolean(activeLuytenFauna()) || luytenFauna.some((creature) => creature.dying > 0);
+        if (!encounterLocked) luytenRun.scroll = Math.min(luytenRun.maxScroll, luytenRun.scroll + luytenRun.speed * dt);
         updateLuytenParallaxBackdrop();
         const displayedProgress = Math.round(luytenRun.scroll / luytenRun.maxScroll * 100);
         if (displayedProgress !== luytenDisplayedProgress) {
@@ -9088,8 +9529,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         for (let i = particles.length - 1; i >= 0; i -= 1) {
           if (particles[i].life <= 0) particles.splice(i, 1);
         }
+        shockwaves.forEach((ring) => {
+          ring.radius += ring.speed * dt;
+          ring.life -= dt;
+          ring.twist += dt * 1.8;
+        });
+        for (let i = shockwaves.length - 1; i >= 0; i -= 1) {
+          if (shockwaves[i].life <= 0) shockwaves.splice(i, 1);
+        }
         updateHud();
-        if (luytenRun.scroll >= luytenRun.maxScroll) finishLuytenRun();
+        shell.dataset.luytenEncounterLocked = encounterLocked ? "true" : "false";
+        if (luytenRun.scroll >= luytenRun.maxScroll && luytenFauna.every((creature) => creature.dead)) finishLuytenRun();
       }
 
       function updateLuytenKinematics(dt) {
@@ -11345,6 +11795,417 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.restore();
       }
 
+      function drawLuytenTendril(ctx, length, width, phase, curl, style, alpha = 1) {
+        const segments = 7;
+        ctx.strokeStyle = cssRgba(style.rim, alpha);
+        ctx.lineWidth = width;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        for (let segment = 1; segment <= segments; segment += 1) {
+          const progress = segment / segments;
+          const x = Math.sin(phase + progress * 4.2) * curl * progress;
+          const y = length * progress;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = cssRgba(style.pale, alpha * 0.38);
+        ctx.lineWidth = Math.max(0.7, width * 0.24);
+        ctx.stroke();
+      }
+
+      function drawLuytenCreatureBody(creature, t, ctx = spriteCtx, preview = false) {
+        const species = creature.species;
+        const style = species.style;
+        const form = species.form;
+        const phase = t * (1.4 + species.sceneIndex * 0.015) + creature.phase;
+        const breath = 1 + Math.sin(phase * 1.7) * 0.045;
+        const deathProgress = creature.dying > 0 ? clamp(creature.deathElapsed / creature.deathDuration, 0, 1) : 0;
+        const alpha = creature.dying > 0 ? clamp(1 - Math.max(0, deathProgress - 0.36) / 0.64, 0, 1) : 1;
+        const hurtFlash = creature.hurt > 0 ? 1 : 0;
+        const size = preview ? 126 : species.size;
+        const scale = size / 140;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.scale(scale * (breath + deathProgress * 0.2), scale * (1 / breath - deathProgress * 0.08));
+        ctx.rotate(Math.sin(phase * 0.62) * 0.055 + deathProgress * 0.4);
+        ctx.filter = hurtFlash ? "brightness(2.25) saturate(.55)" : "contrast(1.08) saturate(1.06)";
+
+        const bodyGradient = ctx.createRadialGradient(-18, -22, 3, 0, 0, 74);
+        bodyGradient.addColorStop(0, style.pale);
+        bodyGradient.addColorStop(0.28, style.rim);
+        bodyGradient.addColorStop(0.66, style.tissue);
+        bodyGradient.addColorStop(1, style.shadow);
+        const membraneGradient = ctx.createLinearGradient(-70, -55, 70, 65);
+        membraneGradient.addColorStop(0, cssRgba(style.pale, 0.72));
+        membraneGradient.addColorStop(0.46, cssRgba(style.tissue, 0.88));
+        membraneGradient.addColorStop(1, cssRgba(style.shadow, 0.92));
+
+        if (["star", "brittle", "crown"].includes(form)) {
+          const arms = form === "crown" ? 13 : form === "brittle" ? 7 : 5;
+          for (let arm = 0; arm < arms; arm += 1) {
+            ctx.save();
+            ctx.rotate(arm * Math.PI * 2 / arms + Math.sin(phase + arm) * 0.035);
+            const armLength = form === "brittle" ? 80 : form === "crown" ? 64 : 70;
+            ctx.fillStyle = membraneGradient;
+            ctx.beginPath();
+            ctx.moveTo(-11, 2);
+            ctx.bezierCurveTo(-13, -20, -7 + Math.sin(phase + arm) * 5, -armLength * 0.7, 0, -armLength);
+            ctx.bezierCurveTo(9 + Math.cos(phase * 1.3 + arm) * 4, -armLength * 0.65, 14, -18, 11, 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = cssRgba(style.pale, 0.55);
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.strokeStyle = cssRgba(style.shadow, 0.52);
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(0, -8);
+            ctx.quadraticCurveTo(Math.sin(phase + arm) * 3, -armLength * 0.48, 0, -armLength * 0.86);
+            ctx.stroke();
+            for (let pore = 1; pore <= 4; pore += 1) {
+              const py = -pore * armLength / 5;
+              const px = Math.sin(phase * 1.4 + arm + pore) * 2.4;
+              ctx.fillStyle = pore % 2 ? cssRgba(style.pale, 0.58) : cssRgba(style.shadow, 0.68);
+              ctx.beginPath();
+              ctx.ellipse(px, py, 2.1, 3.4, Math.sin(phase + pore) * 0.2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            if (form === "crown") {
+              for (let thorn = 1; thorn < 5; thorn += 1) {
+                ctx.fillStyle = thorn % 2 ? style.rim : style.pale;
+                ctx.beginPath();
+                ctx.moveTo(0, -thorn * 12);
+                ctx.lineTo(-5, -thorn * 12 + 9);
+                ctx.lineTo(5, -thorn * 12 + 9);
+                ctx.closePath();
+                ctx.fill();
+              }
+            }
+            ctx.restore();
+          }
+          ctx.fillStyle = bodyGradient;
+          ctx.beginPath();
+          ctx.arc(0, 0, form === "brittle" ? 24 : 31, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = cssRgba(style.pale, 0.48);
+          ctx.lineWidth = 1.4;
+          for (let plate = 0; plate < arms; plate += 1) {
+            ctx.beginPath();
+            ctx.arc(0, 0, 12 + plate * 3.1, plate * 0.7 + phase * 0.05, plate * 0.7 + 1.15 + phase * 0.05);
+            ctx.stroke();
+          }
+        } else if (["hydra", "jelly", "siphon", "squid"].includes(form)) {
+          const tendrils = form === "hydra" ? 9 : form === "siphon" ? 7 : form === "squid" ? 10 : 12;
+          for (let tendril = 0; tendril < tendrils; tendril += 1) {
+            ctx.save();
+            const spread = (tendril - (tendrils - 1) / 2) * (form === "squid" ? 7 : 6);
+            if (form === "hydra") {
+              ctx.translate(0, -37);
+              ctx.rotate(Math.PI + (tendril - (tendrils - 1) / 2) * 0.24);
+            } else {
+              ctx.translate(spread, 20 + Math.abs(spread) * 0.16);
+              ctx.rotate(spread * 0.006);
+            }
+            drawLuytenTendril(
+              ctx,
+              (form === "siphon" ? 82 : form === "jelly" ? 74 : form === "hydra" ? 58 : 64) + Math.abs(spread) * 0.25,
+              form === "squid" ? 4.6 : 2.2 + (tendril % 3),
+              phase + tendril * 0.61,
+              11 + (tendril % 4) * 3,
+              style,
+              0.52 + (tendril % 3) * 0.12
+            );
+            ctx.restore();
+          }
+          if (form === "hydra") {
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.moveTo(-18, 45);
+            ctx.bezierCurveTo(-25, 8, -19, -27, -8, -42);
+            ctx.quadraticCurveTo(0, -51, 8, -42);
+            ctx.bezierCurveTo(19, -27, 25, 8, 18, 45);
+            ctx.quadraticCurveTo(0, 58, -18, 45);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = cssRgba(style.pale, 0.52);
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+            for (let bud = 0; bud < 5; bud += 1) {
+              const by = -22 + bud * 14;
+              const side = bud % 2 ? 1 : -1;
+              ctx.fillStyle = bud % 2 ? style.rim : style.tissue;
+              ctx.beginPath();
+              ctx.ellipse(side * (14 + Math.sin(phase + bud) * 3), by, 7, 10, side * 0.38, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          } else if (form === "siphon") {
+            for (let cell = 0; cell < 8; cell += 1) {
+              const cy = -42 + cell * 12;
+              const cx = Math.sin(phase + cell * 0.52) * (5 + cell);
+              ctx.fillStyle = bodyGradient;
+              ctx.beginPath();
+              ctx.ellipse(cx, cy, 20 - cell * 0.7, 10, Math.sin(phase + cell) * 0.12, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          } else {
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.moveTo(-54, 17);
+            ctx.bezierCurveTo(-54, -37, -28, -61, 0, -64);
+            ctx.bezierCurveTo(34, -59, 56, -31, 54, 17);
+            ctx.quadraticCurveTo(0, 38 + Math.sin(phase * 2) * 5, -54, 17);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = cssRgba(style.pale, 0.58);
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+        } else if (["serpent", "dragon", "oarfish"].includes(form)) {
+          const segments = form === "oarfish" ? 13 : 10;
+          for (let segment = segments - 1; segment >= 0; segment -= 1) {
+            const progress = segment / (segments - 1);
+            const sy = -48 + progress * 104;
+            const sx = Math.sin(phase * 1.25 + progress * 5.2) * (18 + progress * 18);
+            const radiusX = (form === "dragon" ? 22 : 27) * (1 - progress * 0.58);
+            ctx.fillStyle = bodyGradient;
+            ctx.beginPath();
+            ctx.ellipse(sx, sy, radiusX, 13 * (1 - progress * 0.45), Math.sin(phase + progress * 3) * 0.18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = cssRgba(style.pale, 0.38);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            if (form !== "serpent" && segment % 2 === 0) {
+              ctx.fillStyle = cssRgba(style.rim, 0.78);
+              ctx.beginPath();
+              ctx.moveTo(sx - radiusX * 0.4, sy);
+              ctx.lineTo(sx - radiusX * 1.6, sy - 16);
+              ctx.lineTo(sx - radiusX * 0.8, sy + 8);
+              ctx.fill();
+            }
+          }
+          ctx.fillStyle = bodyGradient;
+          ctx.beginPath();
+          ctx.ellipse(Math.sin(phase) * 4, -53, 34, 25, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (["mantis", "crab", "isopod", "spider"].includes(form)) {
+          const legs = form === "spider" ? 8 : form === "crab" ? 8 : 6;
+          for (let leg = 0; leg < legs; leg += 1) {
+            const side = leg % 2 ? 1 : -1;
+            const row = Math.floor(leg / 2);
+            const rootY = -28 + row * (form === "spider" ? 18 : 20);
+            const step = Math.sin(phase * 2.1 + leg * 0.85) * 9;
+            ctx.strokeStyle = cssRgba(leg % 3 ? style.tissue : style.rim, 0.88);
+            ctx.lineWidth = form === "spider" ? 5 : 8;
+            ctx.beginPath();
+            ctx.moveTo(side * 22, rootY);
+            ctx.lineTo(side * (48 + row * 4), rootY + step);
+            ctx.lineTo(side * (66 + row * 7), rootY + 28 - step * 0.3);
+            ctx.stroke();
+            ctx.strokeStyle = cssRgba(style.pale, 0.35);
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          }
+          if (form === "mantis") {
+            [-1, 1].forEach((side) => {
+              ctx.save();
+              ctx.translate(side * 34, -31);
+              ctx.rotate(side * (0.48 + Math.sin(phase * 2.4) * 0.14));
+              ctx.fillStyle = bodyGradient;
+              ctx.beginPath();
+              ctx.moveTo(0, 0);
+              ctx.lineTo(side * 38, -21);
+              ctx.lineTo(side * 52, 8);
+              ctx.lineTo(side * 13, 17);
+              ctx.closePath();
+              ctx.fill();
+              ctx.restore();
+            });
+          }
+          ctx.fillStyle = bodyGradient;
+          ctx.beginPath();
+          if (form === "isopod") ctx.ellipse(0, 0, 45, 66, 0, 0, Math.PI * 2);
+          else ctx.ellipse(0, 0, form === "crab" ? 53 : 39, form === "spider" ? 48 : 43, 0, 0, Math.PI * 2);
+          ctx.fill();
+          if (form === "isopod") {
+            ctx.strokeStyle = cssRgba(style.pale, 0.45);
+            ctx.lineWidth = 2;
+            for (let plate = -4; plate <= 4; plate += 1) {
+              ctx.beginPath();
+              ctx.ellipse(0, plate * 12, 42 - Math.abs(plate) * 2, 8, 0, 0, Math.PI);
+              ctx.stroke();
+            }
+          }
+        } else {
+          ctx.fillStyle = bodyGradient;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, form === "nautilus" ? 53 : 58, form === "nautilus" ? 52 : 39, 0, 0, Math.PI * 2);
+          ctx.fill();
+          if (form === "nautilus") {
+            ctx.strokeStyle = cssRgba(style.pale, 0.68);
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            for (let angle = 0; angle < Math.PI * 5; angle += 0.12) {
+              const radius = angle * 2.25;
+              const x = Math.cos(angle + phase * 0.08) * radius;
+              const y = Math.sin(angle + phase * 0.08) * radius;
+              if (angle === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          } else {
+            ctx.strokeStyle = style.pale;
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(20, -18);
+            ctx.quadraticCurveTo(62, -68 + Math.sin(phase) * 8, 48, -82);
+            ctx.stroke();
+            ctx.fillStyle = style.pale;
+            ctx.beginPath();
+            ctx.arc(48, -82, 7 + Math.sin(phase * 2) * 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = style.shadow;
+            for (let tooth = -3; tooth <= 3; tooth += 1) {
+              ctx.beginPath();
+              ctx.moveTo(20 + tooth * 6, 10);
+              ctx.lineTo(23 + tooth * 6, 20);
+              ctx.lineTo(27 + tooth * 6, 10);
+              ctx.fill();
+            }
+          }
+        }
+
+        if (["star", "brittle", "crown"].includes(form)) {
+          const aperture = 8 + Math.sin(phase * 2.2) * 2;
+          ctx.fillStyle = style.shadow;
+          ctx.beginPath();
+          for (let tooth = 0; tooth < 12; tooth += 1) {
+            const angle = tooth * Math.PI / 6;
+            const radius = tooth % 2 ? aperture * 0.46 : aperture;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (tooth === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.fill();
+          for (let eye = 0; eye < 5; eye += 1) {
+            const angle = eye * Math.PI * 2 / 5 + phase * 0.035;
+            ctx.fillStyle = cssRgba(style.pale, 0.82);
+            ctx.beginPath();
+            ctx.arc(Math.cos(angle) * 19, Math.sin(angle) * 19, 2.1, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else {
+          const eyeCount = form === "siphon" ? 3 : 2;
+          for (let eye = 0; eye < eyeCount; eye += 1) {
+            const x = (eye - (eyeCount - 1) / 2) * 18;
+            const blink = Math.max(0.14, Math.abs(Math.sin(phase * 0.72 + eye * 1.4)));
+            ctx.fillStyle = style.shadow;
+            ctx.beginPath();
+            ctx.ellipse(x, -12, 7, 5 * blink, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = cssRgba(style.pale, 0.72);
+            ctx.beginPath();
+            ctx.arc(x - 1, -13, 1.7 * blink, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawLuytenFauna(creature, t) {
+        if (state !== "luyten" || creature.dead) return;
+        const dying = creature.dying > 0;
+        const bob = dying ? 0 : Math.sin(t * 2.1 + creature.index) * 5;
+        spriteCtx.save();
+        spriteCtx.translate(creature.x + renderShake.x, creature.y + bob + renderShake.y);
+        drawLuytenCreatureBody(creature, t);
+        spriteCtx.restore();
+
+        if (creature.engaged && !dying) {
+          const width = 250;
+          const hpRatio = clamp(creature.hp / creature.maxHp, 0, 1);
+          spriteCtx.save();
+          spriteCtx.translate(W / 2 - width / 2, 82);
+          spriteCtx.fillStyle = "rgba(2,10,15,.72)";
+          spriteCtx.fillRect(-3, -3, width + 6, 10);
+          spriteCtx.fillStyle = creature.species.accent;
+          spriteCtx.fillRect(0, 0, width * hpRatio, 4);
+          spriteCtx.fillStyle = "rgba(255,255,255,.72)";
+          spriteCtx.fillRect(0, 0, width * hpRatio, 1);
+          spriteCtx.font = "10px Orbitron, monospace";
+          spriteCtx.textAlign = "center";
+          spriteCtx.fillStyle = "rgba(230,247,248,.86)";
+          spriteCtx.fillText(creature.species.name.toUpperCase(), width / 2, -9);
+          spriteCtx.restore();
+        }
+      }
+
+      function drawLuytenWeapon(weapon, t) {
+        if (state !== "luyten" || weapon.t < 0) return;
+        const spin = weapon.phase + weapon.t * 3.2;
+        spriteCtx.save();
+        spriteCtx.translate(weapon.x + renderShake.x, weapon.y + renderShake.y);
+        spriteCtx.rotate(spin);
+        const body = spriteCtx.createRadialGradient(-weapon.r * 0.28, -weapon.r * 0.32, 1, 0, 0, weapon.r * 1.35);
+        body.addColorStop(0, weapon.pale);
+        body.addColorStop(0.42, weapon.accent);
+        body.addColorStop(1, "rgba(1,9,14,.1)");
+        spriteCtx.fillStyle = body;
+        const lobes = 5 + weapon.slot % 3;
+        spriteCtx.beginPath();
+        for (let lobe = 0; lobe < lobes * 2; lobe += 1) {
+          const angle = lobe * Math.PI / lobes;
+          const radius = weapon.r * (lobe % 2 ? 0.58 : 1.2);
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (lobe === 0) spriteCtx.moveTo(x, y);
+          else spriteCtx.lineTo(x, y);
+        }
+        spriteCtx.closePath();
+        spriteCtx.fill();
+        spriteCtx.strokeStyle = cssRgba(weapon.pale, 0.62);
+        spriteCtx.lineWidth = 1;
+        spriteCtx.stroke();
+        spriteCtx.restore();
+      }
+
+      function drawLuytenBonus(bonus, t) {
+        if (state !== "luyten") return;
+        const entrance = Math.min(1, bonus.age / 0.7);
+        const pulse = 1 + Math.sin(t * 4.1 + bonus.phase) * 0.065;
+        const radius = 33 * pulse * (0.2 + 0.8 * (1 - Math.pow(1 - entrance, 3)));
+        const primary = bonus.type === "shield" ? "#68e5ff" : "#ffd67d";
+        const secondary = bonus.type === "shield" ? "#214f89" : "#b84d54";
+        spriteCtx.save();
+        spriteCtx.translate(bonus.x + renderShake.x, bonus.y + renderShake.y);
+        spriteCtx.rotate(t * 0.42 + bonus.phase);
+        spriteCtx.globalAlpha = Math.min(1, bonus.age * 3, bonus.life * 1.4);
+        const pearl = spriteCtx.createRadialGradient(-radius * 0.3, -radius * 0.34, 1, 0, 0, radius);
+        pearl.addColorStop(0, "#ffffff");
+        pearl.addColorStop(0.24, primary);
+        pearl.addColorStop(0.68, secondary);
+        pearl.addColorStop(1, "rgba(1,7,12,.25)");
+        spriteCtx.fillStyle = pearl;
+        spriteCtx.beginPath();
+        spriteCtx.arc(0, 0, radius, 0, Math.PI * 2);
+        spriteCtx.fill();
+        spriteCtx.strokeStyle = cssRgba(primary, 0.72);
+        spriteCtx.lineWidth = 2;
+        for (let ring = 0; ring < 3; ring += 1) {
+          spriteCtx.beginPath();
+          spriteCtx.ellipse(0, 0, radius * (1.2 + ring * 0.22), radius * (0.48 + ring * 0.13), ring * Math.PI / 3 + t * (ring % 2 ? -0.7 : 0.7), 0, Math.PI * 2);
+          spriteCtx.stroke();
+        }
+        spriteCtx.fillStyle = "#fff";
+        spriteCtx.font = `700 ${Math.max(15, radius * 0.65)}px Orbitron, monospace`;
+        spriteCtx.textAlign = "center";
+        spriteCtx.textBaseline = "middle";
+        spriteCtx.fillText(bonus.type === "shield" ? "S" : "+", 0, 1);
+        spriteCtx.restore();
+      }
+
       function drawLuytenOrganisms(t, ctx = spriteCtx) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
         const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
@@ -12391,6 +13252,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           if (weapon.t >= 0) pushPoint(glowPoints, weapon.x, weapon.y, weapon.r * 3.4, hexToRgb(weapon.accent), 0.34);
         });
         canyonBonuses.forEach((bonus) => pushPoint(glowPoints, bonus.x, bonus.y, 108, bonus.type === "shield" ? colors.cyan : colors.gold, 0.52));
+        luytenWeapons.forEach((weapon) => {
+          if (weapon.t >= 0) pushPoint(glowPoints, weapon.x, weapon.y, weapon.r * 3.2, hexToRgb(weapon.accent), 0.3);
+        });
+        luytenBonuses.forEach((bonus) => pushPoint(glowPoints, bonus.x, bonus.y, 112, bonus.type === "shield" ? colors.cyan : colors.gold, 0.48));
         particles.forEach((p) => pushPoint(glowPoints, p.x, p.y, p.r * 6.5, p.rgb, clamp(p.life / p.max, 0, 1) * 0.65));
         debris.forEach((fragment) => pushPoint(glowPoints, fragment.x, fragment.y, fragment.size * 5.2, fragment.rgb, clamp(fragment.life / fragment.max, 0, 1) * 0.42));
         drawPoints(glowPoints, true);
@@ -12426,10 +13291,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         });
 
         enemyBullets.forEach((b) => {
-          drawBolt(b, b.flame ? "#ff9a36" : b.regolith ? "#ffcc72" : "#ff5b78", b.flame ? 10 : b.regolith ? 16 : 13, b.flame ? 4 : b.regolith ? 5.5 : 5);
+          drawBolt(b, b.tint || (b.flame ? "#ff9a36" : b.regolith ? "#ffcc72" : "#ff5b78"), b.flame ? 10 : b.regolith ? 16 : 13, b.flame ? 4 : b.regolith ? 5.5 : 5);
         });
 
         compositeLuytenOrganisms(nowSec);
+        luytenWeapons.forEach((weapon) => drawLuytenWeapon(weapon, nowSec));
         bossMines.forEach(drawAstraxMine);
         mordrathFireballs.forEach(drawMordrathFireball);
         canyonWeapons.forEach(drawCanyonWeapon);
@@ -12440,6 +13306,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         enemies.forEach(drawEnemy);
         canyonAliens.forEach((alien) => drawCanyonAlien(alien, nowSec));
         canyonBonuses.forEach((bonus) => drawCanyonBonus(bonus, nowSec));
+        luytenFauna.forEach((creature) => drawLuytenFauna(creature, nowSec));
+        luytenBonuses.forEach((bonus) => drawLuytenBonus(bonus, nowSec));
         drawPlayer();
         debris.forEach((fragment) => {
           const a = clamp(fragment.life / fragment.max, 0, 1);
