@@ -831,6 +831,24 @@
       pointer-events: none;
     }
 
+    .intro-build-mark {
+      position: absolute;
+      z-index: 5;
+      top: max(14px, env(safe-area-inset-top));
+      left: max(16px, env(safe-area-inset-left));
+      max-width: min(72vw, 560px);
+      margin: 0;
+      color: rgba(238, 244, 250, 0.64);
+      font-family: "Avenir Next", Avenir, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      font-size: clamp(7px, 0.68vw, 10px);
+      font-weight: 300;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 0 1px 10px rgba(0, 0, 0, 0.98), 0 0 9px rgba(94, 215, 255, 0.22);
+      pointer-events: none;
+    }
+
     html[data-music-state="playing"] .intro-audio {
       opacity: 0;
       pointer-events: none;
@@ -2331,6 +2349,13 @@
         font-size: 8px;
       }
 
+      .intro-build-mark {
+        top: max(10px, env(safe-area-inset-top));
+        left: max(11px, env(safe-area-inset-left));
+        max-width: 78vw;
+        font-size: 7px;
+      }
+
       .encouragement {
         max-width: 60%;
         font-size: 11px;
@@ -3183,6 +3208,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.24.144 · Luyten Scene Minibosses · updated 2026-07-24 23:45 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
