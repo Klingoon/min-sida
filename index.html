@@ -3216,7 +3216,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.153 · K2-18 b Full Flow · updated 2026-07-25 14:17 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.155 · K2-18 b Reliable Audio Flow · updated 2026-07-25 15:03 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3458,7 +3458,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.153 · K2-18 b Full Flow · updated 2026-07-25 14:17 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.155 · K2-18 b Reliable Audio Flow · updated 2026-07-25 15:03 CEST</div>
   </main>
 
   <script>
@@ -3831,6 +3831,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let luytenExpedition = "luyten";
       let soundtrackIndex = 0;
       let soundtrackFadeTimer = null;
+      let soundtrackTransitionSerial = 0;
       let luytenMusicCue = "";
       const soundtrackTargetVolume = 0.46;
 
@@ -3848,6 +3849,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function updateMusicState() {
         document.documentElement.dataset.musicState =
           soundtrack.paused && soundtrackStandby.paused ? "paused" : "playing";
+        document.documentElement.dataset.musicVolume = soundtrack.volume.toFixed(3);
+        document.documentElement.dataset.musicStandbyVolume = soundtrackStandby.volume.toFixed(3);
+        document.documentElement.dataset.musicDecks =
+          `${soundtrack.paused ? "paused" : "playing"}/${soundtrackStandby.paused ? "paused" : "playing"}`;
       }
 
       [soundtrack, soundtrackStandby].forEach((deck) => {
@@ -4145,14 +4150,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           hp: 30 + index, size: 214 + index * 3, reward: index % 2 ? "shield" : "life",
           sceneIndex:index, style:microcosmSceneStyles[index], accent:microcosmSceneStyles[index].rim,
           masterUrl, masterImage, animationImage:new Image(), animationUrl:"",
-          animationFrames:64, animationColumns:8, animationFps:48
+          animationFrames:64, animationColumns:8, animationFps:60
         };
       });
 
       function configureLuytenExpedition(kind = "luyten") {
         luytenExpedition = kind;
         const micro = kind === "microcosm";
-        shell.dataset.microcosmAnimation = micro ? "biomechanical-flow-48fps-v2" : "inactive";
+        shell.dataset.microcosmAnimation = micro ? "synchronized-60hz-flow-v3" : "inactive";
         const scenes = micro ? microcosmScenes : luytenBaseScenes;
         const styles = micro ? microcosmSceneStyles : luytenBaseSceneStyles;
         const species = micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
@@ -4161,6 +4166,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenFaunaBlueprints.splice(0, luytenFaunaBlueprints.length, ...species);
         luytenRun.imageHeight = scenes.length * H;
         luytenRun.maxScroll = (scenes.length - 1) * H;
+        luytenRun.speed = micro ? 84 : 72;
         luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${micro ? "varldsrymden-anfaller/assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-far-v1.webp" : "varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-far-v7.jpg"}")`);
         luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${micro ? "varldsrymden-anfaller/assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-mid-v1.webp" : "varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-mid-v7.webp"}")`);
         luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${micro ? "varldsrymden-anfaller/assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-near-v1.webp" : "varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b-near-v7.webp"}")`);
@@ -4311,7 +4317,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             dead: false,
             dying: 0,
             deathElapsed: 0,
-            deathDuration: 3.05 + index * 0.045,
+            deathDuration: luytenExpedition === "microcosm"
+              ? 2.15 + index * 0.025
+              : 3.05 + index * 0.045,
             burstAt: 0,
             hurt: 0,
             motionMode: "idle",
@@ -5009,7 +5017,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ...microcosmFaunaBlueprints.map((species) => ({
           ...species,
           category: "alien",
-          typeLabel: `K2-18 b miniboss · Scene ${species.sceneIndex + 1}/16 · continuous 48 FPS biomechanical flow · ${species.earth}-derived titan · ${species.formation} weapon formation`,
+          typeLabel: `K2-18 b miniboss · Scene ${species.sceneIndex + 1}/16 · synchronized 60 FPS biomechanical flow · ${species.earth}-derived titan · ${species.formation} weapon formation`,
           sprite: "luytenFauna",
           eye: species.accent
         })),
@@ -6432,6 +6440,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function stopMelody() {
+        soundtrackTransitionSerial += 1;
         if (typeof melodyTimer === "number") clearInterval(melodyTimer);
         melodyTimer = null;
         if (soundtrackFadeTimer) clearInterval(soundtrackFadeTimer);
@@ -6447,8 +6456,22 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function selectSoundtrack(index, fadeDuration = 2800) {
         const nextIndex = clamp(index, 0, soundtrackCatalog.length - 1);
-        if (nextIndex === soundtrackIndex) return;
         const shouldResume = melodyTimer === "orchestral" || !soundtrack.paused;
+        if (nextIndex === soundtrackIndex) {
+          if (!muted && shouldResume) {
+            if (!soundtrackFadeTimer && soundtrack.volume < soundtrackTargetVolume * 0.8) {
+              soundtrack.volume = soundtrackTargetVolume;
+            }
+            if (soundtrack.paused) {
+              soundtrack.play().then(updateMusicState).catch(() => {
+                document.documentElement.dataset.musicState = "awaiting-input";
+              });
+            }
+          }
+          updateMusicState();
+          return;
+        }
+        const transitionSerial = ++soundtrackTransitionSerial;
         const previousIndex = soundtrackIndex;
         const outgoing = soundtrack;
         const incoming = soundtrackStandby;
@@ -6469,31 +6492,49 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           outgoing.pause();
           outgoing.currentTime = 0;
           incoming.volume = soundtrackTargetVolume;
+          updateMusicState();
           return;
         }
 
         incoming.play().then(() => {
+          if (transitionSerial !== soundtrackTransitionSerial) {
+            if (incoming !== soundtrack) incoming.pause();
+            return;
+          }
           const startedAt = performance.now();
-          const outgoingStartVolume = outgoing.paused ? 0 : outgoing.volume;
-          soundtrackFadeTimer = setInterval(() => {
+          const outgoingStartVolume = outgoing.paused
+            ? 0
+            : Math.max(outgoing.volume, soundtrackTargetVolume * 0.68);
+          outgoing.volume = outgoingStartVolume;
+          const fadeTimer = setInterval(() => {
+            if (transitionSerial !== soundtrackTransitionSerial) {
+              clearInterval(fadeTimer);
+              return;
+            }
             const progress = clamp((performance.now() - startedAt) / fadeDuration, 0, 1);
             const eased = progress * progress * (3 - 2 * progress);
             incoming.volume = soundtrackTargetVolume * eased;
             outgoing.volume = outgoingStartVolume * (1 - eased);
+            updateMusicState();
             if (progress >= 1) {
-              clearInterval(soundtrackFadeTimer);
-              soundtrackFadeTimer = null;
+              clearInterval(fadeTimer);
+              if (soundtrackFadeTimer === fadeTimer) soundtrackFadeTimer = null;
               outgoing.pause();
               outgoing.currentTime = 0;
               outgoing.volume = soundtrackTargetVolume;
+              incoming.volume = soundtrackTargetVolume;
+              updateMusicState();
             }
           }, 50);
+          soundtrackFadeTimer = fadeTimer;
         }).catch(() => {
+          if (transitionSerial !== soundtrackTransitionSerial) return;
           soundtrack = outgoing;
           soundtrackStandby = incoming;
           soundtrackIndex = previousIndex;
           outgoing.volume = soundtrackTargetVolume;
           incoming.pause();
+          updateMusicState();
           document.documentElement.dataset.musicState = "error";
         });
       }
@@ -6506,7 +6547,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const soundtrackSequence = luytenExpedition === "microcosm"
           ? (mode === "combat" ? microcosmCombatSoundtracks : microcosmExplorationSoundtracks)
           : (mode === "combat" ? luytenCombatSoundtracks : luytenExplorationSoundtracks);
-        selectSoundtrack(soundtrackSequence[safeSceneIndex], mode === "combat" ? 2200 : 3200);
+        const fadeDuration = luytenExpedition === "microcosm"
+          ? (mode === "combat" ? 900 : 1250)
+          : (mode === "combat" ? 2200 : 3200);
+        selectSoundtrack(soundtrackSequence[safeSceneIndex], fadeDuration);
       }
 
       function melodyNote(freq, when, length, gain = 0.022, type = "square", slide = 1) {
@@ -6714,12 +6758,19 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function startMelody() {
         if (muted) return Promise.resolve(false);
-        if (melodyTimer && !soundtrack.paused) return Promise.resolve(true);
+        if (melodyTimer && !soundtrack.paused) {
+          if (!soundtrackFadeTimer && soundtrack.volume < soundtrackTargetVolume * 0.8) {
+            soundtrack.volume = soundtrackTargetVolume;
+          }
+          updateMusicState();
+          return Promise.resolve(true);
+        }
         melodyTimer = "orchestral";
         document.documentElement.dataset.musicState = "starting";
+        if (!soundtrackFadeTimer) soundtrack.volume = soundtrackTargetVolume;
         return soundtrack.play()
           .then(() => {
-            document.documentElement.dataset.musicState = "playing";
+            updateMusicState();
             return true;
           })
           .catch(() => {
@@ -10021,7 +10072,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
         updateLuytenKinematics(dt);
         updateLuytenCombat(dt);
-        const encounterLocked = Boolean(activeLuytenFauna()) || luytenFauna.some((creature) => creature.dying > 0);
+        const deathLockThreshold = luytenExpedition === "microcosm" ? 0.72 : 0;
+        const encounterLocked = Boolean(activeLuytenFauna())
+          || luytenFauna.some((creature) => creature.dying > deathLockThreshold);
         if (!encounterLocked) luytenRun.scroll = Math.min(luytenRun.maxScroll, luytenRun.scroll + luytenRun.speed * dt);
         updateLuytenParallaxBackdrop();
         const displayedProgress = Math.round(luytenRun.scroll / luytenRun.maxScroll * 100);
@@ -12699,7 +12752,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const phase = micro
           ? (t * (0.9 + species.sceneIndex * 0.006) + species.sceneIndex * 0.71) % (Math.PI * 2)
           : (t * (0.72 + species.sceneIndex * 0.004) + creature.phase * 0.23) % (Math.PI * 2);
-        const frameRate = preview ? (micro ? 30 : 18) : micro ? 48 : 18;
+        const frameRate = preview ? (micro ? 30 : 18) : micro ? 60 : 18;
         const frameIndex = Math.floor(t * frameRate);
         const cacheOwner = preview ? species : creature;
         const cacheKey = preview ? "_naturalPreviewRig" : "_naturalGameRig";
@@ -12717,7 +12770,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           };
           cacheOwner[cacheKey] = cache;
         }
-        const frameKey = `${frameIndex}:${motionMode}:${Math.round(motionProgress * 48)}:${Math.round(deathProgress * 72)}:${creature.hurt > 0 ? 1 : 0}`;
+        const motionSteps = micro ? 60 : 48;
+        const deathSteps = micro ? Math.ceil(creature.deathDuration * 60) : 72;
+        const frameKey = `${frameIndex}:${motionMode}:${Math.round(motionProgress * motionSteps)}:${Math.round(deathProgress * deathSteps)}:${creature.hurt > 0 ? 1 : 0}`;
         if (cache.frameKey !== frameKey) {
           cache.frameKey = frameKey;
           const rigCtx = cache.ctx;
@@ -13267,7 +13322,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function drawLuytenOrganisms(t, ctx = spriteCtx) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
         const playerShift = clamp((player.x - W / 2) / (W / 2), -1, 1);
-        const animationFrame = Math.floor(t * (luytenExpedition === "microcosm" ? 36 : 24));
+        const animationFrame = Math.floor(t * (luytenExpedition === "microcosm" ? 30 : 24));
         const firstVisibleScene = Math.max(0, luytenRun.sceneIndex - 1);
         const lastVisibleScene = Math.min(luytenScenes.length - 1, luytenRun.sceneIndex + 1);
         ctx.save();
@@ -13513,7 +13568,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function compositeLuytenOrganisms(t) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
-        const renderFrame = Math.floor(t * (luytenExpedition === "microcosm" ? 36 : 30));
+        const renderFrame = Math.floor(t * 30);
         if (luytenOrganismRenderFrame !== renderFrame) {
           luytenOrganismRenderFrame = renderFrame;
           luytenOrganismCtx.clearRect(0, 0, W, H);
