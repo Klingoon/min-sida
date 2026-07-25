@@ -3216,7 +3216,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.156 · K2-18 b Balanced Render Flow · updated 2026-07-25 15:20 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.157 · Environment-Matched Millenium Owl · updated 2026-07-25 15:42 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3458,7 +3458,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.156 · K2-18 b Balanced Render Flow · updated 2026-07-25 15:20 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.157 · Environment-Matched Millenium Owl · updated 2026-07-25 15:42 CEST</div>
   </main>
 
   <script>
@@ -3681,6 +3681,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       realisticSprites.bosses.src = "varldsrymden-anfaller/assets/bosses-realistic.png";
       realisticSprites.ufo.src = "varldsrymden-anfaller/assets/ufo-realistic.png";
       realisticSprites.meteor.src = "varldsrymden-anfaller/assets/meteor-realistic.png";
+      const playerHullGradeCache = new Map();
       const playerThrusterSprite = new Image();
       playerThrusterSprite.decoding = "async";
       playerThrusterSprite.src = "varldsrymden-anfaller/assets/player-millenium-owl-thrusters-64f-v1.webp";
@@ -10873,6 +10874,144 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.restore();
       }
 
+      const shipStageLighting = [
+        { tint: "#5d91a9", rim: "#c9f6ff", shadow: "#07131e", engine: "#70e7ff", engineCore: "#e9ffff", filter: "saturate(.82) brightness(.98) contrast(1.05)", lightX: 0.28, lightY: 0.16 },
+        { tint: "#486a94", rim: "#a9d8ff", shadow: "#07101d", engine: "#76c7ff", engineCore: "#effaff", filter: "saturate(.88) brightness(.95) contrast(1.06)", lightX: 0.72, lightY: 0.2 },
+        { tint: "#72568c", rim: "#e3c7ff", shadow: "#120a1c", engine: "#bb8cff", engineCore: "#fff2ff", filter: "saturate(.9) brightness(.94) contrast(1.08)", lightX: 0.24, lightY: 0.28 },
+        { tint: "#557c8f", rim: "#d5fbff", shadow: "#050d14", engine: "#9deeff", engineCore: "#ffffff", filter: "saturate(.76) brightness(.96) contrast(1.08)", lightX: 0.66, lightY: 0.13 },
+        { tint: "#a95831", rim: "#ffc17b", shadow: "#250b04", engine: "#ff7a32", engineCore: "#fff0bb", filter: "saturate(1.08) brightness(.94) contrast(1.08)", lightX: 0.22, lightY: 0.2 },
+        { tint: "#5b7454", rim: "#c9e894", shadow: "#0a160b", engine: "#9fe75f", engineCore: "#f6ffd8", filter: "saturate(.9) brightness(.91) contrast(1.1)", lightX: 0.78, lightY: 0.3 },
+        { tint: "#8b6247", rim: "#ffd09a", shadow: "#1c0d08", engine: "#ffad55", engineCore: "#fff4c9", filter: "saturate(1.02) brightness(.93) contrast(1.09)", lightX: 0.31, lightY: 0.16 },
+        { tint: "#b24c2b", rim: "#ffae69", shadow: "#2a0703", engine: "#ff5428", engineCore: "#fff1a8", filter: "saturate(1.16) brightness(.92) contrast(1.12)", lightX: 0.7, lightY: 0.2 },
+        { tint: "#365f83", rim: "#a6e6ff", shadow: "#070b1d", engine: "#65d8ff", engineCore: "#eefeff", filter: "saturate(.94) brightness(.94) contrast(1.08)", lightX: 0.2, lightY: 0.25 },
+        { tint: "#534c8b", rim: "#c6b4ff", shadow: "#0c0920", engine: "#8d81ff", engineCore: "#f2edff", filter: "saturate(.94) brightness(.92) contrast(1.1)", lightX: 0.76, lightY: 0.17 },
+        { tint: "#386f78", rim: "#9ff4e9", shadow: "#061416", engine: "#54e4ce", engineCore: "#e9fffa", filter: "saturate(.93) brightness(.93) contrast(1.08)", lightX: 0.32, lightY: 0.22 },
+        { tint: "#61558e", rim: "#d2c2ff", shadow: "#0b071a", engine: "#a479ff", engineCore: "#fff3ff", filter: "saturate(.92) brightness(.91) contrast(1.12)", lightX: 0.69, lightY: 0.25 },
+        { tint: "#414650", rim: "#b4bcc6", shadow: "#030507", engine: "#8ba6bd", engineCore: "#f3fbff", filter: "saturate(.48) brightness(.82) contrast(1.18)", lightX: 0.18, lightY: 0.18 },
+        { tint: "#63575b", rim: "#d9bdac", shadow: "#090607", engine: "#d29372", engineCore: "#fff0dc", filter: "saturate(.62) brightness(.86) contrast(1.16)", lightX: 0.8, lightY: 0.26 },
+        { tint: "#343b4e", rim: "#9faed1", shadow: "#020309", engine: "#788ed0", engineCore: "#edf1ff", filter: "saturate(.52) brightness(.78) contrast(1.2)", lightX: 0.3, lightY: 0.12 },
+        { tint: "#7c3a2e", rim: "#ef9a70", shadow: "#160302", engine: "#ff6435", engineCore: "#fff0bf", filter: "saturate(.78) brightness(.84) contrast(1.2)", lightX: 0.7, lightY: 0.16 }
+      ].map((profile, index) => ({ ...profile, key: `stage-${index + 1}` }));
+      const shipEngineFilterCache = new Map();
+
+      function shipEngineFilter(hex) {
+        if (shipEngineFilterCache.has(hex)) return shipEngineFilterCache.get(hex);
+        const [r, g, b] = hexToRgb(hex);
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const delta = max - min;
+        let hue = 0;
+        if (delta > 0) {
+          if (max === r) hue = 60 * (((g - b) / delta) % 6);
+          else if (max === g) hue = 60 * ((b - r) / delta + 2);
+          else hue = 60 * ((r - g) / delta + 4);
+        }
+        if (hue < 0) hue += 360;
+        const filter = `hue-rotate(${Math.round(hue - 194)}deg) saturate(1.18)`;
+        shipEngineFilterCache.set(hex, filter);
+        return filter;
+      }
+
+      function shipEnvironmentProfile() {
+        if (state === "luyten" || state === "luytenBriefing") {
+          const sceneIndex = clamp(luytenRun.sceneIndex, 0, luytenSceneStyles.length - 1);
+          const style = luytenSceneStyles[sceneIndex];
+          const micro = luytenExpedition === "microcosm";
+          return {
+            key: `${micro ? "k2-18b" : "luyten-b"}-${sceneIndex + 1}`,
+            tint: style.water,
+            rim: style.rim,
+            shadow: style.shadow,
+            engine: micro ? style.tissue : style.rim,
+            engineCore: style.pale,
+            filter: `saturate(${Math.max(0.58, style.saturation * 0.82)}) brightness(${micro ? 0.88 : 0.9}) contrast(1.1)`,
+            lightX: style.lightX,
+            lightY: style.lightY
+          };
+        }
+        if (state === "canyon" || state === "canyonBriefing") {
+          const progress = canyonRun.maxScroll > 0 ? canyonRun.scroll / canyonRun.maxScroll : 0;
+          const nearest = canyonAlienSpecies.reduce((best, species) =>
+            Math.abs(species.progress - progress) < Math.abs(best.progress - progress) ? species : best
+          , canyonAlienSpecies[0]);
+          const coolSector = ["cantor", "seraph", "oracle", "broodqueen"].includes(nearest.special);
+          return {
+            key: `selene-${nearest.encounterIndex + 1}`,
+            tint: coolSector ? "#526674" : "#7b6048",
+            rim: nearest.accent,
+            shadow: "#100b08",
+            engine: nearest.accent,
+            engineCore: coolSector ? "#effcff" : "#fff0c9",
+            filter: `saturate(${coolSector ? 0.72 : 0.78}) brightness(.88) contrast(1.14) sepia(${coolSector ? 0.05 : 0.18})`,
+            lightX: nearest.encounterIndex % 2 ? 0.72 : 0.28,
+            lightY: 0.2
+          };
+        }
+        return shipStageLighting[clamp(activeBackdropIndex, 0, shipStageLighting.length - 1)];
+      }
+
+      function gradedPlayerHull(profile) {
+        let canvas = playerHullGradeCache.get(profile.key);
+        if (canvas) return canvas;
+        canvas = document.createElement("canvas");
+        canvas.width = 96;
+        canvas.height = 96;
+        const ctx = canvas.getContext("2d", { alpha: true });
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.filter = profile.filter;
+        ctx.drawImage(realisticSprites.player, 4, 4, 88, 88);
+        ctx.filter = "none";
+        ctx.globalCompositeOperation = "source-atop";
+
+        ctx.fillStyle = cssRgba(profile.tint, 0.14);
+        ctx.fillRect(0, 0, 96, 96);
+
+        const shadowX = profile.lightX < 0.5 ? 96 : 0;
+        const shadowY = profile.lightY < 0.5 ? 96 : 0;
+        const shadow = ctx.createRadialGradient(shadowX, shadowY, 8, shadowX, shadowY, 104);
+        shadow.addColorStop(0, cssRgba(profile.shadow, 0.38));
+        shadow.addColorStop(0.58, cssRgba(profile.shadow, 0.12));
+        shadow.addColorStop(1, cssRgba(profile.shadow, 0));
+        ctx.fillStyle = shadow;
+        ctx.fillRect(0, 0, 96, 96);
+
+        const lightX = profile.lightX * 96;
+        const lightY = profile.lightY * 96;
+        const reflectedLight = ctx.createRadialGradient(lightX, lightY, 1, lightX, lightY, 78);
+        reflectedLight.addColorStop(0, cssRgba(profile.rim, 0.34));
+        reflectedLight.addColorStop(0.34, cssRgba(profile.rim, 0.17));
+        reflectedLight.addColorStop(1, cssRgba(profile.rim, 0));
+        ctx.fillStyle = reflectedLight;
+        ctx.fillRect(0, 0, 96, 96);
+
+        playerHullGradeCache.set(profile.key, canvas);
+        return canvas;
+      }
+
+      function drawEnvironmentThrusterPlumes(profile, t, thrustPulse) {
+        spriteCtx.save();
+        spriteCtx.globalCompositeOperation = "lighter";
+        [-18, 0, 18].forEach((x, index) => {
+          const flicker = 0.88 + Math.sin(t * (19 + index * 1.7) + index * 2.1) * 0.1;
+          const width = index === 1 ? 6.4 : 5.2;
+          const length = (index === 1 ? 34 : 29) * flicker * thrustPulse;
+          const gradient = spriteCtx.createLinearGradient(x, 36, x, 36 + length);
+          gradient.addColorStop(0, cssRgba(profile.engineCore, 0.94));
+          gradient.addColorStop(0.28, cssRgba(profile.engine, 0.82));
+          gradient.addColorStop(0.72, cssRgba(profile.engine, 0.3));
+          gradient.addColorStop(1, cssRgba(profile.engine, 0));
+          spriteCtx.fillStyle = gradient;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(x - width / 2, 36);
+          spriteCtx.quadraticCurveTo(x - width * 0.42, 36 + length * 0.5, x, 36 + length);
+          spriteCtx.quadraticCurveTo(x + width * 0.42, 36 + length * 0.5, x + width / 2, 36);
+          spriteCtx.closePath();
+          spriteCtx.fill();
+        });
+        spriteCtx.restore();
+      }
+
       function drawRealisticPlayer(t) {
         const bankTarget = player.body ? clamp(player.body.velocity.x * 0.007, -0.045, 0.045) : 0;
         player.visualBank += (bankTarget - player.visualBank) * 0.14;
@@ -10880,6 +11019,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const thrustFrame = Math.floor(t * 24) % 64;
         const thrustPulse = 0.86 + Math.sin(t * Math.PI * 2 * 0.75) * 0.06;
         const hurt = player.invuln > 0 ? clamp(player.invuln / 1.8, 0, 1) : 0;
+        const environment = shipEnvironmentProfile();
+        const engineFilter = shipEngineFilter(environment.engine);
+        if (shell.dataset.shipEnvironment !== environment.key) {
+          shell.dataset.shipEnvironment = environment.key;
+        }
 
         const renderX = Math.round(player.x + renderShake.x);
         const renderY = Math.round(player.y + renderShake.y);
@@ -10897,24 +11041,26 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
           spriteCtx.globalCompositeOperation = "lighter";
           spriteCtx.globalAlpha = 0.1 + thrustPulse * 0.08;
-          spriteCtx.filter = "blur(3px)";
+          spriteCtx.filter = `${engineFilter} blur(3px)`;
           spriteCtx.drawImage(
             playerThrusterSprite,
             sourceX, sourceY, sourceWidth, sourceHeight,
             -44, 31, 88, 54
           );
-          spriteCtx.filter = "none";
+          spriteCtx.filter = engineFilter;
           spriteCtx.globalAlpha = 0.78 + thrustPulse * 0.12;
           spriteCtx.drawImage(
             playerThrusterSprite,
             sourceX, sourceY, sourceWidth, sourceHeight,
             -42, 32, 84, 52
           );
+          spriteCtx.filter = "none";
+          drawEnvironmentThrusterPlumes(environment, t, thrustPulse);
 
           const reflection = spriteCtx.createRadialGradient(0, 33, 2, 0, 33, 32);
-          reflection.addColorStop(0, `rgba(206, 255, 255, ${0.12 + thrustPulse * 0.1})`);
-          reflection.addColorStop(0.32, `rgba(51, 205, 255, ${0.08 + thrustPulse * 0.08})`);
-          reflection.addColorStop(1, "rgba(4, 92, 255, 0)");
+          reflection.addColorStop(0, cssRgba(environment.engineCore, 0.12 + thrustPulse * 0.1));
+          reflection.addColorStop(0.32, cssRgba(environment.engine, 0.08 + thrustPulse * 0.08));
+          reflection.addColorStop(1, cssRgba(environment.engine, 0));
           spriteCtx.fillStyle = reflection;
           spriteCtx.beginPath();
           spriteCtx.ellipse(0, 33, 33, 16, 0, 0, Math.PI * 2);
@@ -10927,7 +11073,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ? `brightness(${1 + hurt * 0.65}) saturate(${1 - hurt * 0.22})`
           : "none";
         spriteCtx.shadowBlur = 0;
-        spriteCtx.drawImage(realisticSprites.player, -44, -44, 88, 88);
+        spriteCtx.drawImage(gradedPlayerHull(environment), -48, -48, 96, 96);
         spriteCtx.restore();
       }
 
