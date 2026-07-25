@@ -3216,7 +3216,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.158 · Sixteen Native UFO Variants · updated 2026-07-25 16:03 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.160 · Ten-Life Arcade Resources · updated 2026-07-25 17:04 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3342,7 +3342,7 @@
       <div class="hud-pill"><span class="dot"></span><span>Score&nbsp;<strong id="score">0</strong></span></div>
       <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
       <div class="hud-pill">Wave&nbsp;<strong id="wave">1</strong></div>
-      <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">∞</strong></span></div>
+      <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">10</strong></span></div>
       <div class="hud-location">
         <span><small>Stage</small><strong id="hudStageName">Iceworld Alpha Centauri</strong></span>
         <span class="hud-location-divider" aria-hidden="true"></span>
@@ -3368,7 +3368,8 @@
             <h2 class="console-screen-label">Mission controls</h2>
             <p class="panel-copy" id="overlayText">DESKTOP
 MOVE   ← A   D →   ↑ FORWARD   ↓ BACK
-FIRE   SPACE / W   SHIELD  X   LIVES  ∞
+FIRE   SPACE / W   SHIELD  X   LIVES  10   SHIELDS  10
+INFINITE MODE   CTRL + I
 
 MOBILE
 STEER  HOLD YOUR THUMB ON THE SHIP AND DRAG
@@ -3458,7 +3459,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.158 · Sixteen Native UFO Variants · updated 2026-07-25 16:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.160 · Ten-Life Arcade Resources · updated 2026-07-25 17:04 CEST</div>
   </main>
 
   <script>
@@ -3736,7 +3737,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       bossAnimationSprites.octopus.src = "varldsrymden-anfaller/assets/bosses/nharkaal-organic-288f-v5.webp";
       bossAnimationSprites.hunter.src = "varldsrymden-anfaller/assets/bosses/varkuun-240f-v3.webp";
       bossAnimationSprites.crystal.src = "varldsrymden-anfaller/assets/bosses/astrax-192f-v3.webp";
-      bossAnimationSprites.dreadnought.src = "varldsrymden-anfaller/assets/bosses/mordrath-organic-240f-v3.webp";
+      bossAnimationSprites.dreadnought.src = "varldsrymden-anfaller/assets/bosses/mordrath-organic-authored-32f-v4.png";
 
       function bossAnimationReady(kind) {
         const image = bossAnimationSprites[kind];
@@ -3799,6 +3800,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let activeBackdropMode = "wave";
 
       let state = "ready";
+      let infiniteResources = false;
       let devScreenOpen = false;
       let devAnimationFrame = 0;
       let devLastDraw = 0;
@@ -4471,14 +4473,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function collectLuytenBonus(index) {
         const bonus = luytenBonuses[index];
         if (bonus.type === "life") {
-          player.bonusLives += 1;
+          player.lives += 1;
           player.invuln = Math.max(player.invuln, 5);
           score += 4200;
           makeParticles(bonus.x, bonus.y, "#ffd987", 62);
           play(659, 0.14, "triangle", 0.05);
           setTimeout(() => play(1047, 0.22, "sine", 0.04), 100);
         } else {
-          player.bonusShields += 1;
+          player.shields += 1;
           player.shieldTime = Math.max(player.shieldTime, 14);
           score += 3600;
           makeParticles(bonus.x, bonus.y, "#70e8ff", 62);
@@ -4893,7 +4895,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL", frames: 288, columns: 16, rows: 18, animationFps: 24 },
         { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN", frames: 240, columns: 16, rows: 15, animationFps: 24 },
         { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 192, columns: 16, rows: 12, animationFps: 24 },
-        { kind: "dreadnought", name: "Mordrath, the Living Helios", id: "BOSS-A04-MORDRATH", frames: 240, columns: 16, rows: 15, animationFps: 24 }
+        { kind: "dreadnought", name: "Mordrath, the Living Helios", id: "BOSS-A04-MORDRATH", frames: 32, columns: 8, rows: 4, animationFps: 16 }
       ];
       const bossKinds = bossCatalog.map((entry) => entry.kind);
       const stageBackdropCatalog = stageBackdropUrls.map((imageUrl, index) => {
@@ -5085,9 +5087,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         w: 42,
         h: 48,
         speed: 430,
-        lives: Infinity,
-        bonusLives: 0,
-        bonusShields: 0,
+        lives: 10,
+        shields: 10,
         shieldTime: 0,
         cooldown: 0,
         invuln: 0,
@@ -6091,14 +6092,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function collectCanyonBonus(index) {
         const bonus = canyonBonuses[index];
         if (bonus.type === "life") {
-          player.bonusLives += 1;
+          player.lives += 1;
           player.invuln = Math.max(player.invuln, 4.5);
           score += 3500;
           makeParticles(bonus.x, bonus.y, "#ffd27a", 54);
           play(659, 0.15, "triangle", 0.05);
           setTimeout(() => play(988, 0.2, "triangle", 0.045), 100);
         } else {
-          player.bonusShields += 1;
+          player.shields += 1;
           player.shieldTime = Math.max(player.shieldTime, 12);
           score += 3000;
           makeParticles(bonus.x, bonus.y, "#62dcff", 54);
@@ -7116,13 +7117,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const sparkPoints = [];
 
       function renderLives() {
-        const label = player.bonusLives > 0 ? `∞ +${player.bonusLives}` : "∞";
+        const label = infiniteResources ? "∞" : String(player.lives);
         if (livesEl.textContent === label) return;
         const life = document.createElement("span");
         life.className = "life-infinity";
         life.textContent = label;
         livesEl.replaceChildren(life);
-        livesEl.setAttribute("aria-label", player.bonusLives > 0 ? `Infinite lives and ${player.bonusLives} rescue cores` : "Infinite lives");
+        livesEl.setAttribute("aria-label", infiniteResources ? "Infinite lives enabled" : `${player.lives} lives remaining`);
       }
 
       function updateHud() {
@@ -7152,7 +7153,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setHudText(waveEl, waveLabel);
         setHudText(hudStageName, stageLabel);
         setHudText(hudEncounterName, encounterLabel);
-        setHudText(shieldCountEl, player.bonusShields > 0 ? `∞ +${player.bonusShields}` : "∞");
+        setHudText(shieldCountEl, infiniteResources ? "∞" : String(player.shields));
         renderLives();
       }
 
@@ -8208,9 +8209,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.x = W / 2;
         player.y = H - 140;
         resetPhysicsBody(player, player.x, player.y);
-        player.lives = Infinity;
-        player.bonusLives = 0;
-        player.bonusShields = 0;
+        player.lives = 10;
+        player.shields = 10;
         player.shieldTime = 0;
         player.cooldown = 0;
         player.invuln = 1.4;
@@ -8283,7 +8283,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         setConsolePane("scores");
         updateHud();
       }
@@ -8507,7 +8507,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         riftTimer = 12;
         bossDefeated = false;
         clearBossTimers();
-        player.lives = Infinity;
+        if (!infiniteResources) {
+          player.lives += 3;
+          player.shields += 3;
+        }
         player.shieldTime = 2.4;
         player.invuln = 2.2;
         bullets.length = 0;
@@ -8571,7 +8574,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         resetCanyonAliens();
         player.x = W / 2;
         player.y = H - 140;
-        player.lives = Infinity;
         player.invuln = 2.2;
         player.shieldTime = 1.5;
         resetPhysicsBody(player, player.x, player.y);
@@ -8620,7 +8622,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Begin descent";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8643,7 +8645,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES ∞\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Enter the microcosm";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8668,7 +8670,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         resetLuytenFauna();
         player.x = W / 2;
         player.y = H - 140;
-        player.lives = Infinity;
         player.invuln = 2.2;
         player.shieldTime = 1.5;
         luytenPlayerVx = 0;
@@ -9064,8 +9065,23 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (state === "playing" || state === "canyon" || state === "luyten") laserSound();
       }
 
+      function toggleInfiniteResources() {
+        infiniteResources = !infiniteResources;
+        shell.dataset.infiniteResources = infiniteResources ? "enabled" : "disabled";
+        player.invuln = Math.max(player.invuln, 0.8);
+        updateHud();
+        play(infiniteResources ? 988 : 196, 0.16, "square", 0.036);
+        setTimeout(() => play(infiniteResources ? 1319 : 147, 0.18, "triangle", 0.03), 90);
+        makeParticles(player.x, player.y, infiniteResources ? "#ffd86b" : "#5ed7ff", 24);
+      }
+
       function activateShield() {
         if ((state !== "playing" && state !== "canyon" && state !== "luyten") || player.shieldTime > 0) return;
+        if (!infiniteResources && player.shields <= 0) {
+          play(118, 0.12, "square", 0.026);
+          return;
+        }
+        if (!infiniteResources) player.shields -= 1;
         player.shieldTime = 2.4;
         updateHud();
         play(880, 0.14, "triangle", 0.04);
@@ -9775,7 +9791,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         shake = 16;
         makeParticles(player.x, player.y, "#5ed7ff", 34);
         explosionSound(1.1);
+        if (!infiniteResources) player.lives = Math.max(0, player.lives - 1);
         updateHud();
+        if (!infiniteResources && player.lives <= 0) {
+          state = "transition";
+          setTimeout(gameOver, 650);
+        }
       }
 
       function runDemoPilot(dt) {
@@ -11211,31 +11232,36 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawRealisticBoss() {
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
-        const sizes = { octopus: [500, 540], hunter: [490, 450], crystal: [430, 430], dreadnought: [480, 480] };
-        const animationRates = { octopus: 24, hunter: 24, crystal: 24, dreadnought: 24 };
-        const animationFrames = { octopus: 288, hunter: 240, crystal: 192, dreadnought: 240 };
-        const animationRows = { octopus: 18, hunter: 15, crystal: 12, dreadnought: 15 };
+        const sizes = { octopus: [500, 540], hunter: [490, 450], crystal: [430, 430], dreadnought: [430, 430] };
+        const animationRates = { octopus: 24, hunter: 24, crystal: 24, dreadnought: 16 };
+        const animationFrames = { octopus: 288, hunter: 240, crystal: 192, dreadnought: 32 };
+        const animationColumns = { octopus: 16, hunter: 16, crystal: 16, dreadnought: 8 };
+        const animationRows = { octopus: 18, hunter: 15, crystal: 12, dreadnought: 4 };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
-        const pulseX = 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
-        const pulseY = 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
+        const usesAuthoredMotion = boss.kind === "dreadnought";
+        const pulseX = usesAuthoredMotion ? 1 : 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
+        const pulseY = usesAuthoredMotion ? 1 : 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
         const filter = boss.hurt > 0
           ? "brightness(1.42) saturate(0.72)"
           : (boss.kind === "hunter" || boss.kind === "octopus" || boss.kind === "crystal" || boss.kind === "dreadnought") && boss.attackPulse > 0
             ? `brightness(${1 + boss.attackPulse * 0.2}) saturate(${1 + boss.attackPulse * 0.16})`
             : "none";
-        const angle = Math.sin(boss.phase * 0.63) * (boss.kind === "dreadnought" ? 0.012 : boss.kind === "hunter" ? 0.015 : boss.kind === "octopus" ? 0.018 : 0.025);
-        const drawX = boss.x + Math.sin(boss.phase * 0.88) * 3.2;
+        const angle = usesAuthoredMotion ? 0 : Math.sin(boss.phase * 0.63) * (boss.kind === "hunter" ? 0.015 : boss.kind === "octopus" ? 0.018 : 0.025);
+        const drawX = usesAuthoredMotion ? boss.x : boss.x + Math.sin(boss.phase * 0.88) * 3.2;
         const presentationOffsetY = boss.kind === "octopus" ? 12 : boss.kind === "hunter" ? 18 : 0;
-        const drawY = boss.y + Math.cos(boss.phase * 1.05) * 4.5 + presentationOffsetY;
+        const drawY = (usesAuthoredMotion ? boss.y : boss.y + Math.cos(boss.phase * 1.05) * 4.5) + presentationOffsetY;
         if (bossAnimationReady(boss.kind)) {
           const animationFrame = Math.floor(boss.phase * animationRates[boss.kind]) % animationFrames[boss.kind];
+          if (usesAuthoredMotion) {
+            shell.dataset.mordrathAnimation = `authored-frame-${animationFrame + 1}-of-${animationFrames[boss.kind]}`;
+          }
           const preanimatedBoss = boss.kind === "octopus" || boss.kind === "hunter" || boss.kind === "crystal" || boss.kind === "dreadnought";
           const drawBossFrame = preanimatedBoss ? drawSpriteFrame : drawLivingBossFrame;
           drawBossFrame(
             bossAnimationSprites[boss.kind],
             animationFrame,
-            16,
+            animationColumns[boss.kind],
             animationRows[boss.kind],
             drawX,
             drawY,
@@ -15006,6 +15032,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (winScene.classList.contains("battle-report")) {
           event.preventDefault();
           if (!event.repeat) continueFromBattleReport();
+          return;
+        }
+        if (event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && event.code === "KeyI") {
+          event.preventDefault();
+          if (!event.repeat) toggleInfiniteResources();
           return;
         }
         if (event.ctrlKey && event.code === "KeyU") {
