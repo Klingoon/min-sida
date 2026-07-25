@@ -3217,7 +3217,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.163 · Cinematic Battle Report · updated 2026-07-25 18:27 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.164 · Voice and X Shield · updated 2026-07-25 20:09 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3375,7 +3375,6 @@ INFINITE MODE   CTRL + I
 MOBILE
 STEER  HOLD YOUR THUMB ON THE SHIP AND DRAG
 FIRE   TAP WITH ANOTHER FINGER
-SHIELD HOLD THE LOWER-LEFT CORNER
 VOICE SHIELD  ENABLE VOICE SHIELD AND KEEP SINGING "LA LA LAA"
 BONUS  DESTROY UFO TO CLEAR THE WAVE
 WARNING  DO NOT SHOOT THE HYDRA COMET
@@ -3460,7 +3459,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.163 · Cinematic Battle Report · updated 2026-07-25 18:27 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.164 · Voice and X Shield · updated 2026-07-25 20:09 CEST</div>
   </main>
 
   <script>
@@ -5077,7 +5076,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let directDragPointerId = null;
       let directDragTarget = null;
       let directDragOffset = { x: 0, y: 0 };
-      const touchShieldPointers = new Set();
       const touchTapPointers = new Map();
 
       function attachPhysicsBody(item, kind) {
@@ -8261,7 +8259,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         setConsolePane("scores");
         updateHud();
       }
@@ -8525,7 +8523,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setCanyonBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "SELENE CANYON ODYSSEY\nOBJECTIVE  DEFEAT TWELVE SECTOR MINIBOSSES\nFLIGHT  THE FULL SCREEN IS OPEN — CANYON WALLS ARE SCENERY\nWEAPONS  DESTROY THE GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT RESCUE CORES AND AEGIS CAPACITORS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "SELENE CANYON ODYSSEY\nOBJECTIVE  DEFEAT TWELVE SECTOR MINIBOSSES\nFLIGHT  THE FULL SCREEN IS OPEN — CANYON WALLS ARE SCENERY\nWEAPONS  DESTROY THE GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT RESCUE CORES AND AEGIS CAPACITORS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Enter canyon";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8596,7 +8594,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Begin descent";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8619,7 +8617,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Enter the microcosm";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -9797,7 +9795,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
-        if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
         if (fullAutoPlaythrough || attractTourMode) {
           const targetAlien = activeCanyonAlien();
@@ -10085,7 +10082,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
-        if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
         if (fullAutoPlaythrough || attractTourMode) {
           playerInput = clamp((W / 2 + Math.sin(performance.now() / 820) * 172 - player.x) / 68, -1, 1);
@@ -10266,9 +10262,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.cooldown = Math.max(0, player.cooldown - dt);
         player.invuln = Math.max(0, player.invuln - dt);
         player.shieldTime = Math.max(0, player.shieldTime - dt);
-        if (touchShieldPointers.size > 0 && state === "playing") {
-          player.shieldTime = Math.max(player.shieldTime, 0.18);
-        }
         playerInput = 0;
         playerInputY = 0;
         if (state === "demo") {
@@ -14646,7 +14639,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         directDragPointerId = null;
         directDragTarget = null;
         directDragOffset = { x: 0, y: 0 };
-        touchShieldPointers.clear();
         touchTapPointers.clear();
       }
 
@@ -14664,17 +14656,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (devScreenOpen) return;
         if ((state !== "playing" && state !== "canyon" && state !== "luyten") || introActive) return;
         const point = pointerToGame(event);
-        const inShieldCorner = point.x <= W * 0.28 && point.y >= H * 0.72;
-
-        if (inShieldCorner) {
-          event.preventDefault();
-          event.stopPropagation();
-          touchShieldPointers.add(event.pointerId);
-          captureGesturePointer(event.pointerId);
-          shell.dataset.lastGesture = "shield";
-          activateShield();
-          return;
-        }
 
         const interactiveTarget = event.target instanceof Element && event.target.closest("button, .overlay, .win-scene");
         if (interactiveTarget) return;
@@ -14721,14 +14702,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           directDragTarget = null;
           directDragOffset = { x: 0, y: 0 };
           releaseGesturePointer(event.pointerId);
-          return;
-        }
-
-        if (touchShieldPointers.delete(event.pointerId)) {
-          event.preventDefault();
-          if (touchShieldPointers.size === 0) player.shieldTime = Math.min(player.shieldTime, 0.12);
-          releaseGesturePointer(event.pointerId);
-          updateHud();
           return;
         }
 
