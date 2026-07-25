@@ -3216,7 +3216,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.155 · K2-18 b Reliable Audio Flow · updated 2026-07-25 15:03 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.156 · K2-18 b Balanced Render Flow · updated 2026-07-25 15:20 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3458,7 +3458,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.155 · K2-18 b Reliable Audio Flow · updated 2026-07-25 15:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.156 · K2-18 b Balanced Render Flow · updated 2026-07-25 15:20 CEST</div>
   </main>
 
   <script>
@@ -4157,7 +4157,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function configureLuytenExpedition(kind = "luyten") {
         luytenExpedition = kind;
         const micro = kind === "microcosm";
-        shell.dataset.microcosmAnimation = micro ? "synchronized-60hz-flow-v3" : "inactive";
+        shell.dataset.microcosmAnimation = micro ? "60hz-motion-staggered-30hz-deformation-v4" : "inactive";
         const scenes = micro ? microcosmScenes : luytenBaseScenes;
         const styles = micro ? microcosmSceneStyles : luytenBaseSceneStyles;
         const species = micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
@@ -10110,7 +10110,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           if (shockwaves[i].life <= 0) shockwaves.splice(i, 1);
         }
         updateHud();
-        shell.dataset.luytenEncounterLocked = encounterLocked ? "true" : "false";
+        const encounterLockState = encounterLocked ? "true" : "false";
+        if (shell.dataset.luytenEncounterLocked !== encounterLockState) {
+          shell.dataset.luytenEncounterLocked = encounterLockState;
+        }
         if (luytenRun.scroll >= luytenRun.maxScroll && luytenFauna.every((creature) => creature.dead)) finishLuytenRun();
       }
 
@@ -12653,8 +12656,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function drawLuytenNaturalMesh(ctx, image, species, phase, volley, deploy, deathProgress, size, preview) {
         const softBody = ["hydrostat", "medusa", "siphonophore", "cephalopod", "anguilliform"].includes(species.motion);
         const micro = Boolean(species.microMotion);
-        const columns = preview ? (micro ? 6 : 5) : micro ? 7 : softBody ? 6 : 5;
-        const rows = preview ? (micro ? 6 : 5) : micro ? 7 : softBody ? 6 : 5;
+        const columns = preview ? (micro ? 6 : 5) : micro ? 6 : softBody ? 6 : 5;
+        const rows = preview ? (micro ? 6 : 5) : micro ? 6 : softBody ? 6 : 5;
         const aspect = image.naturalWidth / image.naturalHeight;
         const fitX = aspect < 1 ? aspect : 1;
         const fitY = aspect > 1 ? 1 / aspect : 1;
@@ -12752,8 +12755,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const phase = micro
           ? (t * (0.9 + species.sceneIndex * 0.006) + species.sceneIndex * 0.71) % (Math.PI * 2)
           : (t * (0.72 + species.sceneIndex * 0.004) + creature.phase * 0.23) % (Math.PI * 2);
-        const frameRate = preview ? (micro ? 30 : 18) : micro ? 60 : 18;
-        const frameIndex = Math.floor(t * frameRate);
+        // K2-18 b keeps flight and attack motion at 60 Hz while the costly
+        // organic texture deformation advances at an even 30 Hz cadence.
+        const frameRate = preview ? (micro ? 30 : 18) : micro ? 30 : 18;
+        const renderPhaseOffset = micro && !preview ? 0.5 : 0;
+        const frameIndex = Math.floor(t * frameRate + renderPhaseOffset);
         const cacheOwner = preview ? species : creature;
         const cacheKey = preview ? "_naturalPreviewRig" : "_naturalGameRig";
         const dimension = Math.ceil(size * 1.42);
@@ -12770,8 +12776,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           };
           cacheOwner[cacheKey] = cache;
         }
-        const motionSteps = micro ? 60 : 48;
-        const deathSteps = micro ? Math.ceil(creature.deathDuration * 60) : 72;
+        const motionSteps = micro ? 30 : 48;
+        const deathSteps = micro ? Math.ceil(creature.deathDuration * 30) : 72;
         const frameKey = `${frameIndex}:${motionMode}:${Math.round(motionProgress * motionSteps)}:${Math.round(deathProgress * deathSteps)}:${creature.hurt > 0 ? 1 : 0}`;
         if (cache.frameKey !== frameKey) {
           cache.frameKey = frameKey;
@@ -12780,7 +12786,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           rigCtx.clearRect(0, 0, dimension, dimension);
           rigCtx.translate(dimension / 2, dimension / 2);
           rigCtx.imageSmoothingEnabled = true;
-          rigCtx.imageSmoothingQuality = "high";
+          rigCtx.imageSmoothingQuality = micro ? "medium" : "high";
           rigCtx.filter = creature.hurt > 0
             ? "brightness(1.75) saturate(.72)"
             : `contrast(${1.04 + species.style.detail * 0.06}) saturate(${species.style.saturation})`;
@@ -13568,7 +13574,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function compositeLuytenOrganisms(t) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
-        const renderFrame = Math.floor(t * 30);
+        // Offset living scenery from the water pass so both caches do not
+        // regenerate during the same 60 Hz frame.
+        const renderFrame = Math.floor(t * 20 + 1 / 3);
         if (luytenOrganismRenderFrame !== renderFrame) {
           luytenOrganismRenderFrame = renderFrame;
           luytenOrganismCtx.clearRect(0, 0, W, H);
@@ -13617,13 +13625,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ctx.clearRect(0, 0, W, H);
           return;
         }
-        const frame = Math.floor(t * 30);
+        const frame = Math.floor(t * 20);
         if (underwaterEffectsRenderFrame === frame) return;
         underwaterEffectsRenderFrame = frame;
         ctx.clearRect(0, 0, W, H);
 
         const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
-        const frameTime = frame / 30;
+        const frameTime = frame / 20;
         ctx.save();
 
         const waterVeil = ctx.createLinearGradient(0, 0, 0, H);
