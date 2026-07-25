@@ -3208,7 +3208,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.145 · Luyten Natural Motion · updated 2026-07-25 00:48 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.146 · Luyten Abyssal Soundtrack · updated 2026-07-25 10:11 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3450,7 +3450,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.145 · Luyten Natural Motion · updated 2026-07-25 00:48 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.146 · Luyten Abyssal Soundtrack · updated 2026-07-25 10:11 CEST</div>
   </main>
 
   <script>
@@ -3802,21 +3802,46 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const activePadOscillators = new Set();
       const musicGain = 1.32;
       const soundtrackCatalog = [
-        { title: "The Old Castle", src: "varldsrymden-anfaller/assets/mussorgsky-castle-cc0.m4a" },
-        { title: "Tuileries", src: "varldsrymden-anfaller/assets/mussorgsky-tuileries-cc0.m4a" },
-        { title: "Gnomus", src: "varldsrymden-anfaller/assets/mussorgsky-gnomus-cc0.m4a" },
-        { title: "Bydlo", src: "varldsrymden-anfaller/assets/mussorgsky-bydlo-cc0.m4a" },
-        { title: "Mars, the Bringer of War", src: "varldsrymden-anfaller/assets/holst-mars-cc0.m4a" }
+        { title: "The Old Castle", artist: "Modest Mussorgsky", src: "varldsrymden-anfaller/assets/mussorgsky-castle-cc0.m4a" },
+        { title: "Tuileries", artist: "Modest Mussorgsky", src: "varldsrymden-anfaller/assets/mussorgsky-tuileries-cc0.m4a" },
+        { title: "Gnomus", artist: "Modest Mussorgsky", src: "varldsrymden-anfaller/assets/mussorgsky-gnomus-cc0.m4a" },
+        { title: "Bydlo", artist: "Modest Mussorgsky", src: "varldsrymden-anfaller/assets/mussorgsky-bydlo-cc0.m4a" },
+        { title: "Mars, the Bringer of War", artist: "Gustav Holst", src: "varldsrymden-anfaller/assets/holst-mars-cc0.m4a" },
+        { title: "Deep Sea", artist: "Umplix", src: "varldsrymden-anfaller/assets/music/luyten-b/deep-sea-umplix-cc0.mp3" },
+        { title: "Airy", artist: "SRG774", src: "varldsrymden-anfaller/assets/music/luyten-b/airy-srg774-cc0.mp3" },
+        { title: "Sector", artist: "SRG774", src: "varldsrymden-anfaller/assets/music/luyten-b/sector-srg774-cc0.mp3" },
+        { title: "Pulse", artist: "SRG774", src: "varldsrymden-anfaller/assets/music/luyten-b/pulse-srg774-cc0.mp3" },
+        { title: "Urgent", artist: "SRG774", src: "varldsrymden-anfaller/assets/music/luyten-b/urgent-srg774-cc0.mp3" },
+        { title: "Transmission", artist: "SRG774", src: "varldsrymden-anfaller/assets/music/luyten-b/transmission-srg774-cc0.mp3" }
       ];
+      const luytenExplorationSoundtracks = [5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5];
+      const luytenCombatSoundtracks = [8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9];
       let soundtrackIndex = 0;
       let soundtrackFadeTimer = null;
-      const soundtrack = new Audio(soundtrackCatalog[soundtrackIndex].src);
-      soundtrack.loop = true;
-      soundtrack.preload = "auto";
-      soundtrack.volume = 0.46;
-      soundtrack.addEventListener("play", () => document.documentElement.dataset.musicState = "playing");
-      soundtrack.addEventListener("pause", () => document.documentElement.dataset.musicState = "paused");
-      soundtrack.addEventListener("error", () => document.documentElement.dataset.musicState = "error");
+      let luytenMusicCue = "";
+      const soundtrackTargetVolume = 0.46;
+
+      function createSoundtrackDeck(src = "") {
+        const deck = src ? new Audio(src) : new Audio();
+        deck.loop = true;
+        deck.preload = "auto";
+        deck.volume = soundtrackTargetVolume;
+        return deck;
+      }
+
+      let soundtrack = createSoundtrackDeck(soundtrackCatalog[soundtrackIndex].src);
+      let soundtrackStandby = createSoundtrackDeck();
+
+      function updateMusicState() {
+        document.documentElement.dataset.musicState =
+          soundtrack.paused && soundtrackStandby.paused ? "paused" : "playing";
+      }
+
+      [soundtrack, soundtrackStandby].forEach((deck) => {
+        deck.addEventListener("play", updateMusicState);
+        deck.addEventListener("pause", updateMusicState);
+        deck.addEventListener("error", () => document.documentElement.dataset.musicState = "error");
+      });
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
       let fullAutoPlaythrough = false;
@@ -5149,6 +5174,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function setBackdropForStage(mode = "wave") {
+        luytenMusicCue = "";
         const attackWave = clamp(alienRoundsCleared, 0, roundsBeforeBoss - 1);
         const stageWithinAct = mode === "boss" ? roundsBeforeBoss : attackWave;
         const index = (act - 1) * (roundsBeforeBoss + 1) + stageWithinAct;
@@ -5168,6 +5194,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       }
 
       function setCanyonBackdrop() {
+        luytenMusicCue = "";
         setUnderwaterFxActive(false);
         parallaxBackdrop.classList.remove("active");
         stageTwoParallaxBackdrop.classList.remove("active");
@@ -5227,7 +5254,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         shell.dataset.stageBackdrop = "luyten-b-underwater-expedition";
         canvas.style.backgroundImage = "none";
         updateLuytenParallaxBackdrop();
-        selectSoundtrack(2);
+        selectLuytenSoundtrack(luytenRun.sceneIndex, "exploration");
       }
 
       function parallaxAvailableForStage() {
@@ -5553,6 +5580,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenParallaxNear.style.transform = `translate3d(${(-playerShift * 24 - curve * 34).toFixed(2)}px, 0, 0) scaleX(1.16)`;
         if (luytenVisualSceneIndex !== luytenRun.sceneIndex) {
           luytenVisualSceneIndex = luytenRun.sceneIndex;
+          selectLuytenSoundtrack(luytenRun.sceneIndex, "exploration");
           const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
           const waterRgb = hexToRgb(sceneStyle.water).map((channel) => Math.round(channel * 255)).join(", ");
           const lightRgb = hexToRgb(sceneStyle.rim).map((channel) => Math.round(channel * 255)).join(", ");
@@ -6259,44 +6287,76 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (soundtrackFadeTimer) clearInterval(soundtrackFadeTimer);
         soundtrackFadeTimer = null;
         soundtrack.pause();
+        soundtrackStandby.pause();
+        updateMusicState();
         activePadOscillators.forEach((osc) => {
           try { osc.stop(); } catch (_) {}
         });
         activePadOscillators.clear();
       }
 
-      function selectSoundtrack(index) {
+      function selectSoundtrack(index, fadeDuration = 2800) {
         const nextIndex = clamp(index, 0, soundtrackCatalog.length - 1);
         if (nextIndex === soundtrackIndex) return;
         const shouldResume = melodyTimer === "orchestral" || !soundtrack.paused;
+        const previousIndex = soundtrackIndex;
+        const outgoing = soundtrack;
+        const incoming = soundtrackStandby;
         soundtrackIndex = nextIndex;
         const track = soundtrackCatalog[soundtrackIndex];
         if (soundtrackFadeTimer) clearInterval(soundtrackFadeTimer);
         soundtrackFadeTimer = null;
-        soundtrack.pause();
-        soundtrack.src = track.src;
-        soundtrack.load();
-        soundtrack.volume = 0.04;
-        introMusicCredit.setAttribute("aria-label", `Music: ${track.title}, CC0`);
+        incoming.pause();
+        incoming.src = track.src;
+        incoming.load();
+        incoming.volume = 0;
+        soundtrack = incoming;
+        soundtrackStandby = outgoing;
+        introMusicCredit.setAttribute("aria-label", `Music: ${track.title} by ${track.artist}, CC0`);
         document.documentElement.dataset.musicTrack = track.title;
+        document.documentElement.dataset.musicArtist = track.artist;
         if (!shouldResume || muted) {
-          soundtrack.volume = 0.46;
+          outgoing.pause();
+          outgoing.currentTime = 0;
+          incoming.volume = soundtrackTargetVolume;
           return;
         }
-        soundtrack.play().then(() => {
-          let step = 0;
+
+        incoming.play().then(() => {
+          const startedAt = performance.now();
+          const outgoingStartVolume = outgoing.paused ? 0 : outgoing.volume;
           soundtrackFadeTimer = setInterval(() => {
-            step += 1;
-            soundtrack.volume = Math.min(0.46, 0.04 + step * 0.0525);
-            if (step >= 8) {
+            const progress = clamp((performance.now() - startedAt) / fadeDuration, 0, 1);
+            const eased = progress * progress * (3 - 2 * progress);
+            incoming.volume = soundtrackTargetVolume * eased;
+            outgoing.volume = outgoingStartVolume * (1 - eased);
+            if (progress >= 1) {
               clearInterval(soundtrackFadeTimer);
               soundtrackFadeTimer = null;
+              outgoing.pause();
+              outgoing.currentTime = 0;
+              outgoing.volume = soundtrackTargetVolume;
             }
-          }, 70);
+          }, 50);
         }).catch(() => {
-          soundtrack.volume = 0.46;
-          melodyTimer = null;
+          soundtrack = outgoing;
+          soundtrackStandby = incoming;
+          soundtrackIndex = previousIndex;
+          outgoing.volume = soundtrackTargetVolume;
+          incoming.pause();
+          document.documentElement.dataset.musicState = "error";
         });
+      }
+
+      function selectLuytenSoundtrack(sceneIndex, mode) {
+        const safeSceneIndex = clamp(sceneIndex, 0, luytenScenes.length - 1);
+        const cue = `${safeSceneIndex}:${mode}`;
+        if (cue === luytenMusicCue) return;
+        luytenMusicCue = cue;
+        const soundtrackSequence = mode === "combat"
+          ? luytenCombatSoundtracks
+          : luytenExplorationSoundtracks;
+        selectSoundtrack(soundtrackSequence[safeSceneIndex], mode === "combat" ? 2200 : 3200);
       }
 
       function melodyNote(freq, when, length, gain = 0.022, type = "square", slide = 1) {
@@ -8240,6 +8300,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function finishLuytenRun() {
         if (state !== "luyten") return;
         state = "transition";
+        luytenMusicCue = "finale";
+        selectSoundtrack(10, 1800);
         bullets.length = 0;
         enemyBullets.length = 0;
         luytenWeapons.length = 0;
@@ -9440,6 +9502,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
               creature.attackCooldown = 1.25;
               creature.weaponCooldown = 2.8;
               enemyBullets.length = 0;
+              selectLuytenSoundtrack(creature.species.sceneIndex, "combat");
               shell.dataset.luytenEncounter = creature.species.id;
               shake = Math.max(shake, 9);
               play(84 + creature.index * 5, 0.38, "sine", 0.045);
@@ -9543,6 +9606,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             creature.dying = creature.deathDuration;
             creature.deathElapsed = 0;
             creature.burstAt = 0;
+            selectLuytenSoundtrack(creature.species.sceneIndex, "exploration");
             score += 5600 + creature.index * 420;
             enemyBullets.length = 0;
             for (let index = luytenWeapons.length - 1; index >= 0; index -= 1) {
