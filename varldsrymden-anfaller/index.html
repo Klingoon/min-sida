@@ -741,6 +741,10 @@
       font-size: clamp(11px, 1.25vw, 17px);
     }
 
+    .intro-splash.ship-only .intro-phrase.power-word {
+      font-size: clamp(16px, 1.75vw, 24px);
+    }
+
     .intro-copy footer {
       position: absolute;
       inset: 0;
@@ -2249,6 +2253,10 @@
 
       .intro-phrase {
         font-size: clamp(11px, 3.5vw, 15px);
+      }
+
+      .intro-splash.ship-only .intro-phrase.power-word {
+        font-size: clamp(15px, 4.8vw, 20px);
       }
 
       .shell {
@@ -3860,9 +3868,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let introMotionY = 0;
       const introPhrases = [
         "Liberate the inhabitants from the exoplanets rulers who enslaved them",
-        "Fighting the aliens",
+        "Fight the aliens rulers",
         "In their spaceship Millenium Owl",
-        "Visiting all the Exoplanets",
+        "Visiting all the EXOplanets",
         "Improvise",
         "Adapt",
         "Overcome",
@@ -7612,7 +7620,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         introSequence.dataset.position = String(index);
         introSequence.style.setProperty("--cinematic-width", `${Math.min(720, Math.max(180, text.length * 16))}px`);
         const isCredit = index === introPhrases.length - 1;
+        const isPowerWord = index >= 4 && index <= 6;
         introPhrase.classList.toggle("credit", isCredit);
+        introPhrase.classList.toggle("power-word", isPowerWord);
         if (isCredit) {
           introPhrase.textContent = text;
           introPhrase.setAttribute("aria-label", text);
