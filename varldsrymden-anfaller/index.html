@@ -3216,7 +3216,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.160 · Ten-Life Arcade Resources · updated 2026-07-25 17:04 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.162 · Helix Raider Restored · updated 2026-07-25 18:03 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3342,7 +3342,7 @@
       <div class="hud-pill"><span class="dot"></span><span>Score&nbsp;<strong id="score">0</strong></span></div>
       <div class="hud-pill">HI&nbsp;<strong id="hiScore">0</strong></div>
       <div class="hud-pill">Wave&nbsp;<strong id="wave">1</strong></div>
-      <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">10</strong></span></div>
+      <div class="hud-pill"><span>Lives</span><span class="lives" id="lives"></span><span>X&nbsp;Shield&nbsp;<strong id="shieldCount">20</strong></span></div>
       <div class="hud-location">
         <span><small>Stage</small><strong id="hudStageName">Iceworld Alpha Centauri</strong></span>
         <span class="hud-location-divider" aria-hidden="true"></span>
@@ -3368,7 +3368,7 @@
             <h2 class="console-screen-label">Mission controls</h2>
             <p class="panel-copy" id="overlayText">DESKTOP
 MOVE   ← A   D →   ↑ FORWARD   ↓ BACK
-FIRE   SPACE / W   SHIELD  X   LIVES  10   SHIELDS  10
+FIRE   SPACE / W   SHIELD  X   LIVES  20   SHIELDS  20
 INFINITE MODE   CTRL + I
 
 MOBILE
@@ -3459,7 +3459,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.160 · Ten-Life Arcade Resources · updated 2026-07-25 17:04 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.162 · Helix Raider Restored · updated 2026-07-25 18:03 CEST</div>
   </main>
 
   <script>
@@ -4455,14 +4455,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function collectLuytenBonus(index) {
         const bonus = luytenBonuses[index];
         if (bonus.type === "life") {
-          player.lives += 1;
+          player.lives += 2;
           player.invuln = Math.max(player.invuln, 5);
           score += 4200;
           makeParticles(bonus.x, bonus.y, "#ffd987", 62);
           play(659, 0.14, "triangle", 0.05);
           setTimeout(() => play(1047, 0.22, "sine", 0.04), 100);
         } else {
-          player.shields += 1;
+          player.shields += 2;
           player.shieldTime = Math.max(player.shieldTime, 14);
           score += 3600;
           makeParticles(bonus.x, bonus.y, "#70e8ff", 62);
@@ -5057,8 +5057,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         w: 42,
         h: 48,
         speed: 430,
-        lives: 10,
-        shields: 10,
+        lives: 20,
+        shields: 20,
         shieldTime: 0,
         cooldown: 0,
         invuln: 0,
@@ -6062,14 +6062,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function collectCanyonBonus(index) {
         const bonus = canyonBonuses[index];
         if (bonus.type === "life") {
-          player.lives += 1;
+          player.lives += 2;
           player.invuln = Math.max(player.invuln, 4.5);
           score += 3500;
           makeParticles(bonus.x, bonus.y, "#ffd27a", 54);
           play(659, 0.15, "triangle", 0.05);
           setTimeout(() => play(988, 0.2, "triangle", 0.045), 100);
         } else {
-          player.shields += 1;
+          player.shields += 2;
           player.shieldTime = Math.max(player.shieldTime, 12);
           score += 3000;
           makeParticles(bonus.x, bonus.y, "#62dcff", 54);
@@ -6150,6 +6150,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             }
             if (alien.dying <= 0) {
               alien.dead = true;
+              grantResources(3, 3, alien.species.id);
               if (!alien.rewardSpawned) {
                 alien.rewardSpawned = true;
                 spawnCanyonBonus(alien);
@@ -7125,6 +7126,15 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setHudText(hudEncounterName, encounterLabel);
         setHudText(shieldCountEl, infiniteResources ? "∞" : String(player.shields));
         renderLives();
+      }
+
+      function grantResources(lives, shields, source) {
+        player.lives += lives;
+        player.shields += shields;
+        player.invuln = Math.max(player.invuln, 2.4);
+        player.shieldTime = Math.max(player.shieldTime, 2.4);
+        shell.dataset.resourceReward = `${source}:+${lives}-lives:+${shields}-shields`;
+        updateHud();
       }
 
       function buildDevRegistry() {
@@ -8176,8 +8186,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.x = W / 2;
         player.y = H - 140;
         resetPhysicsBody(player, player.x, player.y);
-        player.lives = 10;
-        player.shields = 10;
+        player.lives = 20;
+        player.shields = 20;
         player.shieldTime = 0;
         player.cooldown = 0;
         player.invuln = 1.4;
@@ -8250,7 +8260,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
-        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         setConsolePane("scores");
         updateHud();
       }
@@ -8474,10 +8484,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         riftTimer = 12;
         bossDefeated = false;
         clearBossTimers();
-        if (!infiniteResources) {
-          player.lives += 3;
-          player.shields += 3;
-        }
         player.shieldTime = 2.4;
         player.invuln = 2.2;
         bullets.length = 0;
@@ -8589,7 +8595,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "LUYTEN B · ABYSSAL DESCENT\nOBJECTIVE  DEFEAT SIXTEEN ABYSSAL MINIBOSSES ACROSS THE DROWNED ZONES\nENCOUNTERS  EVERY SCENE HAS A UNIQUE ARTICULATED MINIBOSS\nWEAPONS  DESTROY THEIR LIVING GALAGA FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN LIFE PEARLS AND CYAN AEGIS PEARLS\nFORMS  ALIEN STARFISH, HYDRAE, MEDUSAE, SERPENTS AND DEEP-SEA TITANS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Begin descent";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -8612,7 +8618,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         setLuytenBackdrop();
         winScene.classList.remove("visible", "finale", "intermission");
         overlay.classList.remove("demo-mode");
-        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 10 · SHIELDS 10\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        overlayText.textContent = "K2-18 B · HYCEAN MICROCOSM\nNASA / WEBB FIELD BRIEF\n\nK2-18 b is about 120 light-years away in Leo and orbits within its star's habitable zone. Webb detected methane and carbon dioxide in its atmosphere. Those observations support — but do not confirm — the hypothesis of an ocean beneath a hydrogen-rich atmosphere.\n\nNO OCEAN OR LIFE HAS BEEN CONFIRMED. THIS EXPEDITION IS A SCIENCE-INSPIRED HYPOTHESIS.\n\nOBJECTIVE  DEFEAT SIXTEEN MICROSCOPIC MINIBOSSES\nBIOLOGY  MOTION IS BASED ON REAL POND-WATER ORGANISMS\nWEAPONS  DESTROY THEIR LIVING FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT GOLDEN VITALITY BIO-CORES AND CYAN AEGIS CYSTS\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         startBtn.textContent = "Enter the microcosm";
         setConsolePane("info");
         overlay.classList.add("visible");
@@ -9724,6 +9730,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const kind = boss.kind;
         const finale = act >= totalActs;
         const demoMode = state === "demo";
+        if (!demoMode) grantResources(10, 10, boss.id || boss.name || `boss-act-${act}`);
         bossMines.forEach((mine) => makeParticles(mine.x, mine.y, "#9b6dff", 24));
         bossMines.length = 0;
         shell.dataset.astraxMines = "0";
@@ -9867,6 +9874,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             }
             if (creature.dying <= 0) {
               creature.dead = true;
+              grantResources(3, 3, creature.species.id);
               spawnLuytenReward(creature);
               makeParticles(creature.x, creature.y, creature.species.style.pale, 84);
               makeParticles(creature.x, creature.y, creature.species.accent, 64);
