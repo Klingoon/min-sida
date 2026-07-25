@@ -3208,7 +3208,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.146 · Luyten Abyssal Soundtrack · updated 2026-07-25 10:11 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.147 · Expanded Attract Tour · updated 2026-07-25 10:35 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3450,7 +3450,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.146 · Luyten Abyssal Soundtrack · updated 2026-07-25 10:11 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.147 · Expanded Attract Tour · updated 2026-07-25 10:35 CEST</div>
   </main>
 
   <script>
@@ -3847,6 +3847,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       let fullAutoPlaythrough = false;
       let attractTimer = null;
       let attractDeadline = 0;
+      let attractShowcaseTimer = null;
+      let attractTourMode = false;
       let introActive = true;
       let introPhraseIndex = 0;
       let introPhraseTimer = null;
@@ -7536,6 +7538,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         attractDeadline = 0;
       }
 
+      function clearAttractShowcaseTimer() {
+        if (attractShowcaseTimer) clearTimeout(attractShowcaseTimer);
+        attractShowcaseTimer = null;
+        delete shell.dataset.attractShowcase;
+      }
+
       function setIntroLayerOffset(element, x, y) {
         element.style.setProperty("--intro-x", `${x.toFixed(2)}px`);
         element.style.setProperty("--intro-y", `${y.toFixed(2)}px`);
@@ -7577,7 +7585,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (!introActive) return;
         introActive = false;
         stopIntroParallax();
-        if (introPhraseTimer) clearInterval(introPhraseTimer);
+        if (introPhraseTimer) clearTimeout(introPhraseTimer);
         if (introPhraseFadeTimer) clearTimeout(introPhraseFadeTimer);
         introPhraseTimer = null;
         introPhraseFadeTimer = null;
@@ -7622,7 +7630,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           introPhraseIndex = (introPhraseIndex + 1) % introPhrases.length;
           setIntroPhrase(introPhraseIndex);
           introPhrase.classList.add("visible");
+          scheduleIntroPhraseCycle();
         }, 1250);
+      }
+
+      function scheduleIntroPhraseCycle() {
+        if (introPhraseTimer) clearTimeout(introPhraseTimer);
+        const isWizardCredit = introPhraseIndex === introPhrases.length - 1;
+        introPhraseTimer = setTimeout(cycleIntroPhrase, isWizardCredit ? 9000 : 4600);
       }
 
       function beginIntro() {
@@ -7631,7 +7646,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         requestAnimationFrame(() => introSplash.classList.add("ready"));
         setIntroPhrase(introPhraseIndex);
         introPhraseFadeTimer = setTimeout(() => introPhrase.classList.add("visible"), 550);
-        introPhraseTimer = setInterval(cycleIntroPhrase, 4600);
+        scheduleIntroPhraseCycle();
         startIntroParallax();
         startIntroMusic();
       }
@@ -7971,6 +7986,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function startDemoMode() {
         if (state === "playing" || state === "transition") return;
+        clearAttractShowcaseTimer();
+        attractTourMode = true;
         fullAutoPlaythrough = false;
         delete shell.dataset.autoPlaythrough;
         delete shell.dataset.stageShortcut;
@@ -7989,6 +8006,43 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         updateHud();
       }
 
+      function keepAttractConsoleVisible(label) {
+        overlay.classList.add("visible", "demo-mode");
+        overlayText.textContent = `ATTRACT MODE · ${label}\nPRESS START TO PLAY`;
+        startBtn.textContent = "Start";
+        setConsolePane("scores");
+      }
+
+      function finishAttractShowcase() {
+        if (!attractTourMode || (state !== "canyon" && state !== "luyten")) return;
+        clearAttractShowcaseTimer();
+        state = "transition";
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        canyonWeapons.length = 0;
+        luytenWeapons.length = 0;
+        startNextAct(true);
+        keepAttractConsoleVisible(`ACT ${act}`);
+      }
+
+      function startAttractCanyonShowcase() {
+        clearAttractShowcaseTimer();
+        attractTourMode = true;
+        beginCanyonRun();
+        shell.dataset.attractShowcase = "selene-canyon";
+        keepAttractConsoleVisible("SELENE CANYON ODYSSEY");
+        attractShowcaseTimer = setTimeout(finishAttractShowcase, 24000);
+      }
+
+      function startAttractLuytenShowcase() {
+        clearAttractShowcaseTimer();
+        attractTourMode = true;
+        beginLuytenRun();
+        shell.dataset.attractShowcase = "luyten-b";
+        keepAttractConsoleVisible("LUYTEN B ABYSSAL DESCENT");
+        attractShowcaseTimer = setTimeout(finishAttractShowcase, 26000);
+      }
+
       function startGame() {
         if (introActive) return;
         if (state === "canyonBriefing") {
@@ -8004,6 +8058,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (state === "transition") return;
         if (winScene.classList.contains("visible") && performance.now() < winSceneUnlockAt) return;
         clearAttractTimer();
+        clearAttractShowcaseTimer();
+        attractTourMode = false;
         fullAutoPlaythrough = false;
         delete shell.dataset.autoPlaythrough;
         overlay.classList.remove("demo-mode");
@@ -8105,6 +8161,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (introActive) finishIntro();
         if (devScreenOpen) closeDevScreen();
         clearAttractTimer();
+        clearAttractShowcaseTimer();
+        attractTourMode = false;
         clearBossTimers();
         initAudio();
         fullAutoPlaythrough = true;
@@ -8217,7 +8275,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.shieldTime = 1.5;
         resetPhysicsBody(player, player.x, player.y);
         resetDirectTouchControls();
-        overlay.classList.remove("visible", "demo-mode");
+        if (attractTourMode) keepAttractConsoleVisible("SELENE CANYON ODYSSEY");
+        else overlay.classList.remove("visible", "demo-mode");
         startBtn.textContent = "Start";
         setCanyonBackdrop();
         showActTitle(act, true);
@@ -8228,6 +8287,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function finishCanyonRun() {
         if (state !== "canyon") return;
+        clearAttractShowcaseTimer();
         state = "transition";
         canyonWeapons.length = 0;
         canyonBonuses.length = 0;
@@ -8237,7 +8297,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         makeParticles(player.x, player.y, "#ffd86b", 72);
         play(784, 0.18, "triangle", 0.05);
         setTimeout(() => play(1175, 0.28, "triangle", 0.045), 120);
-        setTimeout(() => startNextAct(fullAutoPlaythrough), 1250);
+        setTimeout(() => {
+          startNextAct(fullAutoPlaythrough || attractTourMode);
+          if (attractTourMode) keepAttractConsoleVisible(`ACT ${act}`);
+        }, 1250);
       }
 
       function startLuytenBriefing() {
@@ -8288,7 +8351,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenDisplayedPlayerPosition = "";
         resetPhysicsBody(player, player.x, player.y);
         resetDirectTouchControls();
-        overlay.classList.remove("visible", "demo-mode");
+        if (attractTourMode) keepAttractConsoleVisible("LUYTEN B ABYSSAL DESCENT");
+        else overlay.classList.remove("visible", "demo-mode");
         startBtn.textContent = "Start";
         setLuytenBackdrop();
         showActTitle(act, false, "Luyten b Abyssal Descent");
@@ -8299,6 +8363,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function finishLuytenRun() {
         if (state !== "luyten") return;
+        clearAttractShowcaseTimer();
         state = "transition";
         luytenMusicCue = "finale";
         selectSoundtrack(10, 1800);
@@ -8313,7 +8378,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
         play(392, 0.24, "triangle", 0.045);
         setTimeout(() => play(587, 0.34, "sine", 0.04), 160);
-        setTimeout(() => startNextAct(fullAutoPlaythrough), 1450);
+        setTimeout(() => {
+          startNextAct(fullAutoPlaythrough || attractTourMode);
+          if (attractTourMode) keepAttractConsoleVisible(`ACT ${act}`);
+        }, 1450);
       }
 
       function winGame(finale = false) {
@@ -8405,9 +8473,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           startDemoMode();
         } else if (finale) {
           winGame(true);
+        } else if (act === 1 && attractTourMode) {
+          startAttractCanyonShowcase();
         } else if (act === 1 && (!demoMode || fullAutoPlaythrough)) {
           if (fullAutoPlaythrough) beginCanyonRun();
           else startCanyonBriefing();
+        } else if (act === 2 && attractTourMode) {
+          startAttractLuytenShowcase();
         } else if (act === 2 && (!demoMode || fullAutoPlaythrough)) {
           if (fullAutoPlaythrough) beginLuytenRun();
           else startLuytenBriefing();
@@ -9398,7 +9470,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.shieldTime = Math.max(0, player.shieldTime - dt);
         if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
-        if (fullAutoPlaythrough) {
+        if (fullAutoPlaythrough || attractTourMode) {
           const targetAlien = activeCanyonAlien();
           const targetX = targetAlien && targetAlien.y < player.y
             ? targetAlien.x
@@ -9659,7 +9731,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         player.shieldTime = Math.max(0, player.shieldTime - dt);
         if (touchShieldPointers.size > 0) player.shieldTime = Math.max(player.shieldTime, 0.18);
 
-        if (fullAutoPlaythrough) {
+        if (fullAutoPlaythrough || attractTourMode) {
           playerInput = clamp((W / 2 + Math.sin(performance.now() / 820) * 172 - player.x) / 68, -1, 1);
           playerInputY = clamp((H * 0.7 + Math.cos(performance.now() / 1250) * 80 - player.y) / 80, -0.72, 0.72);
           player.shieldTime = Math.max(player.shieldTime, 0.2);
