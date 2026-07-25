@@ -2894,17 +2894,17 @@
 
     .battle-report-layer.far {
       --report-scale: 1.035;
-      filter: saturate(0.92) contrast(1.07) brightness(0.9);
+      filter: saturate(0.98) contrast(1.06) brightness(0.98);
     }
 
     .battle-report-layer.aftermath {
       --report-scale: 1.045;
-      filter: saturate(0.9) contrast(1.04);
+      filter: saturate(0.98) contrast(1.05);
     }
 
     .battle-report-layer.citizens {
       --report-scale: 1.055;
-      filter: saturate(0.88) contrast(1.03);
+      filter: saturate(0.96) contrast(1.04);
     }
 
     .battle-report-atmosphere {
@@ -2912,9 +2912,10 @@
       inset: -8%;
       opacity: 0.38;
       background:
-        radial-gradient(ellipse at 50% 68%, transparent 0 38%, rgba(0, 7, 12, 0.28) 78%),
-        radial-gradient(circle at 13% 36%, rgba(107, 223, 239, 0.13), transparent 20%),
-        radial-gradient(circle at 83% 32%, rgba(91, 187, 216, 0.1), transparent 22%);
+        linear-gradient(104deg, transparent 0 24%, rgba(140, 231, 239, 0.045) 39%, transparent 53%),
+        radial-gradient(ellipse at 50% 69%, transparent 0 35%, rgba(0, 5, 10, 0.34) 80%),
+        radial-gradient(circle at 13% 36%, rgba(107, 223, 239, 0.1), transparent 20%),
+        radial-gradient(circle at 83% 32%, rgba(255, 190, 108, 0.055), transparent 24%);
       mix-blend-mode: screen;
       transform: translate3d(var(--report-x, 0), var(--report-y, 0), 0);
       will-change: transform;
@@ -3216,7 +3217,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.162 · Helix Raider Restored · updated 2026-07-25 18:03 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.25.163 · Cinematic Battle Report · updated 2026-07-25 18:27 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3393,10 +3394,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
     </section>
 
     <section class="win-scene" id="winScene" aria-live="assertive">
-      <div class="battle-report-parallax" id="battleReportParallax" role="img" aria-label="The liberated iceworld after Act 1, with Nhar'Kaal and the alien armies defeated while the freed inhabitants reclaim their planet">
-        <img class="battle-report-layer far" id="battleReportFar" src="assets/intermissions/act-1-liberation-far-v1.webp" alt="">
-        <img class="battle-report-layer aftermath" id="battleReportAftermath" src="assets/intermissions/act-1-liberation-aftermath-v1.webp" alt="">
-        <img class="battle-report-layer citizens" id="battleReportCitizens" src="assets/intermissions/act-1-liberation-citizens-v1.webp" alt="">
+      <div class="battle-report-parallax" id="battleReportParallax" role="img" aria-label="A cinematic view across the liberated iceworld capital after Act 1: Nhar'Kaal lies defeated, the alien armies have fallen, the inhabitants raise crystal lights, and the Millenium Owl departs above the sunrise">
+        <img class="battle-report-layer far" id="battleReportFar" src="assets/intermissions/act-1-liberation-far-v3.webp" alt="">
+        <img class="battle-report-layer aftermath" id="battleReportAftermath" src="assets/intermissions/act-1-liberation-aftermath-v3.webp" alt="">
+        <img class="battle-report-layer citizens" id="battleReportCitizens" src="assets/intermissions/act-1-liberation-citizens-v3.webp" alt="">
         <div class="battle-report-atmosphere" id="battleReportAtmosphere"></div>
       </div>
       <div class="battle-report-console" id="battleReportConsole" aria-hidden="true">
@@ -3459,7 +3460,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.162 · Helix Raider Restored · updated 2026-07-25 18:03 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.25.163 · Cinematic Battle Report · updated 2026-07-25 18:27 CEST</div>
   </main>
 
   <script>
