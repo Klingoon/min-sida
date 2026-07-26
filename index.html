@@ -3334,7 +3334,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.170 · WASP-39 b CC0 Soundscape · updated 2026-07-26 12:33 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.171 · Authored Virus Biomechanics · updated 2026-07-26 13:31 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3579,7 +3579,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.170 · WASP-39 b CC0 Soundscape · updated 2026-07-26 12:33 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.171 · Authored Virus Biomechanics · updated 2026-07-26 13:31 CEST</div>
   </main>
 
   <script>
@@ -4407,8 +4407,30 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ["Pox Obsidian Broodqueen","POXVIRUS","pox","pincer","lateral-body","galaga","poxvirus"],
         ["Corona Nucleocapsid Imperator","CORONAVIRUS","enveloped","corona","spike-bud","concentric","coronavirus"]
       ];
+      const virosphereAnimationSlugs = [
+        "t4-dawn-harvester",
+        "lambda-glass-shepherd",
+        "adenovirus-prism-regent",
+        "ebola-thread-sovereign",
+        "tmv-helix-warden",
+        "influenza-crown-drifter",
+        "rotavirus-wheel-archon",
+        "norovirus-cup-emperor",
+        "rabies-bullet-prophet",
+        "herpes-tegument-oracle",
+        "marburg-filament-tyrant",
+        "hiv-cone-usurper",
+        "mimivirus-starfold-titan",
+        "sputnik-virophage-sentinel",
+        "poxvirus-brick-colossus",
+        "coronavirus-spike-imperator"
+      ];
+      const virosphereAnimationFps = [20,18,16,24,18,18,16,16,18,16,24,18,14,16,14,18];
       const virosphereFaunaBlueprints = virosphereSpeciesData.map((data, index) => {
         const [name,code,viralForm,attack,weapon,formation,earth] = data;
+        const animationUrl = `varldsrymden-anfaller/assets/wasp-39b-miniboss-animations/${virosphereAnimationSlugs[index]}-natural-64f-v2.webp?rev=171b`;
+        const animationImage = new Image();
+        animationImage.decoding = "async";
         return {
           name,
           id:`WASP39B-MINIBOSS-${String(index + 1).padStart(2,"0")}-${code}`,
@@ -4417,8 +4439,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           attack, weapon, formation, earth,
           hp:34 + index * 2, size:244 + index * 3, reward:index % 2 ? "shield" : "life",
           sceneIndex:index, style:virosphereSceneStyles[index], accent:virosphereSceneStyles[index].rim,
-          masterUrl:"", masterImage:new Image(), animationImage:new Image(), animationUrl:"",
-          animationFrames:96, animationColumns:12, animationFps:60
+          masterUrl:"", masterImage:new Image(), animationImage, animationUrl,
+          animationFrames:64, animationColumns:8, animationFps:virosphereAnimationFps[index]
         };
       });
 
@@ -4427,13 +4449,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const micro = kind === "microcosm";
         const viral = kind === "virosphere";
         shell.dataset.microcosmAnimation = micro ? "60hz-motion-staggered-30hz-deformation-v4" : "inactive";
-        shell.dataset.virosphereAnimation = viral ? "60hz-authored-capsid-rig-v1" : "inactive";
+        shell.dataset.virosphereAnimation = viral ? "authored-64-frame-virus-biomechanics-v2" : "inactive";
         const scenes = viral ? virosphereScenes : micro ? microcosmScenes : luytenBaseScenes;
         const styles = viral ? virosphereSceneStyles : micro ? microcosmSceneStyles : luytenBaseSceneStyles;
         const species = viral ? virosphereFaunaBlueprints : micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
         luytenScenes.splice(0, luytenScenes.length, ...scenes);
         luytenSceneStyles.splice(0, luytenSceneStyles.length, ...styles);
         luytenFaunaBlueprints.splice(0, luytenFaunaBlueprints.length, ...species);
+        if (viral) species.forEach((entry) => ensureLuytenMinibossAnimation(entry));
         luytenRun.imageHeight = scenes.length * H;
         luytenRun.maxScroll = (scenes.length - 1) * H;
         luytenRun.speed = viral ? 78 : micro ? 84 : 72;
@@ -5312,7 +5335,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ...virosphereFaunaBlueprints.map((species) => ({
           ...species,
           category: "alien",
-          typeLabel: `WASP-39 b viral miniboss · Scene ${species.sceneIndex + 1}/16 · procedural 60 FPS capsid rig · ${species.earth} morphology · ${species.formation} weapon formation`,
+          typeLabel: `WASP-39 b viral miniboss · Scene ${species.sceneIndex + 1}/16 · authored 64-frame ${species.earth} biomechanics at ${species.animationFps} FPS · no runtime interpolation · ${species.formation} weapon formation`,
           sprite: "luytenFauna",
           eye: species.accent
         })),
@@ -7892,19 +7915,17 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           if (!entry.image?.naturalWidth) {
             const viralSpecies = virosphereFaunaBlueprints.find((species) => species.id === entry.id);
             if (!viralSpecies) return;
-            context.save();
-            context.translate(canvas.width / 2, canvas.height / 2);
-            drawViralMiniboss(context, {
-              species: viralSpecies,
-              phase: viralSpecies.sceneIndex * 0.81,
-              motionMode: "idle",
-              motionDuration: 0,
-              motionTime: 0,
-              dying: 0,
-              deathElapsed: 0,
-              hurt: 0
-            }, viralSpecies.sceneIndex * 0.19, 76);
-            context.restore();
+            const animation = ensureLuytenMinibossAnimation(viralSpecies);
+            if (!animation.complete || !animation.naturalWidth) {
+              animation.addEventListener("load", paint, { once: true });
+              return;
+            }
+            const frameWidth = animation.naturalWidth / viralSpecies.animationColumns;
+            const frameHeight = animation.naturalHeight / Math.ceil(viralSpecies.animationFrames / viralSpecies.animationColumns);
+            const scale = Math.min(canvas.width / frameWidth, canvas.height / frameHeight) * 0.92;
+            const width = frameWidth * scale;
+            const height = frameHeight * scale;
+            context.drawImage(animation, 0, 0, frameWidth, frameHeight, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
             return;
           }
           const frameWidth = entry.image.naturalWidth / entry.columns;
@@ -13276,8 +13297,6 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function drawLuytenGeneratedMinibossRig(ctx, creature, t, size, preview = false) {
         const species = creature.species;
-        const image = ensureLuytenMinibossMaster(species);
-        if (!image || !image.complete || !image.naturalWidth) return false;
         const motionMode = creature.motionMode || "idle";
         const motionProgress = creature.motionDuration > 0
           ? clamp(1 - creature.motionTime / creature.motionDuration, 0, 1)
@@ -13290,6 +13309,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const alpha = creature.dying > 0 ? clamp(1 - Math.max(0, deathProgress - 0.56) / 0.44, 0, 1) : 1;
         const animation = ensureLuytenMinibossAnimation(species);
         if (animation && animation.complete && animation.naturalWidth) {
+          const authoredOnly = Boolean(species.viral);
           const columns = species.animationColumns;
           const sourceWidth = animation.naturalWidth / columns;
           const sourceHeight = animation.naturalHeight / Math.ceil(species.animationFrames / columns);
@@ -13302,12 +13322,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ctx.globalAlpha = alpha;
           ctx.translate(
             hurt * (species.sceneIndex % 2 ? -1 : 1) * Math.sin(motionProgress * Math.PI) * 7,
-            -thrustPulse * size * 0.014 + volley * size * 0.012 - deploy * size * 0.008
+            authoredOnly ? 0 : -thrustPulse * size * 0.014 + volley * size * 0.012 - deploy * size * 0.008
           );
-          ctx.rotate(Math.sin(naturalPhase + species.sceneIndex * 0.37) * 0.01);
+          ctx.rotate(authoredOnly ? 0 : Math.sin(naturalPhase + species.sceneIndex * 0.37) * 0.01);
           ctx.scale(
-            1 + deploy * 0.025 + deathProgress * 0.065,
-            1 - volley * 0.025 + deathProgress * 0.025
+            authoredOnly ? 1 : 1 + deploy * 0.025 + deathProgress * 0.065,
+            authoredOnly ? 1 : 1 - volley * 0.025 + deathProgress * 0.025
           );
           ctx.filter = creature.hurt > 0
             ? "brightness(1.7) saturate(.72)"
@@ -13327,6 +13347,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           return true;
         }
 
+        const image = ensureLuytenMinibossMaster(species);
+        if (!image || !image.complete || !image.naturalWidth) return false;
         const micro = Boolean(species.microMotion);
         const phase = micro
           ? (t * (0.9 + species.sceneIndex * 0.006) + species.sceneIndex * 0.71) % (Math.PI * 2)
@@ -13632,8 +13654,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const size = preview ? 126 : species.size;
         const scale = size / 140;
 
-        if (drawViralMiniboss(ctx, creature, t, size)) return;
         if (drawLuytenGeneratedMinibossRig(ctx, creature, t, size, preview)) return;
+        if (species.viral) return;
 
         ctx.save();
         ctx.globalAlpha = alpha;
