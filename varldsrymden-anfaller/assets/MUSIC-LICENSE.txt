@@ -39,6 +39,12 @@ Performance: Skidmore College Orchestra
 Source: Wikimedia Commons / Musopen
 Source page: https://commons.wikimedia.org/wiki/File:Holst,_The_Planets,_Op._32_-_I._Mars,_the_Bringer_of_War.ogg
 
+RHYTHM GARDEN
+File: music/miltons-strawberry-planet/rhythm-garden-congusbongus-cc0.ogg
+Composer and recording: congusbongus
+Source: OpenGameArt
+Source page: https://opengameart.org/content/rhythm-garden
+
 License: https://creativecommons.org/publicdomain/zero/1.0/
 
 The source recordings were converted to AAC/M4A for cross-browser playback.

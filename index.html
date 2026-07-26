@@ -461,6 +461,29 @@
       opacity: 0.84;
     }
 
+    [data-parallax-mode="strawberry-planet-parallax"] .parallax-backdrop.luyten-parallax {
+      background: #130419;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .parallax-backdrop.luyten-parallax::after {
+      background:
+        radial-gradient(ellipse at 50% 28%, rgba(255, 232, 250, 0.11), transparent 36%),
+        linear-gradient(135deg, rgba(255, 40, 116, 0.07), transparent 42%, rgba(74, 230, 255, 0.08));
+      mix-blend-mode: screen;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .parallax-backdrop.luyten-parallax .parallax-layer {
+      background-size: 760px 3840px;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .parallax-backdrop.luyten-parallax .parallax-layer.mid {
+      opacity: 0.48;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .parallax-backdrop.luyten-parallax .parallax-layer.near {
+      opacity: 0.58;
+    }
+
     #underwaterFxLayer,
     .underwater-lens {
       position: absolute;
@@ -536,6 +559,44 @@
       opacity: 0.16;
       animation-direction: reverse;
       animation-duration: 17s;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .underwater-lens {
+      background:
+        radial-gradient(ellipse at 48% 38%, rgba(255, 255, 255, 0.05), transparent 31%),
+        conic-gradient(from 18deg at 50% 44%, rgba(255, 68, 132, 0.025), rgba(105, 231, 255, 0.055), rgba(255, 221, 128, 0.035), rgba(184, 102, 255, 0.055), rgba(255, 68, 132, 0.025));
+      box-shadow:
+        inset 0 0 95px rgba(27, 3, 30, 0.28),
+        inset 0 -90px 150px rgba(57, 4, 48, 0.22);
+      animation: strawberryPrismDrift 8s ease-in-out infinite alternate;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .underwater-lens::before,
+    [data-parallax-mode="strawberry-planet-parallax"] .underwater-lens::after {
+      opacity: 0.22;
+      background:
+        linear-gradient(112deg, transparent 18%, rgba(255,255,255,.08) 27%, transparent 36%),
+        radial-gradient(ellipse at 32% 20%, rgba(255, 119, 183, 0.12), transparent 38%),
+        radial-gradient(ellipse at 72% 68%, rgba(95, 232, 255, 0.1), transparent 43%);
+      mix-blend-mode: screen;
+      animation: strawberryPrismSweep 12s linear infinite;
+    }
+
+    [data-parallax-mode="strawberry-planet-parallax"] .underwater-lens::after {
+      opacity: 0.14;
+      animation-direction: reverse;
+      animation-duration: 17s;
+    }
+
+    @keyframes strawberryPrismDrift {
+      0% { transform: translate3d(-1px, -1px, 0) scale(1.003); filter: hue-rotate(-4deg); }
+      100% { transform: translate3d(1.5px, 1px, 0) scale(1.008); filter: hue-rotate(5deg); }
+    }
+
+    @keyframes strawberryPrismSweep {
+      0% { transform: translate3d(-6%, -2%, 0) rotate(-2deg); }
+      50% { transform: translate3d(3%, 1%, 0) rotate(1deg); }
+      100% { transform: translate3d(8%, -1%, 0) rotate(3deg); }
     }
 
     @keyframes underwaterLensDrift {
@@ -1579,6 +1640,23 @@
       border-color: rgba(94, 215, 255, 0.52);
     }
 
+    button.strawberry-planet-btn {
+      flex: 0 0 auto;
+      min-width: 230px;
+      padding-inline: 22px;
+      white-space: nowrap;
+      font-size: 12px;
+      border-color: rgba(255, 178, 219, 0.92);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,139,198,.92) 34%, rgba(202,35,112,.96) 68%, rgba(114,238,255,.88));
+      color: #24051a;
+      text-shadow: 0 1px rgba(255,255,255,.58);
+      box-shadow:
+        0 0 18px rgba(255, 69, 158, 0.42),
+        0 0 30px rgba(94, 221, 255, 0.18),
+        inset 0 2px 0 rgba(255,255,255,.72);
+    }
+
     button:hover {
       filter: brightness(1.08);
       transform: translateY(-1px);
@@ -2240,9 +2318,20 @@
       }
 
       .panel .actions:has(#voiceShieldBtn) button {
-        width: 32%;
+        width: calc(50% - 5px);
         padding-inline: 10px;
         font-size: clamp(9px, 2.7vw, 13px);
+      }
+
+      .panel .actions:has(#voiceShieldBtn) #startBtn {
+        width: calc(32% - 5px);
+      }
+
+      .panel .actions:has(#voiceShieldBtn) #strawberryPlanetBtn {
+        width: calc(68% - 5px);
+        min-width: 0;
+        white-space: normal;
+        line-height: 1.12;
       }
     }
 
@@ -3323,6 +3412,50 @@
         font-size: 18px;
       }
     }
+
+    /* Keep the long bonus mission label clear of the sound controls. */
+    body .panel .actions {
+      flex-wrap: wrap;
+    }
+
+    body .panel #startBtn {
+      flex: 0 0 120px;
+      width: 120px;
+    }
+
+    body .panel #strawberryPlanetBtn {
+      flex: 1 0 280px;
+      width: 280px;
+      min-width: 280px;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    body .panel #muteBtn,
+    body .panel #voiceShieldBtn {
+      flex: 1 1 180px;
+      width: 180px;
+    }
+
+    @media (pointer: coarse), (max-width: 720px) {
+      body .panel #startBtn {
+        flex-basis: calc(32% - 5px);
+        width: calc(32% - 5px);
+      }
+
+      body .panel #strawberryPlanetBtn {
+        flex-basis: calc(68% - 5px);
+        width: calc(68% - 5px);
+        min-width: 0;
+        white-space: normal;
+      }
+
+      body .panel #muteBtn,
+      body .panel #voiceShieldBtn {
+        flex-basis: calc(50% - 5px);
+        width: calc(50% - 5px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -3334,7 +3467,7 @@
       <img class="intro-layer ship" id="introShip" src="varldsrymden-anfaller/assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.173 · Astrax Articulation Pass · updated 2026-07-26 16:26 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.174 · Strawberry Audio Pass · updated 2026-07-26 19:09 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3503,6 +3636,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
         <div class="actions">
           <button id="startBtn" type="button">Start</button>
+          <button class="strawberry-planet-btn" id="strawberryPlanetBtn" type="button">Miltons Strawberry Planet</button>
           <button class="secondary" id="muteBtn" type="button">Sound on</button>
           <button class="secondary" id="voiceShieldBtn" type="button" aria-live="polite" title="Use microphone speech detection to activate the shield">Voice shield</button>
         </div>
@@ -3579,7 +3713,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.173 · Astrax Articulation Pass · updated 2026-07-26 16:26 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.174 · Strawberry Audio Pass · updated 2026-07-26 19:09 CEST</div>
   </main>
 
   <script>
@@ -3656,6 +3790,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const actKicker = document.querySelector("#actKicker");
       const actName = document.querySelector("#actName");
       const startBtn = document.querySelector("#startBtn");
+      const strawberryPlanetBtn = document.querySelector("#strawberryPlanetBtn");
       const muteBtn = document.querySelector("#muteBtn");
       const voiceShieldBtn = document.querySelector("#voiceShieldBtn");
       const infoTab = document.querySelector("#infoTab");
@@ -3952,8 +4087,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { title: "Underwater Theme", artist: "Spring Spring", src: "varldsrymden-anfaller/assets/music/k2-18b/underwater-theme-spring-spring-cc0.ogg" },
         { title: "Glowsphere", artist: "Gichco", src: "varldsrymden-anfaller/assets/music/wasp-39b/glowsphere-gichco-cc0.m4a" },
         { title: "Deep Space Array", artist: "Tozan", src: "varldsrymden-anfaller/assets/music/wasp-39b/deep-space-array-tozan-cc0.ogg" },
-        { title: "Searching", artist: "yd", src: "varldsrymden-anfaller/assets/music/wasp-39b/searching-yd-cc0.ogg" }
+        { title: "Searching", artist: "yd", src: "varldsrymden-anfaller/assets/music/wasp-39b/searching-yd-cc0.ogg" },
+        { title: "Rhythm Garden", artist: "congusbongus", src: "varldsrymden-anfaller/assets/music/miltons-strawberry-planet/rhythm-garden-congusbongus-cc0.ogg" }
       ];
+      const strawberrySoundtrackIndex = 16;
       const luytenExplorationSoundtracks = [5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5];
       const luytenCombatSoundtracks = [8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9];
       const microcosmExplorationSoundtracks = [11, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11];
@@ -3967,6 +4104,26 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       };
       const virosphereSfxPools = new Map();
       const virosphereSfxLastPlayed = new Map();
+      const strawberrySfxCatalog = {
+        sparkle: {
+          src: "varldsrymden-anfaller/assets/sfx/miltons-strawberry-planet/magic-stars-retro-sparkle-smokinghotdog-cc0.mp3",
+          maxDuration: 2.6
+        },
+        squish: {
+          src: "varldsrymden-anfaller/assets/sfx/miltons-strawberry-planet/squish-nomiqbomi-cc0.mp3",
+          maxDuration: 0.72
+        },
+        pop: {
+          src: "varldsrymden-anfaller/assets/sfx/miltons-strawberry-planet/bubble-pop-arttim-cc0.mp3",
+          maxDuration: 0.32
+        },
+        kiss: {
+          src: "varldsrymden-anfaller/assets/sfx/miltons-strawberry-planet/kiss-cabled-mess-cc0.mp3",
+          maxDuration: 1.08
+        }
+      };
+      const strawberrySfxPools = new Map();
+      const strawberrySfxLastPlayed = new Map();
       let luytenExpedition = "luyten";
       let soundtrackIndex = 0;
       let soundtrackFadeTimer = null;
@@ -4022,6 +4179,46 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         sample.volume = clamp(volume, 0, 0.5);
         sample.playbackRate = 0.9 + Math.random() * 0.2;
         sample.play().catch(() => {});
+      }
+
+      function playStrawberrySfx(name, volume = 0.24, cooldown = 0.12, pitchSpread = 0.08) {
+        if (muted || luytenExpedition !== "strawberry") return;
+        const definition = strawberrySfxCatalog[name];
+        if (!definition) return;
+        const now = performance.now();
+        if (now - (strawberrySfxLastPlayed.get(name) || 0) < cooldown * 1000) return;
+        strawberrySfxLastPlayed.set(name, now);
+        let pool = strawberrySfxPools.get(name);
+        if (!pool) {
+          pool = Array.from({ length: 4 }, () => {
+            const sample = new Audio(definition.src);
+            sample.preload = "auto";
+            sample.addEventListener("error", () => {
+              document.documentElement.dataset.strawberrySfxState = `error:${name}`;
+            });
+            return sample;
+          });
+          strawberrySfxPools.set(name, pool);
+        }
+        const sample = pool.find((candidate) => candidate.paused || candidate.ended) || pool[0];
+        if (sample._strawberryStopTimer) clearTimeout(sample._strawberryStopTimer);
+        sample.pause();
+        sample.currentTime = 0;
+        sample.volume = clamp(volume, 0, 0.52);
+        sample.playbackRate = 1 + (Math.random() * 2 - 1) * pitchSpread;
+        document.documentElement.dataset.strawberrySfx = name;
+        sample.play()
+          .then(() => {
+            document.documentElement.dataset.strawberrySfxState = `playing:${name}`;
+          })
+          .catch(() => {
+            document.documentElement.dataset.strawberrySfxState = `blocked:${name}`;
+          });
+        sample._strawberryStopTimer = setTimeout(() => {
+          sample.pause();
+          sample.currentTime = 0;
+          sample._strawberryStopTimer = 0;
+        }, definition.maxDuration * 1000);
       }
 
       let demoTargetX = W / 2;
@@ -4444,30 +4641,102 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         };
       });
 
+      const strawberryScenes = [
+        { name: "Cellular Berry Dawn", id: "BACKDROP-MILTON-STRAWBERRY-01", imageUrl: "varldsrymden-anfaller/assets/backdrops/miltons-strawberry-planet/scene-01-v1.webp" },
+        { name: "Prismatic Jam Ravine", id: "BACKDROP-MILTON-STRAWBERRY-02", imageUrl: "varldsrymden-anfaller/assets/backdrops/miltons-strawberry-planet/scene-02-v1.webp" },
+        { name: "Whipped-Cream Nebula", id: "BACKDROP-MILTON-STRAWBERRY-03", imageUrl: "varldsrymden-anfaller/assets/backdrops/miltons-strawberry-planet/scene-03-v1.webp" },
+        { name: "The Royal Preserve", id: "BACKDROP-MILTON-STRAWBERRY-04", imageUrl: "varldsrymden-anfaller/assets/backdrops/miltons-strawberry-planet/scene-04-v1.webp" }
+      ];
+      const strawberrySceneStyles = [
+        { ambient:"#281032", tissue:"#d51f61", rim:"#ff8fc8", pale:"#fff0fb", light:"#ffadd4", water:"#33133e", shadow:"#100413", accent:"#ff3e88", substrateLeft:"#1a0823", substrateRight:"#24102e", saturation:1.14, lightX:.39, lightY:.32, detail:.94, morph:0 },
+        { ambient:"#172a40", tissue:"#bd2c74", rim:"#70e8ff", pale:"#f7fbff", light:"#d08cff", water:"#15243a", shadow:"#080612", accent:"#5ce4f2", substrateLeft:"#0d1020", substrateRight:"#24132d", saturation:1.12, lightX:.62, lightY:.36, detail:.96, morph:2 },
+        { ambient:"#4c2449", tissue:"#f06ba8", rim:"#ffd6ee", pale:"#fff9ff", light:"#ffb9e1", water:"#3b1c45", shadow:"#16091c", accent:"#ff86bd", substrateLeft:"#29112d", substrateRight:"#3a163a", saturation:1.08, lightX:.48, lightY:.28, detail:.9, morph:1 },
+        { ambient:"#3a1437", tissue:"#d8175d", rim:"#ffcae4", pale:"#ffffff", light:"#ff8fc4", water:"#230c31", shadow:"#0c0311", accent:"#ff336f", substrateLeft:"#21081f", substrateRight:"#32102c", saturation:1.18, lightX:.5, lightY:.36, detail:1, morph:3 }
+      ];
+      const strawberryKingAnimation = new Image();
+      strawberryKingAnimation.decoding = "async";
+      const strawberryResidentAnimationUrls = [
+        "varldsrymden-anfaller/assets/strawberry-residents/prism-heart-couriers-24f-v1.png",
+        "varldsrymden-anfaller/assets/strawberry-residents/ribbonberry-chorus-24f-v1.png",
+        "varldsrymden-anfaller/assets/strawberry-residents/cream-cherub-24f-v1.png"
+      ];
+      const strawberryResidentAnimationImages = strawberryResidentAnimationUrls.map(() => {
+        const image = new Image();
+        image.decoding = "async";
+        return image;
+      });
+      const strawberryFaunaBlueprints = [
+        {
+          name:"Prism Heart Couriers", id:"MILTON-RESIDENT-01-PRISM-HEART-COURIERS",
+          form:"star", motion:"asteroid", earth:"microscopic berry cells", hp:7, size:170,
+          attack:"weave", weapon:"heart", formation:"sine", reward:"shield", friendly:true, strawberryResident:true,
+          animationImage:strawberryResidentAnimationImages[0], animationUrl:strawberryResidentAnimationUrls[0],
+          animationFrames:24, animationColumns:6, animationFps:18
+        },
+        {
+          name:"Ribbonberry Chorus", id:"MILTON-RESIDENT-02-RIBBONBERRY-CHORUS",
+          form:"siphon", motion:"siphonophore", earth:"colonial crystal berries", hp:9, size:180,
+          attack:"chain", weapon:"ribbon", formation:"chain", reward:"life", friendly:true, strawberryResident:true,
+          animationImage:strawberryResidentAnimationImages[1], animationUrl:strawberryResidentAnimationUrls[1],
+          animationFrames:24, animationColumns:6, animationFps:16
+        },
+        {
+          name:"Cream Cherub Swarm", id:"MILTON-RESIDENT-03-CREAM-CHERUB-SWARM",
+          form:"jelly", motion:"medusa", earth:"bioluminescent berry spores", hp:11, size:186,
+          attack:"curtain", weapon:"kiss", formation:"galaga", reward:"shield", friendly:true, strawberryResident:true,
+          animationImage:strawberryResidentAnimationImages[2], animationUrl:strawberryResidentAnimationUrls[2],
+          animationFrames:24, animationColumns:6, animationFps:20
+        },
+        {
+          name:"Strawberry King", id:"MILTON-MINIBOSS-04-STRAWBERRY-KING",
+          form:"hydra", motion:"hydrostat", earth:"transparent strawberry tissue", hp:52, size:274,
+          attack:"corona", weapon:"jam-heart", formation:"rose", reward:"life", friendly:false,
+          animationImage:strawberryKingAnimation,
+          animationUrl:"varldsrymden-anfaller/assets/bosses/strawberry-king-24f-v1.png",
+          animationFrames:24, animationColumns:6, animationFps:16
+        }
+      ].map((species, sceneIndex) => ({
+        ...species,
+        sceneIndex,
+        style:strawberrySceneStyles[sceneIndex],
+        accent:strawberrySceneStyles[sceneIndex].rim,
+        masterUrl:"",
+        masterImage:new Image(),
+        animationImage:species.animationImage || new Image(),
+        animationUrl:species.animationUrl || "",
+        animationFrames:species.animationFrames || 0,
+        animationColumns:species.animationColumns || 1,
+        animationFps:species.animationFps || 0
+      }));
+
       function configureLuytenExpedition(kind = "luyten") {
         luytenExpedition = kind;
         const micro = kind === "microcosm";
         const viral = kind === "virosphere";
+        const strawberry = kind === "strawberry";
         shell.dataset.microcosmAnimation = micro ? "60hz-motion-staggered-30hz-deformation-v4" : "inactive";
         shell.dataset.virosphereAnimation = viral ? "authored-64-frame-continuity-v3" : "inactive";
-        const scenes = viral ? virosphereScenes : micro ? microcosmScenes : luytenBaseScenes;
-        const styles = viral ? virosphereSceneStyles : micro ? microcosmSceneStyles : luytenBaseSceneStyles;
-        const species = viral ? virosphereFaunaBlueprints : micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
+        shell.dataset.strawberryAnimation = strawberry ? "microscopic-prism-expedition-v1" : "inactive";
+        const scenes = strawberry ? strawberryScenes : viral ? virosphereScenes : micro ? microcosmScenes : luytenBaseScenes;
+        const styles = strawberry ? strawberrySceneStyles : viral ? virosphereSceneStyles : micro ? microcosmSceneStyles : luytenBaseSceneStyles;
+        const species = strawberry ? strawberryFaunaBlueprints : viral ? virosphereFaunaBlueprints : micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
         luytenScenes.splice(0, luytenScenes.length, ...scenes);
         luytenSceneStyles.splice(0, luytenSceneStyles.length, ...styles);
         luytenFaunaBlueprints.splice(0, luytenFaunaBlueprints.length, ...species);
         if (viral) primeVirosphereAnimationWindow(0);
         luytenRun.imageHeight = scenes.length * H;
         luytenRun.maxScroll = (scenes.length - 1) * H;
-        luytenRun.speed = viral ? 78 : micro ? 84 : 72;
-        const backdropRoot = viral
+        luytenRun.speed = strawberry ? 64 : viral ? 78 : micro ? 84 : 72;
+        const backdropRoot = strawberry
+          ? "varldsrymden-anfaller/assets/backdrops/miltons-strawberry-planet/miltons-strawberry-planet"
+          : viral
           ? "varldsrymden-anfaller/assets/backdrops/wasp-39b-virosphere/wasp-39b-virosphere"
           : micro
             ? "varldsrymden-anfaller/assets/backdrops/k2-18b-microcosm/k2-18b-microcosm"
             : "varldsrymden-anfaller/assets/backdrops/luyten-b/luyten-b";
-        const farAsset = viral ? `${backdropRoot}-far-v2.webp` : micro ? `${backdropRoot}-far-v1.webp` : `${backdropRoot}-far-v7.jpg`;
-        const midAsset = viral ? `${backdropRoot}-mid-v2.webp` : micro ? `${backdropRoot}-mid-v1.webp` : `${backdropRoot}-mid-v7.webp`;
-        const nearAsset = viral ? `${backdropRoot}-near-v2.webp` : micro ? `${backdropRoot}-near-v1.webp` : `${backdropRoot}-near-v7.webp`;
+        const farAsset = strawberry ? `${backdropRoot}-far-v1.webp` : viral ? `${backdropRoot}-far-v2.webp` : micro ? `${backdropRoot}-far-v1.webp` : `${backdropRoot}-far-v7.jpg`;
+        const midAsset = strawberry ? `${backdropRoot}-mid-v1.webp` : viral ? `${backdropRoot}-mid-v2.webp` : micro ? `${backdropRoot}-mid-v1.webp` : `${backdropRoot}-mid-v7.webp`;
+        const nearAsset = strawberry ? `${backdropRoot}-near-v1.webp` : viral ? `${backdropRoot}-near-v2.webp` : micro ? `${backdropRoot}-near-v1.webp` : `${backdropRoot}-near-v7.webp`;
         luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${farAsset}")`);
         luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${midAsset}")`);
         luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${nearAsset}")`);
@@ -4630,7 +4899,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             dead: false,
             dying: 0,
             deathElapsed: 0,
-            deathDuration: luytenExpedition === "virosphere"
+            deathDuration: luytenExpedition === "strawberry"
+              ? (species.friendly ? 1.35 : 3.4)
+              : luytenExpedition === "virosphere"
               ? 2.7 + index * 0.035
               : luytenExpedition === "microcosm"
                 ? 2.15 + index * 0.025
@@ -4698,11 +4969,15 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             hp: 2 + (creature.index > 9 ? 1 : 0),
             maxHp: 2 + (creature.index > 9 ? 1 : 0),
             accent: species.accent,
-            pale: species.style.pale
+            pale: species.style.pale,
+            loving: luytenExpedition === "strawberry" && species.friendly
           });
         }
         play(128 + creature.index * 9, 0.18, "triangle", 0.032);
         playVirosphereSfx("attack", 0.12, 0.7);
+        if (luytenExpedition === "strawberry") {
+          playStrawberrySfx(species.weapon === "kiss" ? "kiss" : "pop", 0.2, 0.55, 0.045);
+        }
       }
 
       function fireLuytenPattern(creature) {
@@ -4747,8 +5022,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           for (let index = 0; index < baseCount; index += 1) {
             const offset = (index - (baseCount - 1) / 2) * 0.18;
             shots.push({ angle: aimed + offset, speed: 138 + (index % 2) * 18, turnRate: 0 });
-          }
-        }
+      }
+    }
 
         shots.slice(0, Math.max(0, 28 - enemyBullets.length)).forEach((shot) => {
           enemyBullets.push({
@@ -4759,7 +5034,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             turnRate: shot.turnRate,
             r: 5,
             luyten: true,
-            tint: creature.species.accent
+            tint: creature.species.accent,
+            loving: luytenExpedition === "strawberry" && creature.species.friendly
           });
         });
         play(218 + creature.index * 7, 0.1, "sine", 0.025);
@@ -4767,6 +5043,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function collectLuytenBonus(index) {
         const bonus = luytenBonuses[index];
+        if (luytenExpedition === "strawberry") playStrawberrySfx("sparkle", 0.3, 0.45, 0.025);
         if (bonus.type === "life") {
           player.lives += 2;
           player.invuln = Math.max(player.invuln, 5);
@@ -5724,12 +6001,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ].forEach((backdrop) => backdrop.classList.remove("active"));
         luytenParallaxBackdrop.classList.add("active");
         setUnderwaterFxActive(true);
-        shell.dataset.parallaxMode = luytenExpedition === "virosphere"
+        shell.dataset.parallaxMode = luytenExpedition === "strawberry"
+          ? "strawberry-planet-parallax"
+          : luytenExpedition === "virosphere"
           ? "wasp-39b-virosphere-parallax"
           : luytenExpedition === "microcosm"
             ? "k2-18b-microcosm-parallax"
             : "luyten-b-abyssal-parallax";
-        shell.dataset.stageBackdrop = luytenExpedition === "virosphere"
+        shell.dataset.stageBackdrop = luytenExpedition === "strawberry"
+          ? "miltons-strawberry-planet"
+          : luytenExpedition === "virosphere"
           ? "wasp-39b-fluorescent-virosphere"
           : luytenExpedition === "microcosm"
             ? "k2-18b-hycean-microcosm"
@@ -6883,12 +7164,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const cue = `${luytenExpedition}:${safeSceneIndex}:${mode}`;
         if (cue === luytenMusicCue) return;
         luytenMusicCue = cue;
-        const soundtrackSequence = luytenExpedition === "virosphere"
+        const soundtrackSequence = luytenExpedition === "strawberry"
+          ? [strawberrySoundtrackIndex, strawberrySoundtrackIndex, strawberrySoundtrackIndex, strawberrySoundtrackIndex]
+          : luytenExpedition === "virosphere"
           ? (mode === "combat" ? virosphereCombatSoundtracks : virosphereExplorationSoundtracks)
           : luytenExpedition === "microcosm"
           ? (mode === "combat" ? microcosmCombatSoundtracks : microcosmExplorationSoundtracks)
           : (mode === "combat" ? luytenCombatSoundtracks : luytenExplorationSoundtracks);
-        const fadeDuration = luytenExpedition === "virosphere"
+        const fadeDuration = luytenExpedition === "strawberry"
+          ? (mode === "combat" ? 650 : 1100)
+          : luytenExpedition === "virosphere"
           ? (mode === "combat" ? 1050 : 1800)
           : luytenExpedition === "microcosm"
           ? (mode === "combat" ? 900 : 1250)
@@ -7447,15 +7732,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const luytenStage = state === "luyten" || state === "luytenBriefing";
         const microcosmStage = luytenStage && luytenExpedition === "microcosm";
         const virosphereStage = luytenStage && luytenExpedition === "virosphere";
+        const strawberryStage = luytenStage && luytenExpedition === "strawberry";
         const actIndex = clamp(act - 1, 0, actNames.length - 1);
         const alienStyle = alienStyleForStage(act, alienRoundsCleared);
         const waveLabel = luytenStage
-          ? `${virosphereStage ? "STRAIN" : microcosmStage ? "SPECIMEN" : "DIVE"} ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
+          ? `${strawberryStage ? "SWEET SCENE" : virosphereStage ? "STRAIN" : microcosmStage ? "SPECIMEN" : "DIVE"} ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
           : canyonStage
           ? "MINIBOSS GAUNTLET"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         const stageLabel = luytenStage
-          ? (virosphereStage ? "WASP-39 b Fluorescent Virosphere" : microcosmStage ? "K2-18 b Hycean Microcosm" : "Luyten b Abyssal Descent")
+          ? (strawberryStage ? "Miltons Strawberry Planet" : virosphereStage ? "WASP-39 b Fluorescent Virosphere" : microcosmStage ? "K2-18 b Hycean Microcosm" : "Luyten b Abyssal Descent")
           : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
         const encounterLabel = luytenStage
           ? (activeLuytenFauna()?.species.name || luytenScenes[luytenRun.sceneIndex].name)
@@ -8638,6 +8924,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         overlay.classList.add("visible");
         overlay.classList.add("demo-mode");
         startBtn.textContent = "Start";
+        strawberryPlanetBtn.hidden = false;
         overlayText.textContent = "ATTRACT MODE ACTIVE\nPRESS START TO PLAY\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
         setConsolePane("scores");
         updateHud();
@@ -8714,6 +9001,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function startGame() {
         if (introActive) return;
         initAudio();
+        strawberryPlanetBtn.hidden = true;
         if (state === "canyonBriefing") {
           beginCanyonRun();
           return;
@@ -9056,6 +9344,38 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         updateHud();
       }
 
+      function startStrawberryBriefing() {
+        configureLuytenExpedition("strawberry");
+        selectSoundtrack(strawberrySoundtrackIndex, 900);
+        clearAttractTimer();
+        clearAttractShowcaseTimer();
+        attractTourMode = false;
+        fullAutoPlaythrough = false;
+        delete shell.dataset.autoPlaythrough;
+        delete shell.dataset.attractShowcase;
+        state = "luytenBriefing";
+        clearBossTimers();
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        luytenWeapons.length = 0;
+        luytenBonuses.length = 0;
+        comets.length = 0;
+        rifts.length = 0;
+        bonusUfo = null;
+        luytenRun.scroll = 0;
+        luytenRun.sceneIndex = 0;
+        setLuytenBackdrop();
+        strawberryPlanetBtn.hidden = true;
+        winScene.classList.remove("visible", "finale", "intermission");
+        overlay.classList.remove("demo-mode");
+        overlayText.textContent = "MILTONS STRAWBERRY PLANET · BONUS EXPEDITION\n\nA microscopic crystal world has ripened inside a prism nebula. Every strawberry is transparent, fluorescent and very much alive.\n\nMISSION  CROSS FOUR CONNECTED CRYSTAL SCENES\nCREAM CANNONS  YOUR LASERS HAVE BEEN REPLACED WITH WHIPPED CREAM\nLOVE PARADE  THE RESIDENTS THROW HEARTS, RIBBONS AND KISSES IN GALAGA FORMATIONS\nFINAL SCENE  DEFEAT STRAWBERRY KING AND TURN HIS ROYAL PRESERVE INTO JAM\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE CREAM  SPACE / W · SHIELD X\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE CREAM  TAP WITH ANOTHER FINGER\nSHIELD  HOLD THE LOWER-LEFT CORNER";
+        startBtn.textContent = "Launch the cream cannons";
+        setConsolePane("info");
+        overlay.classList.add("visible");
+        updateHud();
+      }
+
       function beginLuytenRun(kind = luytenExpedition) {
         configureLuytenExpedition(kind);
         clearAttractTimer();
@@ -9086,6 +9406,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           ? "WASP-39 b Fluorescent Virosphere"
           : luytenExpedition === "microcosm"
             ? "K2-18 b Hycean Microcosm"
+            : luytenExpedition === "strawberry"
+              ? "Miltons Strawberry Planet"
             : "Luyten b Abyssal Descent";
         if (attractTourMode) keepAttractConsoleVisible(title.toUpperCase());
         else overlay.classList.remove("visible", "demo-mode");
@@ -9115,7 +9437,20 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         play(392, 0.24, "triangle", 0.045);
         setTimeout(() => play(587, 0.34, "sine", 0.04), 160);
         setTimeout(() => {
-          if (luytenExpedition === "virosphere") {
+          if (luytenExpedition === "strawberry") {
+            state = "strawberryComplete";
+            score += 18000;
+            overlayText.textContent = "STRAWBERRY KING: JAMMED!\n\nTHE ROYAL PRESERVE IS OPEN\nMILTONS STRAWBERRY PLANET IS SWEET, FREE AND SLIGHTLY STICKY AGAIN.\n\nCREAM ACCURACY  EXTREMELY DELICIOUS\nGALACTIC JAM RESERVE  FULL\nPRISM HEARTS LIBERATED  100%\n\nBONUS SCORE  +18 000";
+            startBtn.textContent = "Start the main campaign";
+            strawberryPlanetBtn.hidden = true;
+            setConsolePane("info");
+            overlay.classList.add("visible");
+            for (let burst = 0; burst < 12; burst += 1) {
+              setTimeout(() => {
+                makeParticles(90 + Math.random() * (W - 180), 170 + Math.random() * (H - 330), burst % 3 ? "#ff5e9f" : "#fff4fb", 28);
+              }, burst * 90);
+            }
+          } else if (luytenExpedition === "virosphere") {
             state = "playing";
             spawnBoss();
             showActTitle(act, false, "Mordrath · Helios Devourer");
@@ -9453,10 +9788,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function shoot() {
         if (player.cooldown > 0 || (!isActiveRun() && state !== "canyon")) return;
         const shotId = ++shotSequence;
-        bullets.push({ x: player.x - 12, y: player.y - 24, vy: -720, r: 4, shotId });
-        bullets.push({ x: player.x + 12, y: player.y - 24, vy: -720, r: 4, shotId });
-        player.cooldown = 0.18;
-        if (state === "playing" || state === "canyon" || state === "luyten") laserSound();
+        const cream = state === "luyten" && luytenExpedition === "strawberry";
+        bullets.push({ x: player.x - 12, y: player.y - 24, vy: cream ? -610 : -720, r: cream ? 7 : 4, shotId, cream });
+        bullets.push({ x: player.x + 12, y: player.y - 24, vy: cream ? -610 : -720, r: cream ? 7 : 4, shotId, cream });
+        player.cooldown = cream ? 0.21 : 0.18;
+        if (cream) {
+          play(420 + (shotId % 3) * 32, 0.075, "sine", 0.024);
+          setTimeout(() => play(760, 0.05, "triangle", 0.012), 28);
+        } else if (state === "playing" || state === "canyon" || state === "luyten") laserSound();
       }
 
       function toggleInfiniteResources() {
@@ -10301,6 +10640,23 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
               spawnLuytenReward(creature);
               makeParticles(creature.x, creature.y, creature.species.style.pale, 84);
               makeParticles(creature.x, creature.y, creature.species.accent, 64);
+              if (luytenExpedition === "strawberry" && !creature.species.friendly) {
+                makeParticles(creature.x, creature.y, "#d91455", 118);
+                makeParticles(creature.x, creature.y, "#ff9ac9", 86);
+                for (let splash = 0; splash < 4; splash += 1) {
+                  shockwaves.push({
+                    x: creature.x + (splash - 1.5) * 24,
+                    y: creature.y + Math.sin(splash * 2.1) * 18,
+                    radius: 12 + splash * 5,
+                    life: 1.25 + splash * 0.08,
+                    max: 1.25 + splash * 0.08,
+                    speed: 155 + splash * 28,
+                    rgb: hexToRgb(splash % 2 ? "#ff3b78" : "#fff0fa"),
+                    twist: creature.phase + splash
+                  });
+                }
+                shell.dataset.strawberryKing = "jammed";
+              }
               shockwaves.push({
                 x: creature.x,
                 y: creature.y,
@@ -10435,6 +10791,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
               score += 320;
               luytenWeapons.splice(weaponIndex, 1);
               explosionSound(0.52);
+              if (luytenExpedition === "strawberry") playStrawberrySfx("pop", 0.22, 0.08, 0.12);
             }
             continue;
           }
@@ -10450,7 +10807,9 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             creature.motionTime = creature.motionDuration;
           }
           score += 45;
-          makeParticles(bullet.x, bullet.y, creature.species.accent, creature.hp > 0 ? 11 : 76);
+          makeParticles(bullet.x, bullet.y, bullet.cream ? "#fff6fc" : creature.species.accent, creature.hp > 0 ? 11 : 76);
+          if (bullet.cream) makeParticles(bullet.x, bullet.y, "#ff8fc8", creature.hp > 0 ? 5 : 34);
+          if (bullet.cream) playStrawberrySfx("squish", creature.hp > 0 ? 0.2 : 0.36, 0.075, 0.1);
           play(creature.hp > 0 ? 192 : 88, creature.hp > 0 ? 0.07 : 0.32, "triangle", creature.hp > 0 ? 0.028 : 0.07);
           if (creature.hp <= 0) {
             playVirosphereSfx("rupture", 0.24, 0.35);
@@ -10487,7 +10846,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             enemyBullets.splice(index, 1);
           } else if (Math.hypot(player.x - bullet.x, player.y - bullet.y) < 32 + bullet.r) {
             enemyBullets.splice(index, 1);
-            damagePlayer();
+            if (bullet.loving) {
+              score += 75;
+              makeParticles(bullet.x, bullet.y, "#ff9ccc", 16);
+              playStrawberrySfx("pop", 0.17, 0.09, 0.13);
+              play(784, 0.06, "sine", 0.018);
+            } else {
+              damagePlayer();
+            }
           }
         }
         for (let index = luytenWeapons.length - 1; index >= 0; index -= 1) {
@@ -10497,7 +10863,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           } else if (weapon.t >= 0 && Math.hypot(player.x - weapon.x, player.y - weapon.y) < 31 + weapon.r) {
             makeParticles(weapon.x, weapon.y, weapon.accent, 32);
             luytenWeapons.splice(index, 1);
-            damagePlayer();
+            if (weapon.loving) {
+              score += 180;
+              player.shieldTime = Math.max(player.shieldTime, 0.35);
+              playStrawberrySfx(weapon.type === "kiss" ? "kiss" : "pop", 0.2, 0.12, 0.08);
+              play(988, 0.08, "triangle", 0.022);
+            } else {
+              damagePlayer();
+            }
           }
         }
         for (let index = luytenBonuses.length - 1; index >= 0; index -= 1) {
@@ -10507,7 +10880,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         const collisionCreature = activeLuytenFauna();
-        if (collisionCreature && Math.hypot(player.x - collisionCreature.x, player.y - collisionCreature.y) < collisionCreature.species.size * 0.33 + 30) {
+        if (collisionCreature && !collisionCreature.species.friendly && Math.hypot(player.x - collisionCreature.x, player.y - collisionCreature.y) < collisionCreature.species.size * 0.33 + 30) {
           damagePlayer();
         }
       }
@@ -13326,7 +13699,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const alpha = creature.dying > 0 ? clamp(1 - Math.max(0, deathProgress - 0.56) / 0.44, 0, 1) : 1;
         const animation = ensureLuytenMinibossAnimation(species);
         if (animation && animation.complete && animation.naturalWidth) {
-          const authoredOnly = Boolean(species.viral);
+          const authoredOnly = Boolean(species.viral || luytenExpedition === "strawberry");
           const columns = species.animationColumns;
           const sourceWidth = animation.naturalWidth / columns;
           const sourceHeight = animation.naturalHeight / Math.ceil(species.animationFrames / columns);
@@ -13652,6 +14025,118 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         return true;
       }
 
+      function drawStrawberryResident(ctx, creature, t, size) {
+        const species = creature.species;
+        const style = species.style;
+        const phase = t * (1.5 + species.sceneIndex * 0.16) + creature.phase;
+        const scale = size / 150;
+        const pulse = 1 + Math.sin(phase * 2.1) * 0.045;
+        ctx.save();
+        ctx.scale(scale * pulse, scale / pulse);
+        ctx.globalAlpha = creature.dying > 0
+          ? clamp(1 - creature.deathElapsed / creature.deathDuration, 0, 1)
+          : 1;
+        ctx.globalCompositeOperation = "screen";
+
+        if (species.sceneIndex === 0) {
+          [-1, 1].forEach((side) => {
+            ctx.save();
+            ctx.translate(side * 39, -8);
+            ctx.rotate(side * (.32 + Math.sin(phase * 1.8) * .12));
+            const wing = ctx.createLinearGradient(-34, 0, 34, 0);
+            wing.addColorStop(0, "rgba(94,235,255,.08)");
+            wing.addColorStop(.55, "rgba(169,247,255,.55)");
+            wing.addColorStop(1, "rgba(255,137,211,.14)");
+            ctx.fillStyle = wing;
+            ctx.strokeStyle = "rgba(220,253,255,.65)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(side * 26, -36, side * 56, -28, side * 62, -4);
+            ctx.bezierCurveTo(side * 46, 23, side * 18, 28, 0, 0);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+          });
+        } else if (species.sceneIndex === 1) {
+          ctx.strokeStyle = "rgba(255,185,231,.7)";
+          ctx.lineWidth = 5;
+          for (let ribbon = -1; ribbon <= 1; ribbon += 1) {
+            ctx.beginPath();
+            ctx.moveTo(ribbon * 13, 15);
+            for (let node = 1; node <= 8; node += 1) {
+              const y = 15 + node * 12;
+              const x = ribbon * 13 + Math.sin(phase * 1.7 + node * .72 + ribbon) * (8 + node * 1.2);
+              ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          }
+        } else {
+          ctx.fillStyle = "rgba(255,249,255,.34)";
+          ctx.strokeStyle = "rgba(255,218,244,.78)";
+          for (let lobe = 0; lobe < 7; lobe += 1) {
+            const angle = lobe / 7 * Math.PI * 2 + phase * .08;
+            const x = Math.cos(angle) * 42;
+            const y = Math.sin(angle) * 21 - 11;
+            ctx.beginPath();
+            ctx.ellipse(x, y, 28, 18, angle, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+          ctx.strokeStyle = "rgba(255,207,239,.7)";
+          ctx.lineWidth = 2.4;
+          for (let tendril = 0; tendril < 9; tendril += 1) {
+            const x = (tendril - 4) * 9;
+            ctx.beginPath();
+            ctx.moveTo(x, 22);
+            ctx.bezierCurveTo(
+              x + Math.sin(phase * 1.8 + tendril) * 12, 48,
+              x + Math.cos(phase * 1.3 + tendril) * 17, 70,
+              x + Math.sin(phase * 2.1 + tendril) * 22, 88
+            );
+            ctx.stroke();
+          }
+        }
+
+        const membrane = ctx.createRadialGradient(-18, -24, 2, 0, 0, 64);
+        membrane.addColorStop(0, "rgba(255,255,255,.96)");
+        membrane.addColorStop(.16, cssRgba(style.pale, .86));
+        membrane.addColorStop(.45, cssRgba(style.tissue, .72));
+        membrane.addColorStop(.78, cssRgba(style.accent, .34));
+        membrane.addColorStop(1, "rgba(255,32,112,.05)");
+        ctx.fillStyle = membrane;
+        ctx.strokeStyle = cssRgba(style.pale, .82);
+        ctx.lineWidth = 1.7;
+        ctx.beginPath();
+        ctx.moveTo(0, 64);
+        ctx.bezierCurveTo(-58, 30, -58, -42, 0, -58);
+        ctx.bezierCurveTo(58, -42, 58, 30, 0, 64);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        for (let seed = 0; seed < 14; seed += 1) {
+          const angle = seed * 2.39996 + phase * .045;
+          const radius = 14 + (seed % 4) * 8;
+          ctx.fillStyle = seed % 3 ? "rgba(255,224,246,.82)" : "rgba(92,240,255,.86)";
+          ctx.beginPath();
+          ctx.ellipse(Math.cos(angle) * radius, Math.sin(angle) * radius * .75, 2.7, 1.5, angle, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "rgba(20,3,24,.86)";
+        [-1, 1].forEach((side) => {
+          const blink = .35 + Math.abs(Math.sin(phase * .58 + side)) * .65;
+          ctx.beginPath();
+          ctx.ellipse(side * 13, -15, 4.4, 5.5 * blink, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(side * 13 - 1, -17, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(20,3,24,.86)";
+        });
+        ctx.restore();
+      }
+
       function drawLuytenCreatureBody(creature, t, ctx = spriteCtx, preview = false) {
         const species = creature.species;
         const style = species.style;
@@ -13672,6 +14157,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const scale = size / 140;
 
         if (drawLuytenGeneratedMinibossRig(ctx, creature, t, size, preview)) return;
+        if (species.strawberryResident) {
+          drawStrawberryResident(ctx, creature, t, size);
+          return;
+        }
         if (species.viral) return;
 
         ctx.save();
@@ -14055,7 +14544,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           spriteCtx.font = "10px Orbitron, monospace";
           spriteCtx.textAlign = "center";
           spriteCtx.fillStyle = "rgba(230,247,248,.86)";
-          spriteCtx.fillText(`MINIBOSS // ${creature.species.name.toUpperCase()}`, width / 2, -9);
+          const encounterType = creature.species.friendly ? "PLANET RESIDENT" : "MINIBOSS";
+          spriteCtx.fillText(`${encounterType} // ${creature.species.name.toUpperCase()}`, width / 2, -9);
           spriteCtx.restore();
         }
       }
@@ -14066,6 +14556,31 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.save();
         spriteCtx.translate(weapon.x + renderShake.x, weapon.y + renderShake.y);
         spriteCtx.rotate(spin);
+        if (luytenExpedition === "strawberry") {
+          const r = weapon.r * (1 + Math.sin(t * 5 + weapon.slot) * 0.06);
+          spriteCtx.globalCompositeOperation = "screen";
+          const glow = spriteCtx.createRadialGradient(0, 0, 1, 0, 0, r * 2.3);
+          glow.addColorStop(0, "rgba(255,255,255,.9)");
+          glow.addColorStop(.3, weapon.loving ? "rgba(255,112,184,.72)" : "rgba(255,38,92,.8)");
+          glow.addColorStop(1, "rgba(255,38,128,0)");
+          spriteCtx.fillStyle = glow;
+          spriteCtx.beginPath();
+          spriteCtx.arc(0, 0, r * 2.3, 0, Math.PI * 2);
+          spriteCtx.fill();
+          spriteCtx.globalCompositeOperation = "source-over";
+          spriteCtx.fillStyle = weapon.loving ? "#ff82be" : "#d91755";
+          spriteCtx.strokeStyle = "#fff2fa";
+          spriteCtx.lineWidth = 1.4;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(0, r * 1.08);
+          spriteCtx.bezierCurveTo(-r * 1.35, r * .25, -r * 1.05, -r * .86, 0, -r * .18);
+          spriteCtx.bezierCurveTo(r * 1.05, -r * .86, r * 1.35, r * .25, 0, r * 1.08);
+          spriteCtx.closePath();
+          spriteCtx.fill();
+          spriteCtx.stroke();
+          spriteCtx.restore();
+          return;
+        }
         const body = spriteCtx.createRadialGradient(-weapon.r * 0.28, -weapon.r * 0.32, 1, 0, 0, weapon.r * 1.35);
         body.addColorStop(0, weapon.pale);
         body.addColorStop(0.42, weapon.accent);
@@ -14100,6 +14615,36 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.translate(bonus.x + renderShake.x, bonus.y + renderShake.y);
         spriteCtx.rotate(t * 0.42 + bonus.phase);
         spriteCtx.globalAlpha = Math.min(1, bonus.age * 3, bonus.life * 1.4);
+        if (luytenExpedition === "strawberry") {
+          spriteCtx.globalCompositeOperation = "screen";
+          const aura = spriteCtx.createRadialGradient(0, 0, 1, 0, 0, radius * 1.8);
+          aura.addColorStop(0, "#ffffff");
+          aura.addColorStop(.22, primary);
+          aura.addColorStop(.58, "rgba(255,74,147,.55)");
+          aura.addColorStop(1, "rgba(255,72,156,0)");
+          spriteCtx.fillStyle = aura;
+          spriteCtx.beginPath();
+          spriteCtx.arc(0, 0, radius * 1.8, 0, Math.PI * 2);
+          spriteCtx.fill();
+          spriteCtx.globalCompositeOperation = "source-over";
+          spriteCtx.fillStyle = bonus.type === "shield" ? "rgba(102,226,255,.58)" : "rgba(255,60,126,.62)";
+          spriteCtx.strokeStyle = "#fff4fb";
+          spriteCtx.lineWidth = 2;
+          spriteCtx.beginPath();
+          spriteCtx.moveTo(0, radius);
+          spriteCtx.bezierCurveTo(-radius * 1.25, radius * .2, -radius, -radius * .82, 0, -radius * .2);
+          spriteCtx.bezierCurveTo(radius, -radius * .82, radius * 1.25, radius * .2, 0, radius);
+          spriteCtx.closePath();
+          spriteCtx.fill();
+          spriteCtx.stroke();
+          spriteCtx.fillStyle = "#fff";
+          spriteCtx.font = `800 ${Math.max(15, radius * .62)}px Orbitron, monospace`;
+          spriteCtx.textAlign = "center";
+          spriteCtx.textBaseline = "middle";
+          spriteCtx.fillText(bonus.type === "shield" ? "S" : "+", 0, 1);
+          spriteCtx.restore();
+          return;
+        }
         if (luytenExpedition === "virosphere") {
           spriteCtx.globalCompositeOperation = "screen";
           const viralGlow = spriteCtx.createRadialGradient(0, 0, 1, 0, 0, radius * 1.7);
@@ -14477,7 +15022,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function compositeLuytenOrganisms(t) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
-        if (luytenExpedition === "virosphere") return;
+        if (luytenExpedition === "virosphere" || luytenExpedition === "strawberry") return;
         // Offset living scenery from the water pass so both caches do not
         // regenerate during the same 60 Hz frame.
         const renderFrame = Math.floor(t * 20 + 1 / 3);
@@ -14596,6 +15141,22 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const frameTime = frame / 20;
         if (luytenExpedition === "virosphere") {
           drawVirosphereEffects(ctx, frameTime, sceneStyle);
+          return;
+        }
+        if (luytenExpedition === "strawberry") {
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          for (let mote = 0; mote < 24; mote += 1) {
+            const phase = frameTime * (0.22 + mote % 5 * 0.025) + mote * 2.39996;
+            const x = (mote * 137 + Math.sin(phase) * 32 + 900) % W;
+            const y = (mote * 211 - frameTime * (9 + mote % 4 * 2) + 2400) % H;
+            const r = 0.8 + (mote % 4) * 0.45;
+            ctx.fillStyle = mote % 3 === 0 ? "rgba(111,235,255,.34)" : "rgba(255,151,207,.38)";
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
           return;
         }
         ctx.save();
@@ -15377,7 +15938,12 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         bullets.forEach((b) => {
-          drawBolt(b, "#ffd86b", 18, 4);
+          if (b.cream) {
+            drawBolt(b, "#fff8ff", 24, 8);
+            drawBolt({ ...b, x: b.x + Math.sin(nowSec * 18 + b.shotId) * 2 }, "#ff9dce", 13, 3.5);
+          } else {
+            drawBolt(b, "#ffd86b", 18, 4);
+          }
         });
 
         enemyBullets.forEach((b) => {
@@ -15628,6 +16194,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       startBtn.addEventListener("click", () => {
         initAudio();
         startGame();
+      });
+      strawberryPlanetBtn.addEventListener("click", () => {
+        initAudio();
+        startStrawberryBriefing();
       });
       winRestartBtn.addEventListener("click", () => {
         initAudio();
