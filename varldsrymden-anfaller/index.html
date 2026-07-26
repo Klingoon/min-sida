@@ -3334,7 +3334,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.171 · Authored Virus Biomechanics · updated 2026-07-26 13:31 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.172 · Virosphere Flow Pass · updated 2026-07-26 14:58 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3579,7 +3579,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.171 · Authored Virus Biomechanics · updated 2026-07-26 13:31 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.172 · Virosphere Flow Pass · updated 2026-07-26 14:58 CEST</div>
   </main>
 
   <script>
@@ -4425,10 +4425,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         "poxvirus-brick-colossus",
         "coronavirus-spike-imperator"
       ];
-      const virosphereAnimationFps = [20,18,16,24,18,18,16,16,18,16,24,18,14,16,14,18];
+      const virosphereAnimationFps = [20,20,20,30,30,30,20,20,20,30,30,30,20,20,20,30];
       const virosphereFaunaBlueprints = virosphereSpeciesData.map((data, index) => {
         const [name,code,viralForm,attack,weapon,formation,earth] = data;
-        const animationUrl = `assets/wasp-39b-miniboss-animations/${virosphereAnimationSlugs[index]}-natural-64f-v2.webp?rev=171b`;
+        const animationUrl = `assets/wasp-39b-miniboss-animations/${virosphereAnimationSlugs[index]}-natural-64f-v3.webp?rev=172`;
         const animationImage = new Image();
         animationImage.decoding = "async";
         return {
@@ -4449,14 +4449,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const micro = kind === "microcosm";
         const viral = kind === "virosphere";
         shell.dataset.microcosmAnimation = micro ? "60hz-motion-staggered-30hz-deformation-v4" : "inactive";
-        shell.dataset.virosphereAnimation = viral ? "authored-64-frame-virus-biomechanics-v2" : "inactive";
+        shell.dataset.virosphereAnimation = viral ? "authored-64-frame-continuity-v3" : "inactive";
         const scenes = viral ? virosphereScenes : micro ? microcosmScenes : luytenBaseScenes;
         const styles = viral ? virosphereSceneStyles : micro ? microcosmSceneStyles : luytenBaseSceneStyles;
         const species = viral ? virosphereFaunaBlueprints : micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
         luytenScenes.splice(0, luytenScenes.length, ...scenes);
         luytenSceneStyles.splice(0, luytenSceneStyles.length, ...styles);
         luytenFaunaBlueprints.splice(0, luytenFaunaBlueprints.length, ...species);
-        if (viral) species.forEach((entry) => ensureLuytenMinibossAnimation(entry));
+        if (viral) primeVirosphereAnimationWindow(0);
         luytenRun.imageHeight = scenes.length * H;
         luytenRun.maxScroll = (scenes.length - 1) * H;
         luytenRun.speed = viral ? 78 : micro ? 84 : 72;
@@ -4465,14 +4465,29 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           : micro
             ? "assets/backdrops/k2-18b-microcosm/k2-18b-microcosm"
             : "assets/backdrops/luyten-b/luyten-b";
-        luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${backdropRoot}-${viral || micro ? "far-v1.webp" : "far-v7.jpg"}")`);
-        luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${backdropRoot}-${viral || micro ? "mid-v1.webp" : "mid-v7.webp"}")`);
-        luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${backdropRoot}-${viral || micro ? "near-v1.webp" : "near-v7.webp"}")`);
+        const farAsset = viral ? `${backdropRoot}-far-v2.webp` : micro ? `${backdropRoot}-far-v1.webp` : `${backdropRoot}-far-v7.jpg`;
+        const midAsset = viral ? `${backdropRoot}-mid-v2.webp` : micro ? `${backdropRoot}-mid-v1.webp` : `${backdropRoot}-mid-v7.webp`;
+        const nearAsset = viral ? `${backdropRoot}-near-v2.webp` : micro ? `${backdropRoot}-near-v1.webp` : `${backdropRoot}-near-v7.webp`;
+        luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${farAsset}")`);
+        luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${midAsset}")`);
+        luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${nearAsset}")`);
       }
 
       function ensureLuytenMinibossAnimation(species) {
         if (!species.animationImage.src && species.animationUrl) species.animationImage.src = species.animationUrl;
         return species.animationImage;
+      }
+
+      function primeVirosphereAnimationWindow(sceneIndex) {
+        virosphereFaunaBlueprints.forEach((species, index) => {
+          if (index >= sceneIndex && index <= sceneIndex + 2) {
+            ensureLuytenMinibossAnimation(species);
+          } else if (index < sceneIndex - 1 && species.animationImage.src) {
+            const replacement = new Image();
+            replacement.decoding = "async";
+            species.animationImage = replacement;
+          }
+        });
       }
 
       function ensureLuytenMinibossMaster(species) {
@@ -6047,6 +6062,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenParallaxNear.style.transform = `translate3d(${(-playerShift * 24 - curve * 34).toFixed(2)}px, 0, 0) scaleX(1.16)`;
         if (luytenVisualSceneIndex !== luytenRun.sceneIndex) {
           luytenVisualSceneIndex = luytenRun.sceneIndex;
+          if (luytenExpedition === "virosphere") primeVirosphereAnimationWindow(luytenRun.sceneIndex);
           ensureLuytenMinibossMaster(luytenFaunaBlueprints[luytenRun.sceneIndex]);
           if (luytenFaunaBlueprints[luytenRun.sceneIndex + 1]) {
             ensureLuytenMinibossMaster(luytenFaunaBlueprints[luytenRun.sceneIndex + 1]);
