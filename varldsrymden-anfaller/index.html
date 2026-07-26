@@ -3334,7 +3334,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.172 · Virosphere Flow Pass · updated 2026-07-26 14:58 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.173 · Astrax Articulation Pass · updated 2026-07-26 16:26 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3579,7 +3579,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.172 · Virosphere Flow Pass · updated 2026-07-26 14:58 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.173 · Astrax Articulation Pass · updated 2026-07-26 16:26 CEST</div>
   </main>
 
   <script>
@@ -3842,7 +3842,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       });
       bossAnimationSprites.octopus.src = "assets/bosses/nharkaal-organic-288f-v5.webp";
       bossAnimationSprites.hunter.src = "assets/bosses/varkuun-240f-v3.webp";
-      bossAnimationSprites.crystal.src = "assets/bosses/astrax-192f-v3.webp";
+      bossAnimationSprites.crystal.src = "assets/bosses/astrax-articulated-24f-v4.png?rev=173";
       bossAnimationSprites.dreadnought.src = "assets/bosses/mordrath-organic-authored-32f-v4.png";
 
       function bossAnimationReady(kind) {
@@ -5189,7 +5189,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       const bossCatalog = [
         { kind: "octopus", name: "Nhar'Kaal, the Abyssal Crown", id: "BOSS-A01-NHARKAAL", frames: 288, columns: 16, rows: 18, animationFps: 24 },
         { kind: "hunter", name: "Varkuun, the Bone Hunter", id: "BOSS-A02-VARKUUN", frames: 240, columns: 16, rows: 15, animationFps: 24 },
-        { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 192, columns: 16, rows: 12, animationFps: 24 },
+        { kind: "crystal", name: "Astrax, the Prism Devourer", id: "BOSS-A03-ASTRAX", frames: 24, columns: 6, rows: 4, animationFps: 16 },
         { kind: "dreadnought", name: "Mordrath, the Living Helios", id: "BOSS-A04-MORDRATH", frames: 32, columns: 8, rows: 4, animationFps: 16 }
       ];
       const bossKinds = bossCatalog.map((entry) => entry.kind);
@@ -7686,7 +7686,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         }
 
         if (item.sprite === "bossAnimation") {
-          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % 128 };
+          const frameCount = item.frames || item.columns * item.rows;
+          const animatedItem = { ...item, frame: Math.floor(t * item.animationFps) % frameCount };
           const previewSize = canvas === devDetailCanvas ? 270 : 164;
           drawDevImage(ctx, item.image, animatedItem, t, previewSize, previewSize, false);
           return;
@@ -11638,13 +11639,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function drawRealisticBoss() {
         const frames = { octopus: 0, hunter: 1, crystal: 2, dreadnought: 3 };
         const sizes = { octopus: [500, 540], hunter: [490, 450], crystal: [430, 430], dreadnought: [430, 430] };
-        const animationRates = { octopus: 24, hunter: 24, crystal: 24, dreadnought: 16 };
-        const animationFrames = { octopus: 288, hunter: 240, crystal: 192, dreadnought: 32 };
-        const animationColumns = { octopus: 16, hunter: 16, crystal: 16, dreadnought: 8 };
-        const animationRows = { octopus: 18, hunter: 15, crystal: 12, dreadnought: 4 };
+        const animationRates = { octopus: 24, hunter: 24, crystal: 16, dreadnought: 16 };
+        const animationFrames = { octopus: 288, hunter: 240, crystal: 24, dreadnought: 32 };
+        const animationColumns = { octopus: 16, hunter: 16, crystal: 6, dreadnought: 8 };
+        const animationRows = { octopus: 18, hunter: 15, crystal: 4, dreadnought: 4 };
         const [width, height] = sizes[boss.kind];
         const inhale = Math.sin(boss.phase * 1.55);
-        const usesAuthoredMotion = boss.kind === "dreadnought";
+        const usesAuthoredMotion = boss.kind === "crystal" || boss.kind === "dreadnought";
         const pulseX = usesAuthoredMotion ? 1 : 1 + inhale * (boss.kind === "octopus" ? 0.022 : 0.012);
         const pulseY = usesAuthoredMotion ? 1 : 1 - inhale * (boss.kind === "octopus" ? 0.014 : 0.008);
         const filter = boss.hurt > 0
