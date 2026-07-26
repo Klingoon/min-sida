@@ -511,6 +511,33 @@
       animation: underwaterSurfaceDrift 8.5s linear infinite reverse;
     }
 
+    [data-parallax-mode="wasp-39b-virosphere-parallax"] .underwater-lens {
+      background:
+        radial-gradient(ellipse at 34% 20%, rgba(var(--luyten-light-rgb), 0.11), transparent 38%),
+        radial-gradient(ellipse at 76% 64%, rgba(var(--luyten-water-rgb), 0.08), transparent 46%),
+        linear-gradient(135deg, rgba(255, 210, 112, 0.035), transparent 34%, rgba(204, 92, 255, 0.04) 68%, rgba(64, 232, 244, 0.055));
+      box-shadow:
+        inset 0 0 90px rgba(9, 3, 24, 0.24),
+        inset 0 -100px 150px rgba(13, 2, 28, 0.22);
+      animation: virosphereLensDrift 9s ease-in-out infinite alternate;
+    }
+
+    [data-parallax-mode="wasp-39b-virosphere-parallax"] .underwater-lens::before,
+    [data-parallax-mode="wasp-39b-virosphere-parallax"] .underwater-lens::after {
+      opacity: 0.26;
+      background:
+        repeating-radial-gradient(ellipse at 46% 44%, rgba(var(--luyten-light-rgb), 0.075) 0 1px, transparent 2px 28px),
+        radial-gradient(ellipse at 28% 18%, rgba(255, 232, 174, 0.1), transparent 38%);
+      mix-blend-mode: screen;
+      animation: virosphereMembraneDrift 13s linear infinite;
+    }
+
+    [data-parallax-mode="wasp-39b-virosphere-parallax"] .underwater-lens::after {
+      opacity: 0.16;
+      animation-direction: reverse;
+      animation-duration: 17s;
+    }
+
     @keyframes underwaterLensDrift {
       0% { transform: translate3d(-1.2px, -0.8px, 0) scale(1.003); }
       48% { transform: translate3d(0.8px, 1.4px, 0) scale(1.006); }
@@ -521,6 +548,16 @@
       0% { background-position: 0 0; }
       50% { background-position: 33px 21px; }
       100% { background-position: 67px 0; }
+    }
+
+    @keyframes virosphereLensDrift {
+      from { transform: translate3d(-2px, -1px, 0) scale(1.004); filter: hue-rotate(-2deg); }
+      to { transform: translate3d(2px, 1px, 0) scale(1.008); filter: hue-rotate(5deg); }
+    }
+
+    @keyframes virosphereMembraneDrift {
+      from { transform: translate3d(-2%, -1%, 0) rotate(-1deg) scale(1.01); }
+      to { transform: translate3d(2%, 1.5%, 0) rotate(1.2deg) scale(1.035); }
     }
 
     #spriteLayer {
@@ -3297,7 +3334,7 @@
       <img class="intro-layer ship" id="introShip" src="assets/opening/liberation-saga-ship-original-v1.webp" alt="">
       <div class="intro-atmosphere" id="introAtmosphere"></div>
     </div>
-    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.167 · Arcade Battle Report Prompt · updated 2026-07-26 11:44 CEST</p>
+    <p class="intro-build-mark" aria-label="Version and revision">v-2026.07.26.170 · WASP-39 b CC0 Soundscape · updated 2026-07-26 12:33 CEST</p>
     <button class="intro-audio" id="introAudioBtn" type="button" aria-label="Start music" title="Start music"><span aria-hidden="true">▶</span></button>
     <p class="intro-music-credit" id="introMusicCredit">Music: Modest Mussorgsky · The Old Castle · CC0</p>
     <div class="intro-copy">
@@ -3542,7 +3579,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         </div>
       </div>
     </section>
-    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.167 · Arcade Battle Report Prompt · updated 2026-07-26 11:44 CEST</div>
+    <div class="build-mark" aria-label="Version and upload time">v-2026.07.26.170 · WASP-39 b CC0 Soundscape · updated 2026-07-26 12:33 CEST</div>
   </main>
 
   <script>
@@ -3912,12 +3949,24 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { title: "Urgent", artist: "SRG774", src: "assets/music/luyten-b/urgent-srg774-cc0.mp3" },
         { title: "Transmission", artist: "SRG774", src: "assets/music/luyten-b/transmission-srg774-cc0.mp3" },
         { title: "Underwater Ambient Pad", artist: "isaiah658", src: "assets/music/k2-18b/underwater-ambient-pad-isaiah658-cc0.ogg" },
-        { title: "Underwater Theme", artist: "Spring Spring", src: "assets/music/k2-18b/underwater-theme-spring-spring-cc0.ogg" }
+        { title: "Underwater Theme", artist: "Spring Spring", src: "assets/music/k2-18b/underwater-theme-spring-spring-cc0.ogg" },
+        { title: "Glowsphere", artist: "Gichco", src: "assets/music/wasp-39b/glowsphere-gichco-cc0.m4a" },
+        { title: "Deep Space Array", artist: "Tozan", src: "assets/music/wasp-39b/deep-space-array-tozan-cc0.ogg" },
+        { title: "Searching", artist: "yd", src: "assets/music/wasp-39b/searching-yd-cc0.ogg" }
       ];
       const luytenExplorationSoundtracks = [5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5, 6, 7, 5];
       const luytenCombatSoundtracks = [8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9];
       const microcosmExplorationSoundtracks = [11, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11];
       const microcosmCombatSoundtracks = [12, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12, 11, 12];
+      const virosphereExplorationSoundtracks = [14, 14, 14, 13, 13, 13, 14, 14, 15, 15, 13, 13, 15, 15, 13, 15];
+      const virosphereCombatSoundtracks = [13, 9, 13, 9, 15, 9, 13, 9, 15, 9, 13, 9, 15, 9, 13, 9];
+      const virosphereSfxCatalog = {
+        awaken: "assets/sfx/wasp-39b/alien-hiss-ezduzziteh-cc0.mp3",
+        attack: "assets/sfx/wasp-39b/alien-chirp-a-ezduzziteh-cc0.mp3",
+        rupture: "assets/sfx/wasp-39b/alien-chirp-b-ezduzziteh-cc0.mp3"
+      };
+      const virosphereSfxPools = new Map();
+      const virosphereSfxLastPlayed = new Map();
       let luytenExpedition = "luyten";
       let soundtrackIndex = 0;
       let soundtrackFadeTimer = null;
@@ -3950,6 +3999,31 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         deck.addEventListener("pause", updateMusicState);
         deck.addEventListener("error", () => document.documentElement.dataset.musicState = "error");
       });
+
+      function playVirosphereSfx(name, volume = 0.22, cooldown = 0.18) {
+        if (muted || luytenExpedition !== "virosphere") return;
+        const src = virosphereSfxCatalog[name];
+        if (!src) return;
+        const now = performance.now();
+        if (now - (virosphereSfxLastPlayed.get(name) || 0) < cooldown * 1000) return;
+        virosphereSfxLastPlayed.set(name, now);
+        let pool = virosphereSfxPools.get(name);
+        if (!pool) {
+          pool = Array.from({ length: 3 }, () => {
+            const sample = new Audio(src);
+            sample.preload = "auto";
+            return sample;
+          });
+          virosphereSfxPools.set(name, pool);
+        }
+        const sample = pool.find((candidate) => candidate.paused || candidate.ended) || pool[0];
+        sample.pause();
+        sample.currentTime = 0;
+        sample.volume = clamp(volume, 0, 0.5);
+        sample.playbackRate = 0.9 + Math.random() * 0.2;
+        sample.play().catch(() => {});
+      }
+
       let demoTargetX = W / 2;
       let demoFireTimer = 0;
       let fullAutoPlaythrough = false;
@@ -4055,6 +4129,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
       function stageShortcutLabel(stageNumber) {
         if (stageNumber <= 9) return `Ctrl+${stageNumber}`;
         if (stageNumber === 10) return "Ctrl+0";
+        if (stageNumber === 20) return "Ctrl+Shift+0";
         return `Ctrl+Shift+${stageNumber - 10}`;
       }
       const canyonLegacyImageHeight = 11340;
@@ -4280,23 +4355,96 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           animationFrames:64, animationColumns:8, animationFps:60
         };
       });
+      const virosphereSceneNames = [
+        "Sodium Dawn Membrane", "Phage Glass Causeway", "Adenoid Prism Reach", "Filament Ember Current",
+        "Sulfur Helix Basin", "Influenza Veil", "Rotavirus Orrery", "Capsid Aurora Gate",
+        "Crimson Genome Trench", "Herpetic Crystal Choir", "Marburg Ribbon Storm", "RNA Lantern Reef",
+        "Mimivirus Night Vault", "Virophage Cathedral", "Pox Obsidian Nursery", "Nucleocapsid Sovereign"
+      ];
+      const virosphereScenes = virosphereSceneNames.map((name, index) => ({
+        name,
+        id: `BACKDROP-WASP-39B-VIROSPHERE-SCENE-${String(index + 1).padStart(2, "0")}`,
+        imageUrl: `assets/backdrops/wasp-39b-virosphere/scene-${String(index + 1).padStart(2, "0")}-v1.webp`
+      }));
+      const virosphereSceneStyles = [
+        ["#4b321f","#1c9c9d","#79f4e8","#fff0bf","#ffc96d","#58331f","#10070b"],
+        ["#5b2f24","#168b9c","#68d9e5","#ffdca0","#f7ae58","#48242b","#10070d"],
+        ["#66272f","#158d9d","#63dce8","#ffc4a2","#ff8d68","#4a2035","#120710"],
+        ["#6a1f3e","#b32b58","#ff7792","#ffd1b0","#ff7d70","#3e1738","#110610"],
+        ["#48411c","#95a21e","#d9ec61","#fff1a1","#d8bd41","#34321b","#0c0b08"],
+        ["#463044","#703a9c","#c18aff","#f4d8ff","#b36dff","#312036","#090712"],
+        ["#3a2d59","#6146bd","#aa8cff","#e8deff","#9377ff","#24203b","#070711"],
+        ["#302b63","#2d7aa5","#7de9ff","#d8faff","#66c9ff","#1e2546","#050811"],
+        ["#581b2a","#af253d","#ff6b72","#ffd0c5","#ff6d5e","#38131f","#0d0508"],
+        ["#4b1e4c","#853c9f","#d38cff","#f6dcff","#b568ef","#2d183b","#09050d"],
+        ["#3b2354","#9e376e","#ff77b6","#f9d0e6","#d44f9e","#241538","#07050c"],
+        ["#27355c","#297f9b","#74e9f2","#ddffff","#67d6e6","#192942","#050a10"],
+        ["#182e49","#178b91","#68f3e2","#d8fff7","#55d7d0","#10243a","#03080e"],
+        ["#242042","#3d8fab","#8ff7ff","#e3fbff","#78e4ff","#171832","#04060c"],
+        ["#351d3b","#8c376f","#f277be","#ffe0f2","#da5ca8","#25132e","#07040a"],
+        ["#201c43","#2ba6b5","#8dffff","#ffffff","#e989ff","#16122f","#03040b"]
+      ].map(([ambient,tissue,rim,pale,light,water,shadow], index) => ({
+        ambient,tissue,rim,pale,light,water,shadow,accent:tissue,
+        substrateLeft:shadow, substrateRight:ambient, saturation:1.12,
+        lightX:0.3 + (index % 4) * 0.13, lightY:0.3 + (index % 3) * 0.08,
+        detail:0.92, morph:index % 4
+      }));
+      const virosphereSpeciesData = [
+        ["T4 Dawn Harvester","T4-PHAGE","phage","radial","tail-spore","orbit","T4 bacteriophage"],
+        ["Lambda Glass Warden","LAMBDA","phage","weave","capsid-seed","galaga","lambda phage"],
+        ["Adenoid Prism Regent","ADENOVIRUS","icosa","corona","vertex-shard","concentric","adenovirus"],
+        ["Ebola Ember Seraph","EBOLA","filament","serpentine","rna-knot","helix","Ebola virus"],
+        ["Tobamovirus Helix Tyrant","TOBAMOVIRUS","rod","curtain","helix-rod","wall","tobacco mosaic virus"],
+        ["Influenza Veil Matriarch","INFLUENZA","enveloped","radial","spike-bud","sine","influenza A virus"],
+        ["Rotavirus Orrery Prime","ROTAVIRUS","wheel","corona","capsid-wheel","rose","rotavirus"],
+        ["Norovirus Aurora Crown","NOROVIRUS","icosa","spiral","prism-capsid","spiral","norovirus"],
+        ["Rabies Genome Reaver","RABIES","bullet","pincer","glycoprotein","chevron","rabies lyssavirus"],
+        ["Herpes Crystal Choir","HERPES","enveloped","chain","tegument-cell","chain","herpes simplex virus"],
+        ["Marburg Ribbon Sovereign","MARBURG","filament","serpentine","rna-knot","double-sine","Marburg virus"],
+        ["HIV Lantern Nexus","HIV","enveloped","lance","cone-core","crescent","HIV-1"],
+        ["Mimivirus Vault Colossus","MIMIVIRUS","icosa","armor","fibril-seed","wall","mimivirus"],
+        ["Sputnik Virophage Oracle","VIROPHAGE","icosa","spiral","satellite-capsid","orbit","Sputnik virophage"],
+        ["Pox Obsidian Broodqueen","POXVIRUS","pox","pincer","lateral-body","galaga","poxvirus"],
+        ["Corona Nucleocapsid Imperator","CORONAVIRUS","enveloped","corona","spike-bud","concentric","coronavirus"]
+      ];
+      const virosphereFaunaBlueprints = virosphereSpeciesData.map((data, index) => {
+        const [name,code,viralForm,attack,weapon,formation,earth] = data;
+        return {
+          name,
+          id:`WASP39B-MINIBOSS-${String(index + 1).padStart(2,"0")}-${code}`,
+          viral:true, viralForm, motion:viralForm === "filament" || viralForm === "rod" ? "anguilliform" : "asteroid",
+          form:viralForm === "filament" || viralForm === "rod" ? "serpent" : viralForm === "phage" ? "siphon" : "crown",
+          attack, weapon, formation, earth,
+          hp:34 + index * 2, size:244 + index * 3, reward:index % 2 ? "shield" : "life",
+          sceneIndex:index, style:virosphereSceneStyles[index], accent:virosphereSceneStyles[index].rim,
+          masterUrl:"", masterImage:new Image(), animationImage:new Image(), animationUrl:"",
+          animationFrames:96, animationColumns:12, animationFps:60
+        };
+      });
 
       function configureLuytenExpedition(kind = "luyten") {
         luytenExpedition = kind;
         const micro = kind === "microcosm";
+        const viral = kind === "virosphere";
         shell.dataset.microcosmAnimation = micro ? "60hz-motion-staggered-30hz-deformation-v4" : "inactive";
-        const scenes = micro ? microcosmScenes : luytenBaseScenes;
-        const styles = micro ? microcosmSceneStyles : luytenBaseSceneStyles;
-        const species = micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
+        shell.dataset.virosphereAnimation = viral ? "60hz-authored-capsid-rig-v1" : "inactive";
+        const scenes = viral ? virosphereScenes : micro ? microcosmScenes : luytenBaseScenes;
+        const styles = viral ? virosphereSceneStyles : micro ? microcosmSceneStyles : luytenBaseSceneStyles;
+        const species = viral ? virosphereFaunaBlueprints : micro ? microcosmFaunaBlueprints : luytenBaseFaunaBlueprints;
         luytenScenes.splice(0, luytenScenes.length, ...scenes);
         luytenSceneStyles.splice(0, luytenSceneStyles.length, ...styles);
         luytenFaunaBlueprints.splice(0, luytenFaunaBlueprints.length, ...species);
         luytenRun.imageHeight = scenes.length * H;
         luytenRun.maxScroll = (scenes.length - 1) * H;
-        luytenRun.speed = micro ? 84 : 72;
-        luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${micro ? "assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-far-v1.webp" : "assets/backdrops/luyten-b/luyten-b-far-v7.jpg"}")`);
-        luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${micro ? "assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-mid-v1.webp" : "assets/backdrops/luyten-b/luyten-b-mid-v7.webp"}")`);
-        luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${micro ? "assets/backdrops/k2-18b-microcosm/k2-18b-microcosm-near-v1.webp" : "assets/backdrops/luyten-b/luyten-b-near-v7.webp"}")`);
+        luytenRun.speed = viral ? 78 : micro ? 84 : 72;
+        const backdropRoot = viral
+          ? "assets/backdrops/wasp-39b-virosphere/wasp-39b-virosphere"
+          : micro
+            ? "assets/backdrops/k2-18b-microcosm/k2-18b-microcosm"
+            : "assets/backdrops/luyten-b/luyten-b";
+        luytenParallaxBackdrop.style.setProperty("--expedition-far", `url("${backdropRoot}-${viral || micro ? "far-v1.webp" : "far-v7.jpg"}")`);
+        luytenParallaxBackdrop.style.setProperty("--expedition-mid", `url("${backdropRoot}-${viral || micro ? "mid-v1.webp" : "mid-v7.webp"}")`);
+        luytenParallaxBackdrop.style.setProperty("--expedition-near", `url("${backdropRoot}-${viral || micro ? "near-v1.webp" : "near-v7.webp"}")`);
       }
 
       function ensureLuytenMinibossAnimation(species) {
@@ -4444,9 +4592,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
             dead: false,
             dying: 0,
             deathElapsed: 0,
-            deathDuration: luytenExpedition === "microcosm"
-              ? 2.15 + index * 0.025
-              : 3.05 + index * 0.045,
+            deathDuration: luytenExpedition === "virosphere"
+              ? 2.7 + index * 0.035
+              : luytenExpedition === "microcosm"
+                ? 2.15 + index * 0.025
+                : 3.05 + index * 0.045,
             burstAt: 0,
             hurt: 0,
             motionMode: "idle",
@@ -4514,6 +4664,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           });
         }
         play(128 + creature.index * 9, 0.18, "triangle", 0.032);
+        playVirosphereSfx("attack", 0.12, 0.7);
       }
 
       function fireLuytenPattern(creature) {
@@ -5073,6 +5224,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           sprite: "backdrop",
           imageUrl: scene.imageUrl
         })),
+        ...virosphereScenes.map((scene, index) => ({
+          name: `WASP-39 b · ${scene.name}`,
+          id: scene.id,
+          category: "backdrop",
+          typeLabel: `Act 4 virosphere · Scene ${index + 1}/${virosphereScenes.length} · three-layer fluorescent parallax`,
+          stageNumber: 20,
+          shortcutLabel: stageShortcutLabel(20),
+          sprite: "backdrop",
+          imageUrl: scene.imageUrl
+        })),
         {
           name: "Galactic Liberation Convergence",
           id: "BACKDROP-FINALE-GALAXY-LIBERATION",
@@ -5148,6 +5309,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           sprite: "luytenFauna",
           eye: species.accent
         })),
+        ...virosphereFaunaBlueprints.map((species) => ({
+          ...species,
+          category: "alien",
+          typeLabel: `WASP-39 b viral miniboss · Scene ${species.sceneIndex + 1}/16 · procedural 60 FPS capsid rig · ${species.earth} morphology · ${species.formation} weapon formation`,
+          sprite: "luytenFauna",
+          eye: species.accent
+        })),
         { name: "Millenium Owl", id: "PLAYER-SHIP-OWL-01", category: "object", typeLabel: "Veteran 240 px gameplay hull · heavy weathering · 64-frame thruster rig", sprite: "player", frame: 0, columns: 1, rows: 1 },
         { name: "Aegis Field", id: "PLAYER-SHIELD-AEGIS-01", category: "object", typeLabel: "Defence system", sprite: "shield" },
         { name: "Selene Rescue Core", id: "BONUS-SELENE-LIFE-CORE-01", category: "object", typeLabel: "Animated extra-life artifact · 48 frames", sprite: "canyonBonus", bonusType: "life", image: canyonBonusImage, frame: 0, columns: 12, rows: 8 },
@@ -5156,6 +5324,8 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         { name: "Luyten Aegis Pearl", id: "BONUS-LUYTEN-SHIELD-PEARL-01", category: "object", typeLabel: "Articulated shield artifact · 60 FPS tidal rings", sprite: "luytenBonus", bonusType: "shield" },
         { name: "Hycean Vitality Bio-Core", id: "BONUS-K2-18B-LIFE-BIOCORE-01", category: "object", typeLabel: "Living extra-life organelle · soft membrane animation", sprite: "luytenBonus", bonusType: "life", microcosm: true },
         { name: "Hycean Aegis Cyst", id: "BONUS-K2-18B-SHIELD-CYST-01", category: "object", typeLabel: "Living shield cyst · refractive membrane animation", sprite: "luytenBonus", bonusType: "shield", microcosm: true },
+        { name: "Virosphere Vitality Capsid", id: "BONUS-WASP39B-LIFE-CAPSID-01", category: "object", typeLabel: "Fluorescent extra-life capsid · 60 FPS membrane animation", sprite: "luytenBonus", bonusType: "life", virosphere: true },
+        { name: "Virosphere Aegis Antibody", id: "BONUS-WASP39B-SHIELD-ANTIBODY-01", category: "object", typeLabel: "Fluorescent shield antibody · 60 FPS refractive animation", sprite: "luytenBonus", bonusType: "shield", virosphere: true },
         { name: "Helix Raider", id: "BONUS-UFO-HELIX-01", category: "object", typeLabel: "Bonus UFO · 128 frames", sprite: "objectAnimation", objectKind: "helixRaider", image: objectAnimationSprites.helixRaider, frame: 0, columns: 16, rows: 8, animationFps: 24 },
         { name: "Hydra Comet", id: "HAZARD-COMET-HYDRA-01", category: "object", typeLabel: "Procedural 60 FPS tumble · plasma trail", sprite: "objectAnimation", objectKind: "hydraComet", image: hydraCometCoreSprite, frame: 0, columns: 1, rows: 1, animationFps: 60 },
         { name: "Astrax Prism Mine", id: "BOSS-A03-MINE-PRISM-01", category: "object", typeLabel: "Boss weapon · destructible mine · 64 frames", sprite: "objectAnimation", objectKind: "astraxPrismMine", image: objectAnimationSprites.astraxPrismMine, frame: 0, columns: 8, rows: 8, animationFps: 24 },
@@ -5516,12 +5686,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         ].forEach((backdrop) => backdrop.classList.remove("active"));
         luytenParallaxBackdrop.classList.add("active");
         setUnderwaterFxActive(true);
-        shell.dataset.parallaxMode = luytenExpedition === "microcosm"
-          ? "k2-18b-microcosm-parallax"
-          : "luyten-b-abyssal-parallax";
-        shell.dataset.stageBackdrop = luytenExpedition === "microcosm"
-          ? "k2-18b-hycean-microcosm"
-          : "luyten-b-underwater-expedition";
+        shell.dataset.parallaxMode = luytenExpedition === "virosphere"
+          ? "wasp-39b-virosphere-parallax"
+          : luytenExpedition === "microcosm"
+            ? "k2-18b-microcosm-parallax"
+            : "luyten-b-abyssal-parallax";
+        shell.dataset.stageBackdrop = luytenExpedition === "virosphere"
+          ? "wasp-39b-fluorescent-virosphere"
+          : luytenExpedition === "microcosm"
+            ? "k2-18b-hycean-microcosm"
+            : "luyten-b-underwater-expedition";
         canvas.style.backgroundImage = "none";
         updateLuytenParallaxBackdrop();
         selectLuytenSoundtrack(luytenRun.sceneIndex, "exploration");
@@ -6670,10 +6844,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const cue = `${luytenExpedition}:${safeSceneIndex}:${mode}`;
         if (cue === luytenMusicCue) return;
         luytenMusicCue = cue;
-        const soundtrackSequence = luytenExpedition === "microcosm"
+        const soundtrackSequence = luytenExpedition === "virosphere"
+          ? (mode === "combat" ? virosphereCombatSoundtracks : virosphereExplorationSoundtracks)
+          : luytenExpedition === "microcosm"
           ? (mode === "combat" ? microcosmCombatSoundtracks : microcosmExplorationSoundtracks)
           : (mode === "combat" ? luytenCombatSoundtracks : luytenExplorationSoundtracks);
-        const fadeDuration = luytenExpedition === "microcosm"
+        const fadeDuration = luytenExpedition === "virosphere"
+          ? (mode === "combat" ? 1050 : 1800)
+          : luytenExpedition === "microcosm"
           ? (mode === "combat" ? 900 : 1250)
           : (mode === "combat" ? 2200 : 3200);
         selectSoundtrack(soundtrackSequence[safeSceneIndex], fadeDuration);
@@ -7229,15 +7407,16 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const canyonStage = state === "canyon" || state === "canyonBriefing";
         const luytenStage = state === "luyten" || state === "luytenBriefing";
         const microcosmStage = luytenStage && luytenExpedition === "microcosm";
+        const virosphereStage = luytenStage && luytenExpedition === "virosphere";
         const actIndex = clamp(act - 1, 0, actNames.length - 1);
         const alienStyle = alienStyleForStage(act, alienRoundsCleared);
         const waveLabel = luytenStage
-          ? `${microcosmStage ? "SPECIMEN" : "DIVE"} ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
+          ? `${virosphereStage ? "STRAIN" : microcosmStage ? "SPECIMEN" : "DIVE"} ${luytenRun.sceneIndex + 1}/${luytenScenes.length}`
           : canyonStage
           ? "MINIBOSS GAUNTLET"
           : boss ? `BOSS ${act}/${totalActs}` : `ACT ${act} ${alienRoundsCleared + 1}/${roundsBeforeBoss}`;
         const stageLabel = luytenStage
-          ? (microcosmStage ? "K2-18 b Hycean Microcosm" : "Luyten b Abyssal Descent")
+          ? (virosphereStage ? "WASP-39 b Fluorescent Virosphere" : microcosmStage ? "K2-18 b Hycean Microcosm" : "Luyten b Abyssal Descent")
           : canyonStage ? "Selene Canyon Odyssey" : actNames[actIndex];
         const encounterLabel = luytenStage
           ? (activeLuytenFauna()?.species.name || luytenScenes[luytenRun.sceneIndex].name)
@@ -7696,6 +7875,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           return;
         }
         actStats.set(enemy.objectId, {
+          id: enemy.objectId,
           name: enemy.name || variant?.name || enemy.objectId,
           count: 1,
           points: pointsAwarded,
@@ -7709,7 +7889,24 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const context = canvas.getContext("2d");
         const paint = () => {
           context.clearRect(0, 0, canvas.width, canvas.height);
-          if (!entry.image?.naturalWidth) return;
+          if (!entry.image?.naturalWidth) {
+            const viralSpecies = virosphereFaunaBlueprints.find((species) => species.id === entry.id);
+            if (!viralSpecies) return;
+            context.save();
+            context.translate(canvas.width / 2, canvas.height / 2);
+            drawViralMiniboss(context, {
+              species: viralSpecies,
+              phase: viralSpecies.sceneIndex * 0.81,
+              motionMode: "idle",
+              motionDuration: 0,
+              motionTime: 0,
+              dying: 0,
+              deathElapsed: 0,
+              hurt: 0
+            }, viralSpecies.sceneIndex * 0.19, 76);
+            context.restore();
+            return;
+          }
           const frameWidth = entry.image.naturalWidth / entry.columns;
           const frameHeight = entry.image.naturalHeight / entry.rows;
           const scale = Math.min(canvas.width / frameWidth, canvas.height / frameHeight) * 0.88;
@@ -8454,6 +8651,28 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         attractShowcaseTimer = setTimeout(finishAttractShowcase, 28000);
       }
 
+      function finishAttractVirosphereShowcase() {
+        if (!attractTourMode || state !== "luyten" || luytenExpedition !== "virosphere") return;
+        clearAttractShowcaseTimer();
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        luytenWeapons.length = 0;
+        luytenBonuses.length = 0;
+        state = "demo";
+        spawnBoss();
+        showActTitle(act, false, "Mordrath · Helios Devourer");
+        keepAttractConsoleVisible("MORDRATH · HELIOS DEVOURER");
+      }
+
+      function startAttractVirosphereShowcase() {
+        clearAttractShowcaseTimer();
+        attractTourMode = true;
+        beginLuytenRun("virosphere");
+        shell.dataset.attractShowcase = "wasp-39b-virosphere";
+        keepAttractConsoleVisible("WASP-39 B FLUORESCENT VIROSPHERE");
+        attractShowcaseTimer = setTimeout(finishAttractVirosphereShowcase, 30000);
+      }
+
       function startGame() {
         if (introActive) return;
         initAudio();
@@ -8506,7 +8725,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const match = /^Digit([0-9])$/.exec(event.code);
         if (!match) return null;
         const digit = Number(match[1]);
-        if (event.shiftKey) return digit >= 1 && digit <= 9 ? 10 + digit : null;
+        if (event.shiftKey) return digit === 0 ? 20 : digit >= 1 && digit <= 9 ? 10 + digit : null;
         return digit === 0 ? 10 : digit;
       }
 
@@ -8514,6 +8733,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         if (stageNumber === 5) return { stageNumber, type: "canyon", act: 1, stageIndex: 4 };
         if (stageNumber === 18) return { stageNumber, type: "microcosm", act: 2, stageIndex: 4 };
         if (stageNumber === 19) return { stageNumber, type: "luyten", act: 3, stageIndex: 4 };
+        if (stageNumber === 20) return { stageNumber, type: "virosphere", act: 4, stageIndex: 3 };
         const timelineIndex = stageNumber <= 4 ? stageNumber - 1 : stageNumber - 2;
         const actIndex = Math.floor(timelineIndex / 4);
         const stageIndex = timelineIndex % 4;
@@ -8564,6 +8784,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           act = 2;
           wave = 8;
           beginLuytenRun("microcosm");
+          return;
+        }
+        if (stage.type === "virosphere") {
+          act = 4;
+          alienRoundsCleared = roundsBeforeBoss;
+          wave = 12;
+          beginLuytenRun("virosphere");
           return;
         }
         act = stage.act;
@@ -8768,6 +8995,29 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         updateHud();
       }
 
+      function startVirosphereBriefing() {
+        configureLuytenExpedition("virosphere");
+        clearAttractTimer();
+        state = "luytenBriefing";
+        clearBossTimers();
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        comets.length = 0;
+        rifts.length = 0;
+        bonusUfo = null;
+        luytenRun.scroll = 0;
+        luytenRun.sceneIndex = 0;
+        setLuytenBackdrop();
+        winScene.classList.remove("visible", "finale", "intermission");
+        overlay.classList.remove("demo-mode");
+        overlayText.textContent = "WASP-39 B · FLUORESCENT VIROSPHERE\nNASA / WEBB FIELD BRIEF\n\nWASP-39 b is a hot, puffy gas giant about 700 light-years away. It has roughly 0.28 Jupiter masses, a radius about 1.28 times Jupiter's, and circles its G-type star every 4.1 Earth days. Webb observations identified carbon dioxide, sulfur dioxide, water vapor, carbon monoxide, sodium and potassium in its atmosphere. Its temperature is about 900 °C.\n\nNASA HAS NOT DETECTED LIFE OR VIRUSES ON WASP-39 B. THE GIANT FLUORESCENT VIROSPHERE BELOW IS SCIENCE FICTION INSPIRED BY REAL VIRUS MORPHOLOGY.\n\nOBJECTIVE  DEFEAT SIXTEEN VIRAL MINIBOSSES BEFORE MORDRATH\nREFERENCES  PHAGES, ADENOVIRUS, INFLUENZA, EBOLA, ROTAVIRUS, HIV, MIMIVIRUS AND OTHER REAL VIRUS FORMS\nWEAPONS  BREAK THEIR GALAGA FORMATIONS OR EVADE THEM\nBONUSES  EACH MINIBOSS GRANTS 3 LIVES + 3 SHIELDS · COLLECT VITALITY CAPSIDS AND AEGIS ANTIBODIES\n\nDESKTOP  MOVE ← A D → · ↑ FORWARD · ↓ BACK\nFIRE SPACE / W · SHIELD X · LIVES 20 · SHIELDS 20\nINFINITE MODE CTRL + I\n\nMOBILE\nSTEER  HOLD YOUR THUMB ON THE SHIP AND DRAG\nFIRE  TAP WITH ANOTHER FINGER\nVOICE SHIELD  ENABLE IT AND KEEP SINGING \"LA LA LAA\"";
+        startBtn.textContent = "Enter the virosphere";
+        setConsolePane("info");
+        overlay.classList.add("visible");
+        updateHud();
+      }
+
       function beginLuytenRun(kind = luytenExpedition) {
         configureLuytenExpedition(kind);
         clearAttractTimer();
@@ -8794,9 +9044,11 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         luytenDisplayedPlayerPosition = "";
         resetPhysicsBody(player, player.x, player.y);
         resetDirectTouchControls();
-        const title = luytenExpedition === "microcosm"
-          ? "K2-18 b Hycean Microcosm"
-          : "Luyten b Abyssal Descent";
+        const title = luytenExpedition === "virosphere"
+          ? "WASP-39 b Fluorescent Virosphere"
+          : luytenExpedition === "microcosm"
+            ? "K2-18 b Hycean Microcosm"
+            : "Luyten b Abyssal Descent";
         if (attractTourMode) keepAttractConsoleVisible(title.toUpperCase());
         else overlay.classList.remove("visible", "demo-mode");
         startBtn.textContent = "Start";
@@ -8825,8 +9077,14 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         play(392, 0.24, "triangle", 0.045);
         setTimeout(() => play(587, 0.34, "sine", 0.04), 160);
         setTimeout(() => {
-          startNextAct(fullAutoPlaythrough || attractTourMode);
-          if (attractTourMode) keepAttractConsoleVisible(`ACT ${act}`);
+          if (luytenExpedition === "virosphere") {
+            state = "playing";
+            spawnBoss();
+            showActTitle(act, false, "Mordrath · Helios Devourer");
+          } else {
+            startNextAct(fullAutoPlaythrough || attractTourMode);
+            if (attractTourMode) keepAttractConsoleVisible(`ACT ${act}`);
+          }
         }, 1450);
       }
 
@@ -10034,6 +10292,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
               shell.dataset.luytenEncounter = creature.species.id;
               shake = Math.max(shake, 9);
               play(84 + creature.index * 5, 0.38, "sine", 0.045);
+              playVirosphereSfx("awaken", 0.2, 0.8);
             }
             return;
           }
@@ -10156,12 +10415,20 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           makeParticles(bullet.x, bullet.y, creature.species.accent, creature.hp > 0 ? 11 : 76);
           play(creature.hp > 0 ? 192 : 88, creature.hp > 0 ? 0.07 : 0.32, "triangle", creature.hp > 0 ? 0.028 : 0.07);
           if (creature.hp <= 0) {
+            playVirosphereSfx("rupture", 0.24, 0.35);
+            const minibossPoints = 5600 + creature.index * 420;
             creature.engaged = false;
             creature.dying = creature.deathDuration;
             creature.deathElapsed = 0;
             creature.burstAt = 0;
             selectLuytenSoundtrack(creature.species.sceneIndex, "exploration");
-            score += 5600 + creature.index * 420;
+            score += minibossPoints;
+            if (luytenExpedition === "virosphere") {
+              recordBattleKill({
+                objectId: creature.species.id,
+                name: creature.species.name
+              }, minibossPoints);
+            }
             enemyBullets.length = 0;
             for (let index = luytenWeapons.length - 1; index >= 0; index -= 1) {
               if (luytenWeapons[index].owner === creature.index) luytenWeapons.splice(index, 1);
@@ -10718,7 +10985,13 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           score += 1000;
           player.invuln = 1.2;
           if (alienRoundsCleared >= roundsBeforeBoss) {
-            spawnBoss();
+            if (act === 4) {
+              if (attractTourMode) startAttractVirosphereShowcase();
+              else if (fullAutoPlaythrough) beginLuytenRun("virosphere");
+              else startVirosphereBriefing();
+            } else {
+              spawnBoss();
+            }
           } else {
             wave += 1;
             spawnWave();
@@ -13110,6 +13383,236 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         return true;
       }
 
+      function drawViralMiniboss(ctx, creature, t, size) {
+        const species = creature.species;
+        if (!species.viral) return false;
+        const style = species.style;
+        const phase = t * (0.82 + species.sceneIndex * 0.012) + creature.phase;
+        const actionProgress = creature.motionDuration > 0
+          ? clamp(1 - creature.motionTime / creature.motionDuration, 0, 1)
+          : 0;
+        const action = creature.motionMode === "idle" ? 0 : Math.sin(actionProgress * Math.PI);
+        const death = creature.dying > 0 ? clamp(creature.deathElapsed / creature.deathDuration, 0, 1) : 0;
+        const pulse = 1 + Math.sin(phase * 2.2) * 0.035 + action * 0.055;
+        const scale = size / 230;
+        const form = species.viralForm;
+        const polygon = (radius, sides, rotation = 0) => {
+          ctx.beginPath();
+          for (let index = 0; index <= sides; index += 1) {
+            const angle = rotation + index / sides * Math.PI * 2;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (index === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+        };
+
+        ctx.save();
+        ctx.globalAlpha = clamp(1 - Math.max(0, death - 0.58) / 0.42, 0, 1);
+        ctx.scale(scale * pulse * (1 + death * 0.1), scale / pulse * (1 - death * 0.04));
+        ctx.rotate(Math.sin(phase * 0.47) * 0.055 + death * 0.42);
+        ctx.filter = creature.hurt > 0
+          ? "brightness(1.9) saturate(.68)"
+          : `contrast(1.09) saturate(${style.saturation})`;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        const membrane = ctx.createRadialGradient(-18, -22, 3, 0, 0, 78);
+        membrane.addColorStop(0, cssRgba(style.pale, 0.92));
+        membrane.addColorStop(0.22, cssRgba(style.rim, 0.72));
+        membrane.addColorStop(0.58, cssRgba(style.tissue, 0.62));
+        membrane.addColorStop(0.82, cssRgba(style.ambient, 0.46));
+        membrane.addColorStop(1, cssRgba(style.shadow, 0.2));
+
+        if (form === "phage") {
+          ctx.save();
+          ctx.translate(0, -34);
+          ctx.rotate(phase * 0.12);
+          ctx.fillStyle = membrane;
+          ctx.strokeStyle = cssRgba(style.pale, 0.82);
+          ctx.lineWidth = 2;
+          polygon(56, 10, Math.PI / 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(style.rim, 0.42);
+          ctx.lineWidth = 1;
+          for (let facet = 0; facet < 10; facet += 1) {
+            const angle = facet / 10 * Math.PI * 2 + Math.PI / 10;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(angle) * 56, Math.sin(angle) * 56);
+            ctx.stroke();
+          }
+          ctx.fillStyle = cssRgba(style.pale, 0.8);
+          ctx.beginPath();
+          ctx.arc(Math.sin(phase) * 6, Math.cos(phase * 0.8) * 5, 9 + Math.sin(phase * 2) * 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+          const tailPulse = 1 + Math.sin(phase * 2.4) * 0.045;
+          ctx.strokeStyle = cssRgba(style.rim, 0.82);
+          ctx.lineWidth = 15;
+          ctx.beginPath();
+          ctx.moveTo(0, 18);
+          ctx.lineTo(0, 103 * tailPulse);
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(style.shadow, 0.72);
+          ctx.lineWidth = 1.4;
+          for (let ring = 0; ring < 8; ring += 1) {
+            const y = 30 + ring * 10 * tailPulse;
+            ctx.beginPath();
+            ctx.ellipse(0, y, 10, 3.4, 0, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.strokeStyle = cssRgba(style.pale, 0.72);
+          ctx.lineWidth = 3;
+          for (let leg = 0; leg < 6; leg += 1) {
+            const side = leg % 2 ? 1 : -1;
+            const row = Math.floor(leg / 2);
+            const sway = Math.sin(phase * 1.8 + leg) * 8;
+            ctx.beginPath();
+            ctx.moveTo(side * 5, 96 - row * 8);
+            ctx.quadraticCurveTo(side * (38 + row * 7), 110 + row * 8, side * (64 + sway), 139 + row * 10);
+            ctx.stroke();
+          }
+        } else if (form === "filament") {
+          const points = [];
+          for (let segment = 0; segment <= 28; segment += 1) {
+            const x = -102 + segment / 28 * 204;
+            const y = Math.sin(segment * 0.62 - phase * 2.1) * (26 + action * 8)
+              + Math.sin(segment * 0.21 + phase) * 18;
+            points.push([x, y]);
+          }
+          ctx.strokeStyle = cssRgba(style.shadow, 0.78);
+          ctx.lineWidth = 27;
+          ctx.beginPath();
+          points.forEach(([x,y], index) => index ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(style.tissue, 0.94);
+          ctx.lineWidth = 20;
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(style.rim, 0.82);
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          points.forEach(([x,y], index) => {
+            if (index % 2) return;
+            ctx.fillStyle = index % 4 ? cssRgba(style.pale, 0.64) : cssRgba(style.rim, 0.82);
+            ctx.beginPath();
+            ctx.arc(x, y, 3 + (index % 5), 0, Math.PI * 2);
+            ctx.fill();
+          });
+        } else if (form === "rod") {
+          ctx.rotate(Math.sin(phase * 0.4) * 0.14);
+          ctx.fillStyle = membrane;
+          ctx.strokeStyle = cssRgba(style.pale, 0.78);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(-44, -112, 88, 224, 42);
+          ctx.fill();
+          ctx.stroke();
+          ctx.strokeStyle = cssRgba(style.rim, 0.8);
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          for (let node = 0; node <= 34; node += 1) {
+            const y = -94 + node / 34 * 188;
+            const x = Math.sin(node * 0.72 - phase * 2) * 25;
+            if (node === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        } else if (form === "bullet" || form === "pox") {
+          ctx.fillStyle = membrane;
+          ctx.strokeStyle = cssRgba(style.pale, 0.78);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          if (form === "bullet") {
+            ctx.moveTo(0, -108);
+            ctx.bezierCurveTo(68, -78, 63, 42, 42, 96);
+            ctx.quadraticCurveTo(0, 117, -42, 96);
+            ctx.bezierCurveTo(-63, 42, -68, -78, 0, -108);
+          } else {
+            ctx.roundRect(-78, -96, 156, 192, 46);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          for (let band = -3; band <= 3; band += 1) {
+            const y = band * 22 + Math.sin(phase * 1.6 + band) * 3;
+            ctx.strokeStyle = cssRgba(band % 2 ? style.rim : style.tissue, 0.62);
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-48, y);
+            ctx.bezierCurveTo(-18, y - 12, 18, y + 12, 48, y);
+            ctx.stroke();
+          }
+        } else {
+          const sides = form === "wheel" ? 12 : form === "icosa" ? 10 : 32;
+          ctx.rotate(phase * 0.08);
+          ctx.fillStyle = membrane;
+          ctx.strokeStyle = cssRgba(style.pale, 0.76);
+          ctx.lineWidth = 2;
+          polygon(74, sides, Math.PI / sides);
+          ctx.fill();
+          ctx.stroke();
+          if (form === "icosa" || form === "wheel") {
+            ctx.strokeStyle = cssRgba(style.rim, 0.42);
+            ctx.lineWidth = 1;
+            for (let facet = 0; facet < sides; facet += 1) {
+              const angle = facet / sides * Math.PI * 2 + phase * 0.08;
+              ctx.beginPath();
+              ctx.moveTo(Math.cos(angle) * 18, Math.sin(angle) * 18);
+              ctx.lineTo(Math.cos(angle) * 74, Math.sin(angle) * 74);
+              ctx.stroke();
+            }
+          }
+          const spikeCount = form === "wheel" ? 18 : 24;
+          ctx.strokeStyle = cssRgba(style.rim, 0.82);
+          ctx.fillStyle = cssRgba(style.pale, 0.88);
+          ctx.lineWidth = 2.5;
+          for (let spike = 0; spike < spikeCount; spike += 1) {
+            const angle = spike / spikeCount * Math.PI * 2;
+            const wave = Math.sin(phase * 2 + spike * 1.7) * 5 + action * 7;
+            const inner = 69;
+            const outer = 94 + wave;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner);
+            ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(Math.cos(angle) * outer, Math.sin(angle) * outer, 3.4 + action * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = cssRgba(style.shadow, 0.64);
+          ctx.beginPath();
+          ctx.arc(0, 0, form === "wheel" ? 24 : 34, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = cssRgba(style.pale, 0.66);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let node = 0; node <= 22; node += 1) {
+            const angle = node / 22 * Math.PI * 2;
+            const radius = 18 + Math.sin(node * 2.4 + phase * 1.8) * 8;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (node === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+
+        ctx.globalCompositeOperation = "screen";
+        ctx.globalAlpha *= 0.32 + Math.sin(phase * 2.7) * 0.08;
+        ctx.strokeStyle = style.pale;
+        ctx.lineWidth = 1.2;
+        for (let ring = 0; ring < 3; ring += 1) {
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 94 + ring * 14 + action * 5, 34 + ring * 8, phase * (ring % 2 ? -0.17 : 0.14) + ring, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.restore();
+        return true;
+      }
+
       function drawLuytenCreatureBody(creature, t, ctx = spriteCtx, preview = false) {
         const species = creature.species;
         const style = species.style;
@@ -13129,6 +13632,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         const size = preview ? 126 : species.size;
         const scale = size / 140;
 
+        if (drawViralMiniboss(ctx, creature, t, size)) return;
         if (drawLuytenGeneratedMinibossRig(ctx, creature, t, size, preview)) return;
 
         ctx.save();
@@ -13557,6 +14061,63 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
         spriteCtx.translate(bonus.x + renderShake.x, bonus.y + renderShake.y);
         spriteCtx.rotate(t * 0.42 + bonus.phase);
         spriteCtx.globalAlpha = Math.min(1, bonus.age * 3, bonus.life * 1.4);
+        if (luytenExpedition === "virosphere") {
+          spriteCtx.globalCompositeOperation = "screen";
+          const viralGlow = spriteCtx.createRadialGradient(0, 0, 1, 0, 0, radius * 1.7);
+          viralGlow.addColorStop(0, "#ffffff");
+          viralGlow.addColorStop(0.2, primary);
+          viralGlow.addColorStop(0.56, cssRgba(secondary, 0.72));
+          viralGlow.addColorStop(1, "rgba(0,0,0,0)");
+          spriteCtx.fillStyle = viralGlow;
+          spriteCtx.beginPath();
+          spriteCtx.arc(0, 0, radius * 1.7, 0, Math.PI * 2);
+          spriteCtx.fill();
+          spriteCtx.strokeStyle = cssRgba(primary, 0.9);
+          spriteCtx.fillStyle = cssRgba(secondary, 0.72);
+          spriteCtx.lineWidth = 2;
+          if (bonus.type === "shield") {
+            spriteCtx.beginPath();
+            spriteCtx.moveTo(0, 3);
+            spriteCtx.lineTo(-radius * 0.72, -radius * 0.72);
+            spriteCtx.moveTo(0, 3);
+            spriteCtx.lineTo(radius * 0.72, -radius * 0.72);
+            spriteCtx.moveTo(0, 3);
+            spriteCtx.lineTo(0, radius * 0.92);
+            spriteCtx.stroke();
+            [-1, 1].forEach((side) => {
+              spriteCtx.beginPath();
+              spriteCtx.arc(side * radius * 0.72, -radius * 0.72, radius * 0.22, 0, Math.PI * 2);
+              spriteCtx.fill();
+              spriteCtx.stroke();
+            });
+          } else {
+            const sides = 10;
+            spriteCtx.beginPath();
+            for (let side = 0; side <= sides; side += 1) {
+              const angle = side / sides * Math.PI * 2;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius;
+              if (side === 0) spriteCtx.moveTo(x, y);
+              else spriteCtx.lineTo(x, y);
+            }
+            spriteCtx.closePath();
+            spriteCtx.fill();
+            spriteCtx.stroke();
+            spriteCtx.fillStyle = "#ffffff";
+            spriteCtx.font = `700 ${Math.max(15, radius * 0.7)}px Orbitron, monospace`;
+            spriteCtx.textAlign = "center";
+            spriteCtx.textBaseline = "middle";
+            spriteCtx.fillText("+", 0, 1);
+          }
+          spriteCtx.strokeStyle = cssRgba(primary, 0.56);
+          for (let ring = 0; ring < 3; ring += 1) {
+            spriteCtx.beginPath();
+            spriteCtx.ellipse(0, 0, radius * (1.3 + ring * 0.22), radius * (0.42 + ring * 0.1), t * (ring % 2 ? -0.7 : 0.7) + ring, 0, Math.PI * 2);
+            spriteCtx.stroke();
+          }
+          spriteCtx.restore();
+          return;
+        }
         if (luytenExpedition === "microcosm") {
           const membrane = spriteCtx.createRadialGradient(-radius * 0.28, -radius * 0.3, 1, 0, 0, radius * 1.18);
           membrane.addColorStop(0, "#ffffff");
@@ -13877,6 +14438,7 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
       function compositeLuytenOrganisms(t) {
         if (state !== "luyten" && state !== "luytenBriefing") return;
+        if (luytenExpedition === "virosphere") return;
         // Offset living scenery from the water pass so both caches do not
         // regenerate during the same 60 Hz frame.
         const renderFrame = Math.floor(t * 20 + 1 / 3);
@@ -13886,6 +14448,64 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
           drawLuytenOrganisms(t, luytenOrganismCtx);
         }
         spriteCtx.drawImage(luytenOrganismCanvas, 0, 0);
+      }
+
+      function drawVirosphereEffects(ctx, frameTime, sceneStyle) {
+        const sceneIndex = luytenRun.sceneIndex;
+        const scrollPhase = luytenRun.scroll / H;
+        const veil = ctx.createRadialGradient(
+          W * sceneStyle.lightX,
+          H * sceneStyle.lightY,
+          10,
+          W * 0.5,
+          H * 0.5,
+          H * 0.9
+        );
+        veil.addColorStop(0, cssRgba(sceneStyle.rim, 0.12));
+        veil.addColorStop(0.48, cssRgba(sceneStyle.tissue, 0.035));
+        veil.addColorStop(1, cssRgba(sceneStyle.shadow, 0.18));
+        ctx.fillStyle = veil;
+        ctx.fillRect(0, 0, W, H);
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        for (let strand = 0; strand < 7; strand += 1) {
+          const baseX = W * (0.08 + strand * 0.14);
+          const drift = Math.sin(frameTime * 0.22 + strand * 1.7 + sceneIndex) * 34;
+          ctx.strokeStyle = cssRgba(strand % 2 ? sceneStyle.rim : sceneStyle.pale, 0.055 + (strand % 3) * 0.018);
+          ctx.lineWidth = 1.2 + (strand % 3) * 0.7;
+          ctx.beginPath();
+          for (let point = 0; point <= 18; point += 1) {
+            const y = point / 18 * (H + 120) - 60;
+            const x = baseX + drift + Math.sin(y * 0.014 + frameTime * (0.38 + strand * 0.025) + strand) * (22 + strand * 3);
+            if (point === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+        for (let mote = 0; mote < 46; mote += 1) {
+          const seed = sceneIndex * 97 + mote * 37;
+          const x = (seed * 61 % 809 - 24 + Math.sin(frameTime * 0.31 + mote) * (4 + mote % 8));
+          const y = ((seed * 43 % 1060) + frameTime * (5 + mote % 7) + scrollPhase * 31) % 1060 - 50;
+          const radius = 1.2 + (seed % 9) * 0.42;
+          const pulse = 0.55 + Math.sin(frameTime * 1.8 + mote * 0.73) * 0.28;
+          ctx.strokeStyle = cssRgba(mote % 3 ? sceneStyle.rim : sceneStyle.pale, 0.08 + pulse * 0.12);
+          ctx.fillStyle = cssRgba(sceneStyle.tissue, 0.04 + pulse * 0.08);
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          if (mote % 5 === 0) {
+            for (let spike = 0; spike < 6; spike += 1) {
+              const angle = spike / 6 * Math.PI * 2 + frameTime * 0.08;
+              ctx.beginPath();
+              ctx.moveTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+              ctx.lineTo(x + Math.cos(angle) * radius * 2.1, y + Math.sin(angle) * radius * 2.1);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.restore();
       }
 
       function drawUnderwaterRippleField(ctx, frame, frameTime, sceneStyle) {
@@ -13935,6 +14555,10 @@ SELENE  FLY FREELY · DEFEAT EACH MINIBOSS · COLLECT LIFE AND SHIELD CORES</p>
 
         const sceneStyle = luytenSceneStyles[luytenRun.sceneIndex];
         const frameTime = frame / 20;
+        if (luytenExpedition === "virosphere") {
+          drawVirosphereEffects(ctx, frameTime, sceneStyle);
+          return;
+        }
         ctx.save();
 
         const waterVeil = ctx.createLinearGradient(0, 0, 0, H);
